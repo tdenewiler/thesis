@@ -1,11 +1,10 @@
 \chapter{State Estimation}
+\label{ch:estimation}
 *** Talk about quantifying the performance of the ACS Kalman filter \cite{Sights06}. Discuss training of the covariance matrices. Show the position estimation using the original covariance matrices and the ones found from training. If I get to identifying bias and/or drift in the IMU put that here as well. ***
 
-*** What I really want is plots showing the position estimate using GPS only, KF with learned Q/R but no adapting, KF with no adapting or training, KF with adapting, KF with learned and adaptive, KF with different encoder equations. Would be cool to plot these on an overhead image of the test area. ***
+The Space and Naval Warfare Systems Center, San Diego (SSC-SD) robotics group has developed the Autonomous Capabilities Suite (ACS) which incorporates many different technologies into a single software package that can be run on a wide variety of different robots and is able to easily accomodate different payload and sensor suites \cite{Sights06}. One of the ACS libraries is the adaptive extended Kalman filter which is used on the EOD robots for state estimation and is the main method used for answering the question ``Where am I?''. The idea behind the Kalman filter is relatively straightforward. The robot has some basic idea of where it is in the world but there is some uncertainty involved in that estimate due to different measurement accuracies from multiple sensors that measure the same state, noise in the individual sensor measurements and an imperfect model of how the robot moves through the world. Some of the uncertainty of the model can be explained by the fact that not all of the necessary measurements are being carried out and the states can be unobservable. *** Say more here about noise/uncertainty. ***
 
-Space and Naval Warfare Systems Center, San Diego (SSC-SD) robotics group has developed the Autonomous Capabilities Suite (ACS) which incorporates many different technologies into a single package that can be run on a wide variety of different robots \cite{Sights06}. One of the ACS libraries is the adaptive extended Kalman filter which is used on the EOD robots for state estimation and is the main method used for answering the question ``Where am I?''. The idea behind the Kalman filter is relatively straightforward. The robot has some basic idea of where it is in the world but there is some uncertainty involved in that estimate due to noise in the sensor measurements and an imperfect model of how the robot moves through the world. Some of the uncertainty of the model can be explained by the fact that not all of the necessary measurements are being carried out and the states can are unobservable. *** Say more here about noise/uncertainty. ***
-
-An example is when the robot is driving in a straight line the left track may be moving on a flat surface while the right track is moving on an uneven surface as in Figure \ref{fig:topography}. The wheel encoders that measure how far each track is moving will report that the right track is traveling a greater distance than the left track which could mean that the robot is turning counter-clockwise or that the robot tracks are moving over different surface types. At the same time the robot will be getting measurements about its heading from both the IMU and GPS sensors that will have some noise as well. In this example both the IMU and GPS sensors would likely say that the robot is traveling in a straight line on average (as long as the controller is performing adequately). The job of the Kalman filter is to determine how much each sensor should be trusted when trying to determine where the robot really is in the world and how fast it is moving. This is accomplished by looking at each of the noise parameters for both the system model and the measurements as being zero mean, white noise, uncorrelated, Gaussian variables ... *** Clean up this language. ***
+An example is a robot driving in a straight line where the left track may be moving on a flat surface while the right track is moving on an uneven surface as in Figure \ref{fig:topography}. The wheel encoders that measure how far each track is moving will report that the right track is traveling a greater distance than the left track which could mean that the robot is turning counter-clockwise or that the robot tracks are moving over different surface types. At the same time the robot will be getting measurements about its heading from both the IMU and GPS sensors that will have some noise as well. In this example both the IMU and GPS sensors would likely say that the robot is traveling in a straight line on average (as long as the controller is performing adequately). The job of the Kalman filter is to determine how much each sensor should be trusted when trying to determine where the robot really is in the world and how fast it is moving. This is accomplished by looking at each of the noise parameters for both the system model and the measurements as being zero mean, white noise, uncorrelated, Gaussian variables ... *** Clean up this language. Consider putting it in a different section. ***
 
 \begin{figure}[ht!]
 	\centering
@@ -14,8 +13,9 @@ An example is when the robot is driving in a straight line the left track may be
 	\label{fig:topography}
 \end{figure}
 
-\section{The Kalman Filter}
-Kalman filters, and even control systems (see Chapter \ref{sec:controls}), use the idea of a state space to encapsulate all of the relevant information that is known about a system such as position, orientation, velocity and acceleration. The standard equations to describe the state space of a system are
+\section{State Space Models}
+Kalman filters and control systems (see Chapter \ref{ch:controls}) use the idea of a multi-dimensional state space to encapsulate all of the relevant information that is known about a system. In the case of robots the dynamics are typically captured by position, orientation, linear and angular velocities, acceleration and sometimes jerk. The standard equations to describe the state space of a system are
+
 \begin{align}
 \label{eq:statespace}
 \begin{split}
@@ -24,6 +24,9 @@ Kalman filters, and even control systems (see Chapter \ref{sec:controls}), use t
 \end{split}
 \end{align}
 
+The state variables are given in vector form by $x$ and the sensor measurements are contained in the vector $y$. The state space equations are a means of representing how the state and measurements of a system change through time based on the initial state of the system and the inputs, $u$, to the system which allows the trajectory (or motion through time) and the effect of the trajectory on the measurements to be calculated using compact notation. The inputs are assumed to include any external forces applied to the system as well as actuation provided by the system itself.
+
+\section{The Kalman Filter}
 The ACS Kalman filter is typical of all Kalman filters in that it consists of a prediction update step and a measurement update step where the prediction update is run as fast as possible and the measurement update is run whenever new sensor data becomes available as in Figure \ref{fig:kf}. The prediction update step uses the model of the dynamics of the system and a measurement of elapsed time to determine where the system is in the world. The measurement update step is basically a feedback step to help correct for errors in the system model \cite{Kelly_1994_338}.
 
 \begin{figure}[ht!]
@@ -34,6 +37,7 @@ The ACS Kalman filter is typical of all Kalman filters in that it consists of a 
 \end{figure}
 
 From \cite{Kelly_1994_338}, \cite{Simon06OptimalEstimation} the prediction update step marches the system dynamics forward in time using the equations
+
 \begin{align}
 \label{eq:predictionupdate}
 \begin{split}
@@ -42,6 +46,7 @@ P_{k+1}^- &= \Phi_kP_k\Phi_k^T + \Gamma_kQ_k\Gamma_k^T
 \end{split}
 \end{align}
 and the measurement update step provides feedback from sensor data using the equations
+
 \begin{align}
 \label{eq:measurementupdate}
 \begin{split}
@@ -52,6 +57,7 @@ P_k &= \left[I - K_kH_k\right]P_k^-
 \end{align}
 
 The state space equations for the robot are
+
 \begin{align}
 \label{eq:discretess}
 \begin{split}
@@ -64,22 +70,26 @@ z_k &= H_kx_k + v_k
 *** I really need to clean up the language here. \cite{Busse03adaptiveEKF} looks like a great source. Even the notation as far as \textit{a priori} and \textit{a posteriori} needs fixing. *** Attempting to determine the proper values for the covariance matrices $Q$ in (\ref{eq:predictionupdate}) and $R$ in (\ref{eq:measurementupdate}) can be a laborious process and is often considered more of an art than a science with engineer experience being a critical factor. *** Discuss why $Q$ and $R$ are important and what function they serve in the Kalman filter. *** The ACS Kalman filter has been implemented with an adaptive scheme to update the covariance matrices in real time as the robot moves around and sensor measurements are taken into account \cite{Sights06}, \cite{Mehra72}, \cite{Busse03adaptiveEKF}. $Q$ and $R$ are updated at alternating time steps in the EKF.
 
 The first step is to calculate $Q^\ast$ using
+
 \begin{align}
 \label{eq:qstar}
 Q^\ast = \left(x-x_{k+1}^-\right)\left(x-x_{k+1}^-\right)^T + P_{k+1}^- - P - Q
 \end{align}
 Then $Q$ can be updated using
+
 \begin{align}
 \label{eq:q}
 Q = Q + \frac{1}{L_Q}\left(Q^\ast-Q\right)
 \end{align}
 
 Next $R^\ast$ is calculated using
+
 \begin{align}
 \label{eq:rstar}
 R^\ast = \left(y-Hx\right)\left(y-Hx\right)^T - HP_{k+1}^-H^T
 \end{align}
 and $R$ can be updated using
+
 \begin{align}
 \label{eq:r}
 R = R + \frac{1}{L_R}\left(R^\ast-R\right)
