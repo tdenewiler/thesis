@@ -1,0 +1,49 @@
+\documentclass[12pt]{ucsd}
+% documentclass options: default is 11pt, oneside, final.
+% fonts: 10pt, 11pt, 12pt -- are valid for UCSD dissertations.
+% sides: oneside, twoside -- note that two-sided theses are not accepted by OGS
+% mode: draft, final -- draft mode switches to single spacing, removes hyperlinks,
+%                       and places a black box at every overfull hbox (check these before submission).
+% chapterheads -- include this if you want your chapters to read:
+% Chapter 1
+% Title of Chapter
+%
+% instead of
+%
+% 1 Title of Chapter
+
+% Input and configure the required packages.
+\input{preamble}
+
+% Uncomment this line to compile a subset of the chapters.
+% \includeonly{chapters/chIntroduction}
+
+% Document starts here.
+\begin{document}
+
+% Document specific information.
+\input{header}
+
+% The title, copyright, and signature pages.
+\begin{frontmatter}
+\makefrontmatter
+\input{frontmatter}
+\end{frontmatter}
+
+% Meat and potatoes.
+\include{chapters/chIntroduction}
+\include{chapters/chBackground}
+\include{chapters/chEstimation}
+\include{chapters/chControls}
+\include{chapters/chResults}
+\include{chapters/chFutureWork}
+\include{chapters/chConclusion}
+
+\appendix
+\include{chapters/chSourceCode}
+
+% Bibliography.
+\bibliographystyle{these}
+\bibliography{mybib}
+
+\end{document}

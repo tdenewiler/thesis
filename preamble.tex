@@ -1,0 +1,139 @@
+% UCSD Mathematics Dissertation Template
+%
+% Please read the comments in this file and make appropriate edits.
+% NOTE: Always refer to the ``Preperation and Submission Manual for
+% Doctoral Dissertations and Masters Theses for 20**'', where 20** is
+% the year of your graduation, for officiation preparations guidelines.
+%
+% If you desire more control, please see the attached files:
+%   * ucsd.cls -- Class file
+%   * uct10.clo, uct11.clo, uct12.clo -- Configuration files for font sizes 10pt,11pt,12pt
+%
+% CHANGELOG:
+%   * Original file adapted from brockman.tex by JRB and RMR
+%     to work with ucsd.cls
+
+% Include all packages you need here.  Some standard options are suggested below.
+
+% GEOMETRY - This will force the use of Letter paper.
+% Many TeX installations default to A4 paper.  The formatting
+% of the thesis class file requires Letter, else the margins
+% will be wrong when you go to print it (and OGS will complain).
+% If your TeX implementation is not setup for Letter paper, and
+% you cannot change it, uncommenting the following line may fix
+% problem.
+% \usepackage[paper=letterpaper]{geometry}
+
+
+%% AMS PACKAGES - Chances are you will want some or all of these if writing a math dissertation.
+% \usepackage{amsmath, amscd, amssymb, amsthm}
+
+%% GRAPHICX - This is the standard package for including graphics for latex/pdflatex.
+% \usepackage{graphicx}
+
+%% LATIN MODERN FONTS (replacements for Computer Modern)
+% \usepackage{lmodern}
+% \usepackage[T1]{fontenc}
+
+%% INDEX
+% Uncomment the following two lines to create an index:
+% \usepackage{makeidx}
+% \makeindex
+% You will need to uncomment the \printindex line near the
+% bibliography to display the index.  Use the command
+% \index{keyword} within the text to create an entry in the index
+% for keyword.
+
+%% HYPERLINKS
+% To create a PDF with hyperlinks, you need to include the hyperref package.
+% THIS HAS TO BE THE LAST PACKAGE INCLUDED!
+% Note that the options plainpages=false and pdfpagelabels exist
+% to fix indexing associated with having both (ii) and (2) as pages.
+% Also, all links must be black according to OGS.
+% See: http://www.tex.ac.uk/cgi-bin/texfaq2html?label=hyperdupdest
+% Note: This may not work correctly with all DVI viewers (i.e. Yap breaks).
+% NOTE: hyperref will NOT work in draft mode, as noted above.
+% \usepackage[colorlinks=true, pdfstartview=FitV, linkcolor=black, citecolor=black, urlcolor=black,plainpages=false,pdfpagelabels]{hyperref}
+% \hypersetup{ pdfauthor = {Your Name Here}, pdftitle = {The Title of The Dissertation}, pdfkeywords = {Keywords for Searching}, pdfcreator = {pdfLaTeX with hyperref package}, pdfproducer = {pdfLaTeX}}
+
+\usepackage{amsmath,amsfonts,amsthm,amssymb}
+\usepackage{setspace}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{extramarks}
+\usepackage{chngpage}
+\usepackage{soul}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{graphicx,float,wrapfig}
+\usepackage{ifthen}
+\usepackage{listings}
+\usepackage{courier}
+%\usepackage[bw,framed,numbered]{mcode}
+\usepackage{microtype}
+\usepackage{appendix}
+\usepackage{hyperref}
+\usepackage[all]{hypcap}
+\usepackage{url}
+
+% Uncomment this to add line numbers for debugging only.
+\usepackage{lineno}
+\def\linenumberfont{\normalfont\small\sffamily}
+\linenumbers
+
+%\definecolor{MyDarkGreen}{rgb}{0.0,0.4,0.0}
+
+% Needed for changing the font size in \documentclass{} while
+% using the fancyhdr package. Else the warning:
+% \headheight is too small (12.0pt):Make it at least 14.49998pt.
+\setlength{\headheight}{15pt}
+
+% For faster processing, load Matlab syntax for listings
+%\lstloadlanguages{Matlab}%
+%\lstset{language=Matlab,
+%        frame=single,
+%        basicstyle=\small\ttfamily,
+%        keywordstyle=[1]\color{Blue}\bf,
+%        keywordstyle=[2]\color{Purple},
+%        keywordstyle=[3]\color{Blue}\underbar,
+%        identifierstyle=,
+%        commentstyle=\usefont{T1}{pcr}{m}{sl}\color{MyDarkGreen}\small,
+%        stringstyle=\color{Purple},
+%        showstringspaces=false,
+%        tabsize=5,
+%        % Put standard MATLAB functions not included in the default
+%        % language here
+%        morekeywords={xlim,ylim,var,alpha,factorial,poissrnd,normpdf,normcdf},
+%        % Put MATLAB function parameters here
+%        morekeywords=[2]{on, off, interp},
+%        % Put user defined functions here
+%        morekeywords=[3]{FindESS},
+%        morecomment=[l][\color{Blue}]{...},
+%        numbers=left,
+%        firstnumber=1,
+%        numberstyle=\tiny\color{Blue},
+%        stepnumber=0
+%        }
+
+% Adds a hyperlink to an email address.
+\newcommand{\mailto}[2]{\href{mailto:#1}{#2}}
+
+% Homework Specific Information
+\newcommand{\thesisTitle}{Master's Thesis}
+\newcommand{\thesisSubTitle}{Robot Traffic School}
+\newcommand{\thesisAuthorName}{Thomas Denewiler}
+\newcommand{\thesisAuthorEmail}{tdenewiler@gmail.com}
+
+% These commands set the document properties for the PDF output. Needs the hyperref package.
+\hypersetup
+{
+    colorlinks,
+    linkcolor={black},
+    citecolor={black},
+    filecolor={black},
+    urlcolor={black},
+    pdfauthor={\thesisAuthorName <\mailto{\thesisAuthorEmail}{\thesisAuthorEmail}>},
+    pdfsubject={\thesisTitle},
+    pdftitle={\thesisTitle},
+    pdfkeywords={UC San Diego, Small Unmanned Ground Vehicles, Robotics},
+    pdfstartpage={1},
+}

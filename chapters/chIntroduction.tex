@@ -1,0 +1,14 @@
+\chapter{Introduction}
+Robots have been developed to assist humans in tasks that are generally considered dirty, dangerous or boring. Recently robots have found a useful niche as a tool to help Expolosives Ordinance Disposal (EOD) teams to assess and eliminate threats due to improvised explosive devices (IEDs), commonly referred to as roadside bombs, by allowing humans to maintain a safe stand-off distance while investigating a scene. Clearly this falls under the dangerous category. The current method that EOD teams use involves teleoperation of the robot to get from the base to the object of interest. In the process of teleoperating the robot the operator is exposed and vulnerable to other external threats in the area. As technologies mature to provide humans with better tools shortcomings are discovered, such as the vulnerability due to teleoperation, and that opens up avenues for improvement in the development of these tools. For robots one approach to reducing the amount of work humans are required to perform is to give the robots more intelligence via autonomous behaviors using additional sensors, more specialized actuators and software to automate the largest amount of routine tasks as possible.
+
+When adding autonomy to robots nearly all of the tasks can be summarized by the following questions:
+\begin{itemize}
+\item Where am I?
+\item What's around me?
+\item Where do I want to go?
+\item How do I get there?
+\end{itemize}
+
+The initial attempt at adding autonomy to the EOD robots resulted in somewhat erratic driving behavior, especially near obstacles, as the robot trajectory would be very jerky *** needs a better description *** when it changed speed and attempted to make small corrections to its original path to move around the obstacle. In this paper I will look at smoothing out the trajectories taken by the robot by looking for improvements in the state estimation (Where am I?) and controls (How do I get there?) algorithms. For this work I am ignoring actual obstacle detection (What's around me?) and will be using a simple planning algorithm (Where do I want to go?) to simulate obstacles in the robot path which will force the robot to change direction and speed multiple times.
+
+*** Talk more about how this problem is not isolated to any one issue and that state estimation, control and sensor measurements all need to be considered. I need to show later how each piece contributes to making the robot drive better. ***
