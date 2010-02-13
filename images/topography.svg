@@ -15,7 +15,7 @@
    inkscape:version="0.46"
    sodipodi:docname="topography.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
-   inkscape:export-filename="/home/thomas/school/thesis/images/topography.png"
+   inkscape:export-filename="/home/thomas/school/thesis/thomas/images/topography.png"
    inkscape:export-xdpi="600"
    inkscape:export-ydpi="600">
   <defs
@@ -44,8 +44,8 @@
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1920"
-     inkscape:window-height="1148"
+     inkscape:window-width="1918"
+     inkscape:window-height="1143"
      inkscape:window-x="0"
      inkscape:window-y="25" />
   <metadata
@@ -70,7 +70,7 @@
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="M 140.91628,140.6995 L 164.65486,140.6995 L 164.65486,158.37717 L 192.93913,158.37717 L 192.93913,140.6995 L 286.37824,140.6995 L 286.37824,158.37717 L 329.8148,158.37717 L 329.8148,140.6995 L 342.94679,140.6995 L 342.94679,158.37717 L 371.23106,158.37717 L 371.23106,140.6995 L 408.10162,140.6995 L 408.10162,158.37717 L 499.01535,158.37717 L 499.01535,140.6995 L 518.71333,140.6995 L 518.71333,158.37717 L 530.33008,158.37717 L 530.33008,140.6995 L 553,140.6995"
+       d="M 140.91628,233.63353 L 164.65486,233.63353 L 164.65486,251.3112 L 192.93913,251.3112 L 192.93913,233.63353 L 286.37824,233.63353 L 286.37824,251.3112 L 329.8148,251.3112 L 329.8148,233.63353 L 342.94679,233.63353 L 342.94679,251.3112 L 371.23106,251.3112 L 371.23106,233.63353 L 408.10162,233.63353 L 408.10162,251.3112 L 499.01535,251.3112 L 499.01535,233.63353 L 518.71333,233.63353 L 518.71333,251.3112 L 530.33008,251.3112 L 530.33008,233.63353 L 553,233.63353"
        id="path3155"
        sodipodi:nodetypes="cccccccccccccccccccccc" />
   </g>
