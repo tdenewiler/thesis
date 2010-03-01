@@ -4,7 +4,7 @@
 
 The Space and Naval Warfare Systems Center, San Diego (SSC-SD) robotics group has developed the Autonomous Capabilities Suite (ACS) which incorporates many different technologies into a single software package that can be run on a wide variety of different robots and is able to easily accomodate different payload and sensor suites \cite{Sights06}. One of the ACS libraries is the adaptive extended Kalman filter which is used on the EOD robots for state estimation and is the main method used for answering the question ``Where am I?''. The idea behind the Kalman filter is relatively straightforward. The robot has some basic idea of where it is in the world but there is some uncertainty involved in that estimate due to different measurement accuracies from multiple sensors that measure the same state, noise in the individual sensor measurements and an imperfect model of how the robot moves through the world. Some of the uncertainty of the model can be explained by the fact that not all of the necessary measurements are being carried out and the states can be unobservable. *** Say more here about noise/uncertainty. ***
 
-An example is a robot driving in a straight line where the left track may be moving on a flat surface while the right track is moving on an uneven surface as in Figure \ref{fig:topography}. The wheel encoders that measure how far each track is moving will report that the right track is traveling a greater distance than the left track which could mean that the robot is turning counter-clockwise or that the robot tracks are moving over different surface types. At the same time the robot will be getting measurements about its heading from both the IMU and GPS sensors that will have some noise as well. In this example both the IMU and GPS sensors would likely say that the robot is traveling in a straight line on average (as long as the controller is performing adequately). The job of the Kalman filter is to determine how much each sensor should be trusted when trying to determine where the robot really is in the world and how fast it is moving. This is accomplished by looking at each of the noise parameters for both the system model and the measurements as being zero mean, white noise, uncorrelated, Gaussian variables ... *** Clean up this language. Consider putting it in a different section. ***
+An example is a robot driving in a straight line where the left track may be moving on a flat surface while the right track is moving on an uneven surface as in Figure \ref{fig:topography}. The wheel encoders that measure how far each track is moving will report that the right track is traveling a greater distance than the left track which could mean that the robot is turning counter-clockwise or that the robot tracks are moving over different surface types. At the same time the robot will be getting measurements about its heading from both the IMU and GPS sensors that will have some noise as well. In this example both the IMU and GPS sensors would likely say that the robot is traveling in a straight line on average (as long as the controller is performing adequately). The job of the Kalman filter is to determine how much each sensor should be trusted when trying to determine where the robot really is in the world and how fast it is moving. This is accomplished by looking at each of the noise parameters for both the system model and the measurements as being zero mean, white noise, uncorrelated, Gaussian variables ... *** Clean up this language. Consider putting it in a different section like \S\ref{sec:duals}. ***
 
 \begin{figure}[ht!]
 	\centering
@@ -14,7 +14,8 @@ An example is a robot driving in a straight line where the left track may be mov
 \end{figure}
 
 \section{State Space Models}
-Kalman filters and control systems (see Chapter \ref{ch:controls}) use the idea of a multi-dimensional state space to encapsulate all of the relevant information that is known about a system. In the case of robots the dynamics are typically captured by position, orientation, linear and angular velocities, acceleration and sometimes jerk. The standard equations to describe the state space of a system are
+\label{sec:statespacemodels}
+Kalman filters and control systems (see Chapter \ref{ch:controls}) use the idea of a multi-dimensional state space to encapsulate all of the relevant information that is known about a system. In the case of robots the dynamics are typically captured by position, orientation, linear and angular velocities, acceleration and sometimes jerk. The general equations to describe the state space of a system are
 
 \begin{align}
 \label{eq:statespace}
@@ -27,6 +28,7 @@ Kalman filters and control systems (see Chapter \ref{ch:controls}) use the idea 
 The state variables are given in vector form by $x$ and the sensor measurements are contained in the vector $y$. The state space equations are a means of representing how the state and measurements of a system change through time based on the initial state of the system and the inputs, $u$, to the system which allows the trajectory (or motion through time) and the effect of the trajectory on the measurements to be calculated using compact notation. The inputs are assumed to include any external forces applied to the system as well as actuation provided by the system itself.
 
 \section{The Kalman Filter}
+\label{sec:kalmanfilter}
 The ACS Kalman filter is typical of all Kalman filters in that it consists of a prediction update step and a measurement update step where the prediction update is run as fast as possible and the measurement update is run whenever new sensor data becomes available as in Figure \ref{fig:kf}. The prediction update step uses the model of the dynamics of the system and a measurement of elapsed time to determine where the system is in the world. The measurement update step is basically a feedback step to help correct for errors in the system model \cite{Kelly_1994_338}.
 
 \begin{figure}[ht!]
@@ -56,7 +58,7 @@ P_k &= \left[I - K_kH_k\right]P_k^-
 \end{split}
 \end{align}
 
-The state space equations for the robot are
+The state space equations for the robot are discretized as
 
 \begin{align}
 \label{eq:discretess}
@@ -67,7 +69,10 @@ z_k &= H_kx_k + v_k
 \end{align}
 
 \section{Adaptive Extended Kalman Filter}
-*** I really need to clean up the language here. \cite{Busse03adaptiveEKF} looks like a great source. Even the notation as far as \textit{a priori} and \textit{a posteriori} needs fixing. *** Attempting to determine the proper values for the covariance matrices $Q$ in (\ref{eq:predictionupdate}) and $R$ in (\ref{eq:measurementupdate}) can be a laborious process and is often considered more of an art than a science with engineer experience being a critical factor. *** Discuss why $Q$ and $R$ are important and what function they serve in the Kalman filter. *** The ACS Kalman filter has been implemented with an adaptive scheme to update the covariance matrices in real time as the robot moves around and sensor measurements are taken into account \cite{Sights06}, \cite{Mehra72}, \cite{Busse03adaptiveEKF}. $Q$ and $R$ are updated at alternating time steps in the EKF.
+\label{sec:adaptiveekf}
+*** I really need to clean up the language here. \cite{Busse03adaptiveEKF} looks like a great source. Even the notation as far as \textit{a priori} and \textit{a posteriori} needs fixing. ***
+
+Attempting to determine the proper values for the covariance matrices $Q$ in (\ref{eq:predictionupdate}) and $R$ in (\ref{eq:measurementupdate}) can be a laborious process and is often considered more of an art than a science with engineer experience being a critical factor. *** Discuss why $Q$ and $R$ are important and what function they serve in the Kalman filter. *** The ACS Kalman filter has been implemented with an adaptive scheme to update the covariance matrices in real time as the robot moves around and sensor measurements are taken into account \cite{Sights06}, \cite{Mehra72}, \cite{Busse03adaptiveEKF}. $Q$ and $R$ are updated at alternating time steps in the EKF. *** Why is it valid to update $Q$ and $R$ this way? ***
 
 The first step is to calculate $Q^\ast$ using
 
@@ -98,6 +103,17 @@ R = R + \frac{1}{L_R}\left(R^\ast-R\right)
 *** Discuss the implications of the adaptive EKF. ***
 
 \section{Discriminative Training of Kalman Filter Parameters}
-*** Investigate the difference between adaptive filtering and training. It seems like they accomplish the same thing, namely, convergence to some values for the covariance matrices. Do they use the same metrics? Do they converge to the same covariance matrices? Is it just online vs. offline training? *** \cite{Abbeel-RSS-05} describes a method to automatically learn what the covariance matrices should be. When used in conjunction with the adaptive EKF scheme this could allow for faster convergence times when the robots are started and for smaller ranges for the adaptation coefficients $L_Q$ and $L_R$ in (\ref{eq:q}) and (\ref{eq:r}).
+\label{sec:trainingkfparams}
+*** Investigate the difference between adaptive filtering and training. It seems like they accomplish the same thing, namely, convergence to some values for the covariance matrices. Do they use the same metrics? Do they converge to the same covariance matrices? Is it just online vs. offline training? Would a neural network be a good candidate for finding $Q$ and $R$ as well? All of these methods seem to be curve fitting in the multi-dimensional state space. ***
+
+\cite{Abbeel-RSS-05} describes a method to automatically learn what the covariance matrices should be. When used in conjunction with the adaptive EKF scheme this could allow for faster convergence times when the robots are started and for smaller ranges for the adaptation coefficients $L_Q$ and $L_R$ in (\ref{eq:q}) and (\ref{eq:r}).
+
+*** I might also use \cite{Orderud05}. ***
+
+\section{Establishing Ground Truth}
+\label{sec:groundtruth}
+*** Talk about need for ground truth measurements using DGPS and possibly good IMU so that the results of the estimation and controls algorithms can be quantified in terms of performance. This can be related back to example of crazy robot spinning in place and the need to determine where the problems really lie. ***
 
 \section{Identifty IMU Parameters}
+\label{sec:identifyimuparams}
+*** Looking at \cite{ChungOjeda01}. Would need access to a rotary table to perform tests. ***
