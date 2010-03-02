@@ -72,7 +72,13 @@ z_k &= H_kx_k + v_k
 \label{sec:adaptiveekf}
 *** I really need to clean up the language here. \cite{Busse03adaptiveEKF} looks like a great source. Even the notation as far as \textit{a priori} and \textit{a posteriori} needs fixing. ***
 
-Attempting to determine the proper values for the covariance matrices $Q$ in (\ref{eq:predictionupdate}) and $R$ in (\ref{eq:measurementupdate}) can be a laborious process and is often considered more of an art than a science with engineer experience being a critical factor. *** Discuss why $Q$ and $R$ are important and what function they serve in the Kalman filter. *** The ACS Kalman filter has been implemented with an adaptive scheme to update the covariance matrices in real time as the robot moves around and sensor measurements are taken into account \cite{Sights06}, \cite{Mehra72}, \cite{Busse03adaptiveEKF}. $Q$ and $R$ are updated at alternating time steps in the EKF. *** Why is it valid to update $Q$ and $R$ this way? ***
+Attempting to determine the proper values for the covariance matrices $Q$ in (\ref{eq:predictionupdate}) and $R$ in (\ref{eq:measurementupdate}) can be a laborious process and is often considered more of an art than a science with engineer experience being a critical factor.
+
+*** Discuss why $Q$ and $R$ are important and what function they serve in the Kalman filter. ***
+
+The ACS Kalman filter has been implemented with an adaptive scheme to update the covariance matrices in real time as the robot moves around and sensor measurements are taken into account \cite{Sights06}, \cite{Mehra72}, \cite{Busse03adaptiveEKF}. $Q$ and $R$ are updated at alternating time steps in the EKF.
+
+*** Why is it valid to update $Q$ and $R$ this way? ***
 
 The first step is to calculate $Q^\ast$ using
 
@@ -99,6 +105,56 @@ and $R$ can be updated using
 \label{eq:r}
 R = R + \frac{1}{L_R}\left(R^\ast-R\right)
 \end{align}
+
+The discretized state vector used in the ACS EKF is
+
+\begin{align*}
+x_k = \left[\begin{array}{c c c c c c c c} x & y & z & v & \phi & \theta & \psi & \omega \end{array}\right]^T
+\end{align*}
+where $x$, $y$ and $z$ are positions, $v$ is velocity, $\phi$, $\theta$ and $\psi$ are Euler angles for pitch, roll and yaw, and $\omega$ is angular velocity. The state transition matrix is
+
+\begin{align*}
+\Phi_k = \left[\begin{array}{c c c c c c c c}
+1 & 0 & 0 & \cos(\psi)*\cos(\phi)*\Delta T & 0 & 0 & 0 & 0 \\
+0 & 1 & 0 & \sin(\psi)*\cos(\phi)*\Delta T & 0 & 0 & 0 & 0\\
+0 & 0 & 1 & -\sin(\phi)*\Delta T & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 1 & 0 & 0 & -\sin(\theta)*\Delta T \\
+0 & 0 & 0 & 0 & 0 & 1 & 0 & \tan(\phi)*\cos(\theta)*\Delta T \\
+0 & 0 & 0 & 0 & 0 & 0 & 1 & \cos(\theta)*\Delta T/\cos(\phi)\\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 1
+\end{array}\right]
+\end{align*}
+The process noise matrix is
+
+\begin{align*}
+\Gamma_k = \left[\begin{array}{c c c c c c c c}
+\Gamma_{1,1} & \Gamma_{1,2} & \Gamma_{1,3} & 0 & 0 & 0 & 0 & 0 \\
+\Gamma_{2,1} & \Gamma_{2,2} & \Gamma_{2,3} & 0 & 0 & 0 & 0 & 0 \\
+\Gamma_{3,1} & \Gamma_{3,2} & \Gamma_{3,3} & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & \cos(\theta) & 0 & \sin(\theta) & 0 \\
+0 & 0 & 0 & 0 & -\tan(\phi)*\sin(\theta) & 1 & \tan(\phi)*\cos(\theta) & 0 \\
+0 & 0 & 0 & 0 & -\sin(\theta) / \cos(\phi) & 0 & \cos(\theta)/\cos(\phi) & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 1
+\end{array}\right]
+\end{align*}
+
+where the upper left $3\times 3$ block matrix elements are
+
+\begin{align*}
+\Gamma_{1,1} &= \sin(\psi)*\cos(\theta)-\cos(\psi)\sin(\phi)*\sin(\theta) \\
+\Gamma_{1,2} &= \cos(\psi)*\cos(\phi) \\
+\Gamma_{1,3} &= \sin(\psi)*\sin(\theta)+\cos(\psi)*\sin(\phi)*\cos(\theta) \\
+\Gamma_{2,1} &= -\cos(\phi)*\cos(\theta)-\sin(\phi)\sin(\phi)*\sin(\theta) \\
+\Gamma_{2,2} &= \sin(\psi)*\cos(\phi) \\
+\Gamma_{2,3} &= -\cos(\psi)*\sin(\theta)-\sin(\psi)*\sin(\phi)*\cos(\theta) \\
+\Gamma_{3,1} &= -\cos(\phi)*\sin(\theta) \\
+\Gamma_{3,2} &= -\sin(\phi) \\
+\Gamma_{3,3} &= \cos(\phi)*\cos(\theta)
+\end{align*}
+
+The Jacobian of the measurement model with respect to the state, $H$, is initialized to the covariance matrix $Q$ and then updated as new measurements arrive.
 
 *** Discuss the implications of the adaptive EKF. ***
 
