@@ -109,19 +109,19 @@ R = R + \frac{1}{L_R}\left(R^\ast-R\right)
 The discretized state vector used in the ACS EKF is the same as that found in \cite{Kelly_1994_333}
 
 \begin{align*}
-x_k = \left[\begin{array}{c c c c c c c c} x & y & z & v & \phi & \theta & \psi & \omega \end{array}\right]^T
+x_k = \left[\begin{array}{c c c c c c c c} x & y & z & v & \theta & \phi & \psi & \omega \end{array}\right]^T
 \end{align*}
-where $x$, $y$ and $z$ are positions, $v$ is velocity, $\phi$, $\theta$ and $\psi$ are Euler angles for pitch, roll and yaw, and $\omega$ is angular velocity. The state transition matrix is
+where $x$, $y$ and $z$ are positions, $v$ is velocity, $\theta$, $\phi$ and $\psi$ are Euler angles for pitch, roll and yaw, and $\omega$ is angular velocity. The state transition matrix is
 
 \begin{align*}
 \Phi_k = \left[\begin{array}{c c c c c c c c}
-1 & 0 & 0 & \cos(\psi)*\cos(\phi)*\Delta T & 0 & 0 & 0 & 0 \\
-0 & 1 & 0 & \sin(\psi)*\cos(\phi)*\Delta T & 0 & 0 & 0 & 0\\
-0 & 0 & 1 & -\sin(\phi)*\Delta T & 0 & 0 & 0 & 0\\
+1 & 0 & 0 & \cos(\psi)*\cos(\theta)*\Delta T & 0 & 0 & 0 & 0 \\
+0 & 1 & 0 & \sin(\psi)*\cos(\theta)*\Delta T & 0 & 0 & 0 & 0\\
+0 & 0 & 1 & -\sin(\theta)*\Delta T & 0 & 0 & 0 & 0\\
 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & 1 & 0 & 0 & -\sin(\theta)*\Delta T \\
-0 & 0 & 0 & 0 & 0 & 1 & 0 & \tan(\phi)*\cos(\theta)*\Delta T \\
-0 & 0 & 0 & 0 & 0 & 0 & 1 & \cos(\theta)*\Delta T/\cos(\phi)\\
+0 & 0 & 0 & 0 & 1 & 0 & 0 & -\sin(\phi)*\Delta T \\
+0 & 0 & 0 & 0 & 0 & 1 & 0 & \tan(\theta)*\cos(\phi)*\Delta T \\
+0 & 0 & 0 & 0 & 0 & 0 & 1 & \cos(\phi)*\Delta T/\cos(\theta)\\
 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1
 \end{array}\right]
 \end{align*}
@@ -133,9 +133,9 @@ The process noise matrix is
 \Gamma_{2,1} & \Gamma_{2,2} & \Gamma_{2,3} & 0 & 0 & 0 & 0 & 0 \\
 \Gamma_{3,1} & \Gamma_{3,2} & \Gamma_{3,3} & 0 & 0 & 0 & 0 & 0 \\
 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & \cos(\theta) & 0 & \sin(\theta) & 0 \\
-0 & 0 & 0 & 0 & -\tan(\phi)*\sin(\theta) & 1 & \tan(\phi)*\cos(\theta) & 0 \\
-0 & 0 & 0 & 0 & -\sin(\theta) / \cos(\phi) & 0 & \cos(\theta)/\cos(\phi) & 0 \\
+0 & 0 & 0 & 0 & \cos(\phi) & 0 & \sin(\phi) & 0 \\
+0 & 0 & 0 & 0 & -\tan(\theta)*\sin(\phi) & 1 & \tan(\theta)*\cos(\phi) & 0 \\
+0 & 0 & 0 & 0 & -\sin(\phi) / \cos(\theta) & 0 & \cos(\phi)/\cos(\theta) & 0 \\
 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1
 \end{array}\right]
 \end{align*}
@@ -143,15 +143,15 @@ The process noise matrix is
 where the upper left $3\times 3$ block matrix elements are
 
 \begin{align*}
-\Gamma_{1,1} &= \sin(\psi)*\cos(\theta)-\cos(\psi)\sin(\phi)*\sin(\theta) \\
-\Gamma_{1,2} &= \cos(\psi)*\cos(\phi) \\
-\Gamma_{1,3} &= \sin(\psi)*\sin(\theta)+\cos(\psi)*\sin(\phi)*\cos(\theta) \\
-\Gamma_{2,1} &= -\cos(\phi)*\cos(\theta)-\sin(\phi)\sin(\phi)*\sin(\theta) \\
-\Gamma_{2,2} &= \sin(\psi)*\cos(\phi) \\
-\Gamma_{2,3} &= -\cos(\psi)*\sin(\theta)-\sin(\psi)*\sin(\phi)*\cos(\theta) \\
-\Gamma_{3,1} &= -\cos(\phi)*\sin(\theta) \\
-\Gamma_{3,2} &= -\sin(\phi) \\
-\Gamma_{3,3} &= \cos(\phi)*\cos(\theta)
+\Gamma_{1,1} &= \sin(\psi)*\cos(\phi)-\cos(\psi)\sin(\theta)*\sin(\phi) \\
+\Gamma_{1,2} &= \cos(\psi)*\cos(\theta) \\
+\Gamma_{1,3} &= \sin(\psi)*\sin(\phi)+\cos(\psi)*\sin(\theta)*\cos(\phi) \\
+\Gamma_{2,1} &= -\cos(\theta)*\cos(\phi)-\sin(\theta)\sin(\theta)*\sin(\phi) \\
+\Gamma_{2,2} &= \sin(\psi)*\cos(\theta) \\
+\Gamma_{2,3} &= -\cos(\psi)*\sin(\phi)-\sin(\psi)*\sin(\theta)*\cos(\phi) \\
+\Gamma_{3,1} &= -\cos(\theta)*\sin(\phi) \\
+\Gamma_{3,2} &= -\sin(\theta) \\
+\Gamma_{3,3} &= \cos(\theta)*\cos(\phi)
 \end{align*}
 
 The Jacobian of the measurement model with respect to the state, $H$, is initialized to the covariance matrix $Q$ and then updated as new measurements arrive.
