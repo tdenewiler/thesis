@@ -15,6 +15,11 @@
 % Input and configure the required packages.
 \input{preamble}
 
+% Uncomment this to add line numbers for debugging only.
+\usepackage{lineno}
+\def\linenumberfont{\normalfont\small\sffamily}
+\linenumbers
+
 % Uncomment this line to compile a subset of the chapters.
 % \includeonly{chapters/chIntroduction}
 
@@ -26,7 +31,7 @@
 
 % The title, copyright, and signature pages.
 \begin{frontmatter}
-% \makefrontmatter % The title, copyright, and signature pages.
+% \makefrontmatter
 \input{frontmatter}
 \end{frontmatter}
 
@@ -38,7 +43,7 @@
 \include{chapters/chResults}
 \include{chapters/chFutureWork}
 \include{chapters/chConclusion}
-\appendix
+\appendix % Use \appendix for single, \appendices for multiple
 \include{chapters/chSourceCode}
 
 % Bibliography.
