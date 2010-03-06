@@ -29,7 +29,7 @@ The state variables are given in vector form by $x$ and the sensor measurements 
 
 \section{The Kalman Filter}
 \label{sec:kalmanfilter}
-The ACS Kalman filter is typical of all Kalman filters in that it consists of a prediction update step and a measurement update step where the prediction update is run as fast as possible and the measurement update is run whenever new sensor data becomes available as in Figure \ref{fig:kf}. The prediction update step uses the model of the dynamics of the system and a measurement of elapsed time to determine where the system is in the world. The measurement update step is basically a feedback step to help correct for errors in the system model \cite{Kelly_1994_338}.
+The ACS Kalman filter is typical of all Kalman filters in that it consists of a prediction update step and a measurement update step where the prediction update is run as fast as possible and the measurement update is run whenever new sensor data becomes available as in Figure \ref{fig:kf}. The prediction update step uses a model of the system dynamics and a measurement of elapsed time to determine where the system is in the world and will inevitably have errors due to effects that are not captured by the model, especially when the system dynamics are linearized. The measurement update step is basically a feedback step to help correct for errors in the system model using sensors to provide current data \cite{Kelly_1994_338}.
 
 \begin{figure}[ht!]
 	\centering
@@ -38,80 +38,49 @@ The ACS Kalman filter is typical of all Kalman filters in that it consists of a 
 	\label{fig:kf}
 \end{figure}
 
-From \cite{Kelly_1994_338}, \cite{Simon06OptimalEstimation} the prediction update step marches the system dynamics forward in time using the equations
+The Kalman filters that run on the small UGVs used in these experiments run on digital computers and are necessarily discretized forms because of the nature of computers. From \cite{Kelly_1994_338}, \cite{Simon06OptimalEstimation} the discretized versions of (\ref{eq:statespace}) mean that the state space equations are
 
 \begin{align}
-\label{eq:predictionupdate}
+\label{eq:kfstatemodel}
 \begin{split}
-\hat{x}_{k+1}^- &= \Phi_k\hat{x}_k \\
-P_{k+1}^- &= \Phi_kP_k\Phi_k^T + \Gamma_kQ_k\Gamma_k^T
+x_{k+1} &= \Phi_kx_k + \Gamma_kw_k \\
+y_k &= H_kx_k + v_k
+\end{split}
+\end{align}
+where $\Phi_k$ is the state transition matrix relating the state at time $k+1$ to time $k$ in the absence of inputs including noise, $\Gamma_k$ is the noise distribution matrix which translates the input vector $w_k$ into the coordinates of the state, $H_k$ is the measurement matrix which relates the measurements to the state vector and $v_k$ is the sensor measurement noise.
+
+The prediction update step marches the system dynamics forward in time using the equations
+
+\begin{align}
+\label{eq:kfpredictionupdate}
+\begin{split}
+\hat{x}_{k+1}^- &= \Phi_k\hat{x}_k^+ \\
+P_{k+1}^- &= \Phi_kP_k^+\Phi_k^T + \Gamma_kQ_k\Gamma_k^T
 \end{split}
 \end{align}
 and the measurement update step provides feedback from sensor data using the equations
 
 \begin{align}
-\label{eq:measurementupdate}
+\label{eq:kfmeasurementupdate}
 \begin{split}
 K_k &= P_k^-H_k^T\left[H_kP_k^-H_k^T + R_k\right]^{-1} \\
-\hat{x}_k &= \hat{x}_k^- + K_k\left[z_k - H_k\hat{x}_k^-\right] \\
-P_k &= \left[I - K_kH_k\right]P_k^-
+\hat{x}_k^+ &= \hat{x}_k^- + K_k\left[y_k - H_k\hat{x}_k^-\right] \\
+P_k^+ &= \left[I - K_kH_k\right]P_k^-
 \end{split}
 \end{align}
 
-The state space equations for the robot are discretized as
+The prediction update step relies on knowing $\Phi_k$, $\Gamma_k$ and the disturbance covariance matrix, $Q_k$, while the measurement update step needs to know $H_k$ and the measurement covariance matrix, $R_k$. Using (\ref{eq:kfpredictionupdate}) and (\ref{eq:kfmeasurementupdate}) an estimate of the state of the robot can be obtained at any time for use by the controls algorithms.
 
-\begin{align}
-\label{eq:discretess}
-\begin{split}
-x_{k+1} &= \Phi_kx_k + \Gamma_kw_k \\
-z_k &= H_kx_k + v_k
-\end{split}
-\end{align}
+\subsection{Extended Kalman Filter}
+\label{sec:extendedkf}
+The basic Kalman filter makes the assumption that both the system model contained in $\Phi_k$ and the measurement model in $H_k$ are linear. The extended Kalman filter (EKF) allows for nonlinear models to be used for $\Phi_k$, $H_k$ or both by linearizing the models around the state estimate. *** Talk about how partial derivatives are used to linearize the models. ***
 
-\section{Adaptive Extended Kalman Filter}
-\label{sec:adaptiveekf}
-*** I really need to clean up the language here. \cite{Busse03adaptiveEKF} looks like a great source. Even the notation as far as \textit{a priori} and \textit{a posteriori} needs fixing. ***
-
-Attempting to determine the proper values for the covariance matrices $Q$ in (\ref{eq:predictionupdate}) and $R$ in (\ref{eq:measurementupdate}) can be a laborious process and is often considered more of an art than a science with engineer experience being a critical factor.
-
-*** Discuss why $Q$ and $R$ are important and what function they serve in the Kalman filter. ***
-
-The ACS Kalman filter has been implemented with an adaptive scheme to update the covariance matrices in real time as the robot moves around and sensor measurements are taken into account \cite{Sights06}, \cite{Mehra72}, \cite{Busse03adaptiveEKF}. $Q$ and $R$ are updated at alternating time steps in the EKF.
-
-*** Why is it valid to update $Q$ and $R$ this way? ***
-
-The first step is to calculate $Q^\ast$ using
-
-\begin{align}
-\label{eq:qstar}
-Q^\ast = \left(x-x_{k+1}^-\right)\left(x-x_{k+1}^-\right)^T + P_{k+1}^- - P - Q
-\end{align}
-Then $Q$ can be updated using
-
-\begin{align}
-\label{eq:q}
-Q = Q + \frac{1}{L_Q}\left(Q^\ast-Q\right)
-\end{align}
-
-Next $R^\ast$ is calculated using
-
-\begin{align}
-\label{eq:rstar}
-R^\ast = \left(y-Hx\right)\left(y-Hx\right)^T - HP_{k+1}^-H^T
-\end{align}
-and $R$ can be updated using
-
-\begin{align}
-\label{eq:r}
-R = R + \frac{1}{L_R}\left(R^\ast-R\right)
-\end{align}
-
-The discretized state vector used in the ACS EKF is the same as that found in \cite{Kelly_1994_333}
+The state vector used in the ACS EKF follows that found in \cite{Kelly_1994_338}, \cite{Kelly_1994_333} which avoids issues of non-observability by using the principal motion assumption where
 
 \begin{align*}
 x_k = \left[\begin{array}{c c c c c c c c} x & y & z & v & \theta & \phi & \psi & \omega \end{array}\right]^T
 \end{align*}
-where $x$, $y$ and $z$ are positions, $v$ is velocity, $\theta$, $\phi$ and $\psi$ are Euler angles for pitch, roll and yaw, and $\omega$ is angular velocity. The state transition matrix is
+In this vector $x$, $y$ and $z$ are positions, $v$ is velocity, $\theta$, $\phi$ and $\psi$ are Euler angles for pitch, roll and yaw, and $\omega$ is angular velocity. The state transition matrix is
 
 \begin{align*}
 \Phi_k = \left[\begin{array}{c c c c c c c c}
@@ -154,21 +123,62 @@ where the upper left $3\times 3$ block matrix elements are
 \Gamma_{3,3} &= \cos(\theta)*\cos(\phi)
 \end{align*}
 
-The Jacobian of the measurement model with respect to the state, $H$, is initialized to the covariance matrix $Q$ and then updated as new measurements arrive.
+\subsection{Adaptive Extended Kalman Filter}
+\label{sec:adaptiveekf}
+*** Discuss why $Q$ and $R$ are important and what function they serve in the Kalman filter. Why is it valid to update $Q$ and $R$ this way? ***
+
+Attempting to determine the proper values for the covariance matrices $Q$ in (\ref{eq:kfpredictionupdate}) and $R$ in (\ref{eq:kfmeasurementupdate}) can be a laborious process and is often considered more of an art than a science with engineer experience being a critical factor.
+
+The ACS Kalman filter has been implemented with an adaptive scheme to update the covariance matrices in real time as the robot moves around and sensor measurements are taken into account \cite{Sights06}, \cite{Mehra72}, \cite{Busse03adaptiveEKF}. Estimates of $Q$ and $R$ are updated at alternating time steps in the EKF. Recall from (\ref{eq:kfpredictionupdate}) and (\ref{eq:kfmeasurementupdate}) that $\hat{x}_k^+$ and $P_k^+$ are known after the measurement update step and $\hat{x}_k^-$ and $P_k^-$ are known after the system update step in the Kalman filter.
+
+The first step is to calculate $Q^\star$ using
+
+\begin{align}
+\label{eq:qstar}
+Q^\star = \left(\hat{x}_k^+-\hat{x}_k^-\right)\left(\hat{x}_k^+-\hat{x}_k^-\right)^T + P_k^- - P_k^+ - \hat{Q}_k^-
+\end{align}
+Then the estimate of $Q$ can be updated using
+
+\begin{align}
+\label{eq:qadapt}
+\hat{Q}_k^+ = \hat{Q}_k^- + \frac{1}{L_Q}\left(Q^\star-\hat{Q}_k^-\right)
+\end{align}
+
+Next $R^\star$ is calculated using
+
+\begin{align}
+\label{eq:rstar}
+R^\star = \left(y_k-\hat{y}_k^+\right)\left(y_k-\hat{y}_k^+\right)^T - H_kP_k^+H_k^T
+\end{align}
+where $y_k$ are actual measurement data and $\hat{y}_k^+ = h_k\hat{x}_k^+$ is calculated after the measurement update step. Then the estimate of $R$ can be updated using
+
+\begin{align}
+\label{eq:radapt}
+\hat{R}_k^+ = \hat{R}_k^- + \frac{1}{L_R}\left(R^\star-\hat{R}_k^-\right)
+\end{align}
 
 *** Discuss the implications of the adaptive EKF. ***
 
-\section{Discriminative Training of Kalman Filter Parameters}
-\label{sec:trainingkfparams}
-*** Investigate the difference between adaptive filtering and training. It seems like they accomplish the same thing, namely, convergence to some values for the covariance matrices. Do they use the same metrics? Do they converge to the same covariance matrices? Is it just online vs. offline training? Would a neural network be a good candidate for finding $Q$ and $R$ as well? All of these methods seem to be curve fitting in the multi-dimensional state space. ***
-
-\cite{Abbeel-RSS-05} describes a method to automatically learn what the covariance matrices should be. When used in conjunction with the adaptive EKF scheme this could allow for faster convergence times when the robots are started and for smaller ranges for the adaptation coefficients $L_Q$ and $L_R$ in (\ref{eq:q}) and (\ref{eq:r}).
-
-*** I might also use \cite{Orderud05}. ***
-
 \section{Establishing Ground Truth}
 \label{sec:groundtruth}
-*** Talk about need for ground truth measurements using DGPS and possibly good IMU so that the results of the estimation and controls algorithms can be quantified in terms of performance. This can be related back to example of crazy robot spinning in place and the need to determine where the problems really lie. ***
+Quantitatively evaluating the performance of Kalman filters can be done accomplished in several ways, the best of which is to analyze the output of the Kalman filter against ground truth. Although it is nearly impossible to establish ground truth over a large area in practice the closer the measurements are to an absolute position in the world the better. To determine ground truth for the robots in these experiments a differential GPS (DGPS) system was created independently of the sensors on the robot so that very accurate measurements of the robots actual position could be logged and then used in a post-processing step to determine how well the Kalman filter estimate corresponds to ground truth.
+
+The DGPS system consists of a GPS receiver and serial radio that make up the base station and a GPS receiver, serial radio and small computer that make up the roaming station as in Figure \ref{fig:dgps}. The GPS receivers are both Novatel OEM4-G2 receivers using the Real Time Kinematics algorithm. The base station is located in a static position and is configured to use a fixed position which is compared to what the current position would be if it were not fixed. The difference between the fixed position and the calculated position are used to generate corrections that would put the position of the GPS antenna at the fixed position and those corrections are sent to and applied at the roaming station resulting in a standard deviation of $2$ $cm$ for the position output of the roaming station. The DGPS system is bootstrapped to the robot during testing runs to log data at a rate of $20$ $Hz$ and is only used as a tool to improve Kalman filter performance and is not meant to be used during normal operation.
+
+With a highly accurate estimate of ground truth established it becomes possible to not only study the performance of the Kalman filter but to also begin determining whether to focus efforts in improving the autonomous navigation behaviors of the robots via the estimation or controls algorithms.
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.6\textwidth]{images/dgps}
+	\caption{Differential GPS system diagram.}
+	\label{fig:dgps}
+\end{figure}
+
+\section{Discriminative Training of Kalman Filter Parameters}
+\label{sec:trainingkfparams}
+*** Investigate the difference between adaptive filtering and training. It seems like they accomplish the same thing, namely, convergence to some values for the covariance matrices. Do they use the same metrics? Do they converge to the same covariance matrices? Is it just online vs. offline training? Would a neural network be a good candidate for finding $Q$ and $R$ as well? All of these methods seem to be curve fitting in the multi-dimensional state space. Look at \S3.3 of \cite{Simon06OptimalEstimation} for details on how measurements affect state estimate via recursive least squares. I might also use \cite{Orderud05}. ***
+
+\cite{Abbeel-RSS-05} describes a method to automatically learn what the covariance matrices $Q$ and $R$ should be that is an alternative, offline approach to the adaptive EKF from \S\ref{sec:adaptiveekf}. However, when used in conjunction with the adaptive EKF scheme this could allow for faster convergence times when the robots are started and for smaller ranges for the adaptation coefficients $L_Q$ and $L_R$ in (\ref{eq:qadapt}) and (\ref{eq:radapt}). This method takes advantage of ground truth measurements obtained using a system like that described in \S\ref{sec:groundtruth}.
 
 \section{Identifty IMU Parameters}
 \label{sec:identifyimuparams}
