@@ -80,7 +80,41 @@ The state vector used in the ACS EKF follows that found in \cite{Kelly_1994_338}
 \begin{align*}
 x_k = \left[\begin{array}{c c c c c c c c} x & y & z & v & \theta & \phi & \psi & \omega \end{array}\right]^T
 \end{align*}
-In this vector $x$, $y$ and $z$ are positions, $v$ is velocity, $\theta$, $\phi$ and $\psi$ are Euler angles for pitch, roll and yaw, and $\omega$ is angular velocity. The state transition matrix is
+In this vector $x$, $y$ and $z$ are positions, $v$ is velocity, $\theta$, $\phi$ and $\psi$ are Euler angles for pitch, roll and yaw, and $\omega$ is angular velocity. The continuous state transition matrix is
+
+\begin{align*}
+F = \left[\begin{array}{c c c c c c c c}
+0 & 0 & 0 & F_{1,4} & F_{1,5} & 0 & F_{1,7} & 0 \\
+0 & 0 & 0 & F_{2,4} & F_{2,5} & 0 & F_{2,7} & 0 \\
+0 & 0 & 0 & F_{3,4} & F_{3,5} & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & F_{5,6} & 0 & F_{5,8} \\
+0 & 0 & 0 & 0 & F_{6,5} & F_{6,6} & 0 & F_{6,8} \\
+0 & 0 & 0 & 0 & F_{7,5} & F_{7,6} & 0 & F_{7,8} \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0
+\end{array}\right]
+\end{align*}
+where the elements of $F$ are
+
+\begin{align*}
+F_{1,4} &= \cos(\psi)*\cos(\theta) \\
+F_{1,5} &= -v*\cos(\psi)*\sin(\theta) \\
+F_{1,7} &= -v*\sin(\psi)*\cos(\theta) \\
+F_{2,4} &= \sin(\psi)*\cos(\theta) \\
+F_{2,5} &= -v*\sin(\psi)*\sin(\theta) \\
+F_{2,7} &= v*\cos(\psi)*\cos(\theta) \\
+F_{3,4} &= -\sin(\theta) \\
+F_{3,5} &= -v*\cos(\theta) \\
+F_{5,6} &= -\omega *\cos(\phi) \\
+F_{5,8} &= -\sin(\phi) \\
+F_{6,5} &= \omega *\cos(\phi)/\cos^2(\theta) \\
+F_{6,6} &= \omega *\tan(\theta)*\sin(\phi) \\
+F_{6,8} &= \tan(\theta)*\cos(\phi) \\
+F_{7,5} &= \omega *\sin(\theta)*\cos(\phi)/\cos^2(\theta) \\
+F_{7,6} &= -\omega *\sin(\phi)/\cos(\theta) \\
+F_{7,8} &= \cos(\phi)/\cos(\theta)
+\end{align*}
+The discretized state transition matrix then becomes
 
 \begin{align*}
 \Phi_k = \left[\begin{array}{c c c c c c c c}
@@ -94,7 +128,7 @@ In this vector $x$, $y$ and $z$ are positions, $v$ is velocity, $\theta$, $\phi$
 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1
 \end{array}\right]
 \end{align*}
-The process noise matrix is
+And the process noise matrix is
 
 \begin{align*}
 \Gamma_k = \left[\begin{array}{c c c c c c c c}
@@ -108,14 +142,13 @@ The process noise matrix is
 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1
 \end{array}\right]
 \end{align*}
-
-where the upper left $3\times 3$ block matrix elements are
+where the elements of $\Gamma$ are
 
 \begin{align*}
 \Gamma_{1,1} &= \sin(\psi)*\cos(\phi)-\cos(\psi)\sin(\theta)*\sin(\phi) \\
 \Gamma_{1,2} &= \cos(\psi)*\cos(\theta) \\
 \Gamma_{1,3} &= \sin(\psi)*\sin(\phi)+\cos(\psi)*\sin(\theta)*\cos(\phi) \\
-\Gamma_{2,1} &= -\cos(\theta)*\cos(\phi)-\sin(\theta)\sin(\theta)*\sin(\phi) \\
+\Gamma_{2,1} &= -\cos(\psi)*\cos(\phi)-\sin(\psi)\sin(\theta)*\sin(\phi) \\
 \Gamma_{2,2} &= \sin(\psi)*\cos(\theta) \\
 \Gamma_{2,3} &= -\cos(\psi)*\sin(\phi)-\sin(\psi)*\sin(\theta)*\cos(\phi) \\
 \Gamma_{3,1} &= -\cos(\theta)*\sin(\phi) \\
@@ -127,16 +160,14 @@ where the upper left $3\times 3$ block matrix elements are
 \label{sec:adaptiveekf}
 *** Discuss why $Q$ and $R$ are important and what function they serve in the Kalman filter. Why is it valid to update $Q$ and $R$ this way? ***
 
-Attempting to determine the proper values for the covariance matrices $Q$ in (\ref{eq:kfpredictionupdate}) and $R$ in (\ref{eq:kfmeasurementupdate}) can be a laborious process and is often considered more of an art than a science with engineer experience being a critical factor.
+Attempting to determine the proper values for the covariance matrices $Q$ in (\ref{eq:kfpredictionupdate}) and $R$ in (\ref{eq:kfmeasurementupdate}) can be a laborious process and is often considered more of an art than a science with engineer experience being a critical factor. The ACS Kalman filter has been implemented with an adaptive scheme to update the covariance matrices in real time as the robot moves around and sensor measurements are taken into account \cite{Sights06}, \cite{Mehra72}, \cite{Busse03adaptiveEKF} to help overcome the time intensive nature of determining these matrices and add a degree of robustness to the state estimate. Estimates of $Q$ and $R$ are updated at alternating time steps in the EKF. Recall from (\ref{eq:kfpredictionupdate}) and (\ref{eq:kfmeasurementupdate}) that $\hat{x}_k^+$ and $P_k^+$ are known after the measurement update step and $\hat{x}_k^-$ and $P_k^-$ are known after the system update step in the Kalman filter.
 
-The ACS Kalman filter has been implemented with an adaptive scheme to update the covariance matrices in real time as the robot moves around and sensor measurements are taken into account \cite{Sights06}, \cite{Mehra72}, \cite{Busse03adaptiveEKF}. Estimates of $Q$ and $R$ are updated at alternating time steps in the EKF. Recall from (\ref{eq:kfpredictionupdate}) and (\ref{eq:kfmeasurementupdate}) that $\hat{x}_k^+$ and $P_k^+$ are known after the measurement update step and $\hat{x}_k^-$ and $P_k^-$ are known after the system update step in the Kalman filter.
+As shown in \cite{Busse03adaptiveEKF} the first step is to calculate $Q^\star$ using
 
-The first step is to calculate $Q^\star$ using
-
-\begin{align}
-\label{eq:qstar}
+\begin{align*}
+% \label{eq:qstar}
 Q^\star = \left(\hat{x}_k^+-\hat{x}_k^-\right)\left(\hat{x}_k^+-\hat{x}_k^-\right)^T + P_k^- - P_k^+ - \hat{Q}_k^-
-\end{align}
+\end{align*}
 Then the estimate of $Q$ can be updated using
 
 \begin{align}
@@ -146,10 +177,10 @@ Then the estimate of $Q$ can be updated using
 
 Next $R^\star$ is calculated using
 
-\begin{align}
-\label{eq:rstar}
+\begin{align*}
+% \label{eq:rstar}
 R^\star = \left(y_k-\hat{y}_k^+\right)\left(y_k-\hat{y}_k^+\right)^T - H_kP_k^+H_k^T
-\end{align}
+\end{align*}
 where $y_k$ are actual measurement data and $\hat{y}_k^+ = h_k\hat{x}_k^+$ is calculated after the measurement update step. Then the estimate of $R$ can be updated using
 
 \begin{align}
@@ -157,7 +188,7 @@ where $y_k$ are actual measurement data and $\hat{y}_k^+ = h_k\hat{x}_k^+$ is ca
 \hat{R}_k^+ = \hat{R}_k^- + \frac{1}{L_R}\left(R^\star-\hat{R}_k^-\right)
 \end{align}
 
-*** Discuss the implications of the adaptive EKF. ***
+It can be seen that the estimates of both covariance matrices employ a running average algorithm and vary the weight of recent measurements and state updates via the adaptation coefficients $L_Q$ and $L_R$.
 
 \section{Establishing Ground Truth}
 \label{sec:groundtruth}
