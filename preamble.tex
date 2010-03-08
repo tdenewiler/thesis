@@ -68,7 +68,7 @@
 \usepackage{ifthen}
 \usepackage{listings}
 \usepackage{courier}
-%\usepackage[bw,framed,numbered]{mcode}
+\usepackage[bw,framed,numbered]{mcode}
 \usepackage{microtype}
 \usepackage{appendix}
 \usepackage{hyperref}
@@ -81,32 +81,32 @@
 \setlength{\headheight}{15pt}
 
 % For faster processing, load Matlab syntax for listings
-%\definecolor{MyDarkGreen}{rgb}{0.0,0.4,0.0}
-%\lstloadlanguages{Matlab}%
-%\lstset{language=Matlab,
-%        frame=single,
-%        basicstyle=\small\ttfamily,
-%        keywordstyle=[1]\color{Blue}\bf,
-%        keywordstyle=[2]\color{Purple},
-%        keywordstyle=[3]\color{Blue}\underbar,
-%        identifierstyle=,
-%        commentstyle=\usefont{T1}{pcr}{m}{sl}\color{MyDarkGreen}\small,
-%        stringstyle=\color{Purple},
-%        showstringspaces=false,
-%        tabsize=5,
-%        % Put standard MATLAB functions not included in the default
-%        % language here
-%        morekeywords={xlim,ylim,var,alpha,factorial,poissrnd,normpdf,normcdf},
-%        % Put MATLAB function parameters here
-%        morekeywords=[2]{on, off, interp},
-%        % Put user defined functions here
-%        morekeywords=[3]{FindESS},
-%        morecomment=[l][\color{Blue}]{...},
-%        numbers=left,
-%        firstnumber=1,
-%        numberstyle=\tiny\color{Blue},
-%        stepnumber=0
-%        }
+\definecolor{MyDarkGreen}{rgb}{0.0,0.4,0.0}
+\lstloadlanguages{Matlab}%
+\lstset{language=Matlab,
+       frame=single,
+       basicstyle=\scriptsize\ttfamily,
+       keywordstyle=[1]\color{Blue}\bf,
+       keywordstyle=[2]\color{Purple},
+       keywordstyle=[3]\color{Blue}\underbar,
+       identifierstyle=,
+       commentstyle=\usefont{T1}{pcr}{m}{sl}\color{MyDarkGreen}\small,
+       stringstyle=\color{Purple},
+       showstringspaces=false,
+       tabsize=5,
+       % Put standard MATLAB functions not included in the default
+       % language here
+       morekeywords={xlim,ylim,var,alpha,factorial,poissrnd,normpdf,normcdf},
+       % Put MATLAB function parameters here
+       morekeywords=[2]{on, off, interp},
+       % Put user defined functions here
+       morekeywords=[3]{FindESS},
+       morecomment=[l][\color{Blue}]{...},
+       numbers=left,
+       firstnumber=1,
+       numberstyle=\tiny\color{Blue},
+       stepnumber=0
+       }
 
 % Adds a hyperlink to an email address.
 \newcommand{\mailto}[2]{\href{mailto:#1}{#2}}
@@ -131,3 +131,9 @@
     pdfkeywords={UC San Diego, Small Unmanned Ground Vehicles, Robotics},
     pdfstartpage={1},
 }
+
+% Includes a MATLAB script.
+% The first parameter is the label, which also is the name of the script.
+% The second parameter is the optional caption.
+\newcommand{\matlabscript}[2]
+  {\begin{itemize}\item[]\lstinputlisting[caption=#2,label=#1]{#1}\end{itemize}}
