@@ -7,21 +7,21 @@ This is some of the source code used in this research. Contact the \mailto{\thes
 This code was used to generate the $Q$ and $R$ matrices.
 % Set the syntax highlighting to C++.
 \lstset{language=C++}
-\matlabscript{matlab/qr/qr.cc}{Main C++ file for genearating $Q$ and $R$ matrices.}
+\matlabscript{code/qr/qr.cc}{Main C++ file for genearating $Q$ and $R$ matrices.}
 
 \clearpage
 \section{DGPS}
 \label{sec:dgpscode}
 This code was used to set up and communicate with DGPS receivers.
-\matlabscript{matlab/gpslogger/gpslogger.cpp}{Main C/C++ file for logging GPS data.}
-% \matlabscript{matlab/gpslogger/oem4.cpp}{Main C++ file for the Novatel OEM4 library.}
+\matlabscript{code/gpslogger/gpslogger.cpp}{Main C/C++ file for logging GPS data.}
+% \matlabscript{code/gpslogger/oem4.cpp}{Main C++ file for the Novatel OEM4 library.}
 
 \clearpage
 \section{Lyapunov}
 \label{sec:lyapunovcode}
-This code was adapted from \cite{Rusu05RobotuxLyapunov}. Most of the changes involved adding additional comments.
+This code was adapted from \cite{Rusu05RobotuxLyapunov}. Most of the changes involved making the code more efficient and adding additional comments.
 % Set the syntax highlighting back to Matlab.
 \lstset{language=Matlab}
-\matlabscript{matlab/lyapunovRusu/main.m}{Main Matlab file for Lyapunov controller.}
-\matlabscript{matlab/lyapunovRusu/f3.m}{Matlab file for ODE solver for Lyapunov controller.}
-\matlabscript{matlab/lyapunovRusu/CalcETA.m}{Matlab file for calculating the robot trajectory for Lyapunov controller.}
+\matlabscript{code/lyapunovRusu/main.m}{Main Matlab file for Lyapunov controller.}
+\matlabscript{code/lyapunovRusu/f3.m}{Matlab file for ODE solver for Lyapunov controller.}
+\matlabscript{code/lyapunovRusu/CalcETA.m}{Matlab file for calculating the robot trajectory for Lyapunov controller.}
