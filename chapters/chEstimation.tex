@@ -2,7 +2,7 @@
 \label{ch:estimation}
 *** Talk about quantifying the performance of the ACS Kalman filter \cite{Sights06}. Discuss training of the covariance matrices. Show the position estimation using the original covariance matrices and the ones found from training. If I get to identifying bias and/or drift in the IMU put that here as well. ***
 
-The Space and Naval Warfare Systems Center, San Diego (SSC-SD) robotics group has developed the Autonomous Capabilities Suite (ACS) which incorporates many different technologies into a single software package that can be run on a wide variety of different robots and is able to easily accomodate different payload and sensor suites \cite{Sights06}. One of the ACS libraries is the adaptive extended Kalman filter which is used on the EOD robots for state estimation and is the main method used for answering the question ``Where am I?''. The idea behind the Kalman filter is relatively straightforward. The robot has some basic idea of where it is in the world but there is some uncertainty involved in that estimate due to different measurement accuracies from multiple sensors that measure the same state, noise in the individual sensor measurements and an imperfect model of how the robot moves through the world. Some of the uncertainty of the model can be explained by the fact that not all of the necessary measurements are being carried out and the states can be unobservable. *** Say more here about noise/uncertainty. ***
+The Space and Naval Warfare Systems Center, San Diego (SSC-SD) robotics group has developed the Autonomous Capabilities Suite (ACS) which incorporates many different technologies into a single software package that can be run on a wide variety of robots and is able to easily accomodate different payload and sensor suites \cite{Sights06}. One of the ACS libraries is the adaptive extended Kalman filter which is used on the EOD robots for state estimation and is the main method used for answering the question ``Where am I?''. The idea behind the Kalman filter is relatively straightforward. The robot has some basic idea of where it is in the world but there is some uncertainty involved in that estimate due to different measurement accuracies from multiple sensors that measure the same state, noise in the individual sensor measurements and an imperfect model of how the robot moves through the world. Some of the uncertainty of the model can be explained by the fact that not all of the necessary measurements are being carried out and the states can be unobservable. *** Say more here about noise/uncertainty. ***
 
 An example is a robot driving in a straight line where the left track may be moving on a flat surface while the right track is moving on an uneven surface as in Figure \ref{fig:topography}. The wheel encoders that measure how far each track is moving will report that the right track is traveling a greater distance than the left track which could mean that the robot is turning counter-clockwise or that the robot tracks are moving over different surface types. At the same time the robot will be getting measurements about its heading from both the IMU and GPS sensors that will have some noise as well. In this example both the IMU and GPS sensors would likely say that the robot is traveling in a straight line on average (as long as the controller is performing adequately). The job of the Kalman filter is to determine how much each sensor should be trusted when trying to determine where the robot really is in the world and how fast it is moving. This is accomplished by looking at each of the noise parameters for both the system model and the measurements as being zero mean, white noise, uncorrelated, Gaussian variables ... *** Clean up this language. Consider putting it in a different section like \S\ref{sec:duals}. ***
 
@@ -80,7 +80,16 @@ The state vector used in the ACS EKF follows that found in \cite{Kelly_1994_338}
 \begin{align*}
 x_k = \left[\begin{array}{c c c c c c c c} x & y & z & v & \theta & \phi & \psi & \omega \end{array}\right]^T
 \end{align*}
-In this vector $x$, $y$ and $z$ are positions, $v$ is velocity, $\theta$, $\phi$ and $\psi$ are Euler angles for pitch, roll and yaw, and $\omega$ is angular velocity. The continuous state transition matrix is
+In this vector $x$, $y$ and $z$ are positions, $v$ is velocity, $\theta$, $\phi$ and $\psi$ are Euler angles for pitch, roll and yaw, and $\omega$ is angular velocity as shown in Figure \ref{fig:urbotaxes}.
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.75\textwidth]{images/urbotaxes}
+	\caption{Urbot with axes for position and Euler angles.}
+	\label{fig:urbotaxes}
+\end{figure}
+
+The continuous state transition matrix is
 
 \begin{align*}
 F = \left[\begin{array}{c c c c c c c c}
@@ -94,25 +103,17 @@ F = \left[\begin{array}{c c c c c c c c}
 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0
 \end{array}\right]
 \end{align*}
-where the elements of $F$ are
+where the elements of $F$ are *** fix this formatting -- look at lecture notes ***
 
 \begin{align*}
-F_{1,4} &= \cos(\psi)*\cos(\theta) \\
-F_{1,5} &= -v*\cos(\psi)*\sin(\theta) \\
-F_{1,7} &= -v*\sin(\psi)*\cos(\theta) \\
-F_{2,4} &= \sin(\psi)*\cos(\theta) \\
-F_{2,5} &= -v*\sin(\psi)*\sin(\theta) \\
-F_{2,7} &= v*\cos(\psi)*\cos(\theta) \\
-F_{3,4} &= -\sin(\theta) \\
-F_{3,5} &= -v*\cos(\theta) \\
-F_{5,6} &= -\omega *\cos(\phi) \\
-F_{5,8} &= -\sin(\phi) \\
-F_{6,5} &= \omega *\cos(\phi)/\cos^2(\theta) \\
-F_{6,6} &= \omega *\tan(\theta)*\sin(\phi) \\
-F_{6,8} &= \tan(\theta)*\cos(\phi) \\
-F_{7,5} &= \omega *\sin(\theta)*\cos(\phi)/\cos^2(\theta) \\
-F_{7,6} &= -\omega *\sin(\phi)/\cos(\theta) \\
-F_{7,8} &= \cos(\phi)/\cos(\theta)
+F_{1,4} &= \cos(\psi)*\cos(\theta), \qquad F_{1,5} = -v*\cos(\psi)*\sin(\theta) \\
+F_{1,7} &= -v*\sin(\psi)*\cos(\theta), \qquad F_{2,4} = \sin(\psi)*\cos(\theta) \\
+F_{2,5} &= -v*\sin(\psi)*\sin(\theta), \qquad F_{2,7} = v*\cos(\psi)*\cos(\theta) \\
+F_{3,4} &= -\sin(\theta), \qquad F_{3,5} = -v*\cos(\theta) \\
+F_{5,6} &= -\omega *\cos(\phi), \qquad F_{5,8} = -\sin(\phi) \\
+F_{6,5} &= \omega *\cos(\phi)/\cos^2(\theta), \qquad F_{6,6} = \omega *\tan(\theta)*\sin(\phi) \\
+F_{6,8} &= \tan(\theta)*\cos(\phi), \qquad F_{7,5} = \omega *\sin(\theta)*\cos(\phi)/\cos^2(\theta) \\
+F_{7,6} &= -\omega *\sin(\phi)/\cos(\theta), \qquad F_{7,8} = \cos(\phi)/\cos(\theta)
 \end{align*}
 The discretized state transition matrix then becomes
 
@@ -160,7 +161,7 @@ where the elements of $\Gamma$ are
 \label{sec:adaptiveekf}
 *** Discuss why $Q$ and $R$ are important and what function they serve in the Kalman filter. Why is it valid to update $Q$ and $R$ this way? ***
 
-Attempting to determine the proper values for the covariance matrices $Q$ in (\ref{eq:kfpredictionupdate}) and $R$ in (\ref{eq:kfmeasurementupdate}) can be a laborious process and is often considered more of an art than a science with engineer experience being a critical factor. The ACS Kalman filter has been implemented with an adaptive scheme to update the covariance matrices in real time as the robot moves around and sensor measurements are taken into account \cite{Sights06}, \cite{Mehra72}, \cite{Busse03adaptiveEKF} to help overcome the time intensive nature of determining these matrices and add a degree of robustness to the state estimate. Estimates of $Q$ and $R$ are updated at alternating time steps in the EKF. Recall from (\ref{eq:kfpredictionupdate}) and (\ref{eq:kfmeasurementupdate}) that $\hat{x}_k^+$ and $P_k^+$ are known after the measurement update step and $\hat{x}_k^-$ and $P_k^-$ are known after the system update step in the Kalman filter.
+Attempting to determine the proper values for the covariance matrices $Q$ in (\ref{eq:kfpredictionupdate}) and $R$ in (\ref{eq:kfmeasurementupdate}) can be a laborious process and is often considered more of an art than a science with engineer experience being a critical factor. The ACS Kalman filter has been implemented with an adaptive scheme to update the covariance matrices in real time as the robot moves around and sensor measurements are taken into account to help overcome the time intensive nature of determining these matrices and add a degree of robustness to the state estimate \cite{Sights06}, \cite{Mehra72}, \cite{Busse03adaptiveEKF}. Estimates of $Q$ and $R$ are updated at alternating time steps in the EKF. Recall from (\ref{eq:kfpredictionupdate}) and (\ref{eq:kfmeasurementupdate}) that $\hat{x}_k^+$ and $P_k^+$ are known after the measurement update step and $\hat{x}_k^-$ and $P_k^-$ are known after the system update step in the Kalman filter.
 
 As shown in \cite{Busse03adaptiveEKF} the first step is to calculate $Q^\star$ using
 
@@ -168,7 +169,7 @@ As shown in \cite{Busse03adaptiveEKF} the first step is to calculate $Q^\star$ u
 % \label{eq:qstar}
 Q^\star = \left(\hat{x}_k^+-\hat{x}_k^-\right)\left(\hat{x}_k^+-\hat{x}_k^-\right)^T + P_k^- - P_k^+ - \hat{Q}_k^-
 \end{align*}
-Then the estimate of $Q$ can be updated using
+Then the estimate of $Q$ is updated such that
 
 \begin{align}
 \label{eq:qadapt}
@@ -181,7 +182,7 @@ Next $R^\star$ is calculated using
 % \label{eq:rstar}
 R^\star = \left(y_k-\hat{y}_k^+\right)\left(y_k-\hat{y}_k^+\right)^T - H_kP_k^+H_k^T
 \end{align*}
-where $y_k$ are actual measurement data and $\hat{y}_k^+ = h_k\hat{x}_k^+$ is calculated after the measurement update step. Then the estimate of $R$ can be updated using
+where $y_k$ are actual measurement data and $\hat{y}_k^+ = h_k\hat{x}_k^+$ is calculated after the measurement update step. Then the estimate of $R$ is updated such that
 
 \begin{align}
 \label{eq:radapt}
@@ -194,7 +195,7 @@ It can be seen that the estimates of both covariance matrices employ a running a
 \label{sec:groundtruth}
 Quantitatively evaluating the performance of Kalman filters can be done accomplished in several ways, the best of which is to analyze the output of the Kalman filter against ground truth. Although it is nearly impossible to establish ground truth over a large area in practice the closer the measurements are to an absolute position in the world the better. To determine ground truth for the robots in these experiments a differential GPS (DGPS) system was created independently of the sensors on the robot so that very accurate measurements of the robots actual position could be logged and then used in a post-processing step to determine how well the Kalman filter estimate corresponds to ground truth.
 
-The DGPS system consists of a GPS receiver and serial radio that make up the base station and a GPS receiver, serial radio and small computer that make up the roaming station as in Figure \ref{fig:dgps}. The GPS receivers are both Novatel OEM4-G2 receivers using the Real Time Kinematics algorithm. The base station is located in a static position and is configured to use a fixed position which is compared to what the current position would be if it were not fixed. The difference between the fixed position and the calculated position are used to generate corrections that would put the position of the GPS antenna at the fixed position and those corrections are sent to and applied at the roaming station resulting in a standard deviation of $2$ $cm$ for the position output of the roaming station. The DGPS system is bootstrapped to the robot during testing runs to log data at a rate of $20$ $Hz$ and is only used as a tool to improve Kalman filter performance and is not meant to be used during normal operation.
+The DGPS system consists of a GPS receiver and serial radio that make up the base station and a GPS receiver, serial radio and small computer that make up the roaming station as in Figure \ref{fig:dgps}. The GPS receivers are both Novatel OEM4-G2 receivers using the Real Time Kinematics algorithm. The base station is located in a static position and is configured to use a fixed position which is compared to what the current position would be if it were not fixed. The difference between the fixed position and the calculated position are used to generate corrections that would put the position of the GPS antenna at the fixed position and those corrections are sent to and applied at the roaming station resulting in a standard deviation of $2$ $cm$ for the position output of the roaming station. The errors are due to the effects of the GPS signal passing through the atmosphere from the satellites to the antenna as well as to multipath effects closer to the ground. The DGPS corrections are used for each satellite that the ground station and the roaming station share in the constellation of satellites they are using in their solution of a position estimate. The DGPS system is bootstrapped to the robot during testing runs to log data at a rate of $20$ $Hz$ and is only used as a tool to improve Kalman filter performance and is not meant to be used during normal operation.
 
 With a highly accurate estimate of ground truth established it becomes possible to not only study the performance of the Kalman filter but to also begin determining whether to focus efforts in improving the autonomous navigation behaviors of the robots via the estimation or controls algorithms.
 
@@ -210,6 +211,38 @@ With a highly accurate estimate of ground truth established it becomes possible 
 *** Investigate the difference between adaptive filtering and training. It seems like they accomplish the same thing, namely, convergence to some values for the covariance matrices. Do they use the same metrics? Do they converge to the same covariance matrices? Is it just online vs. offline training? Would a neural network be a good candidate for finding $Q$ and $R$ as well? All of these methods seem to be curve fitting in the multi-dimensional state space. Look at \S3.3 of \cite{Simon06OptimalEstimation} for details on how measurements affect state estimate via recursive least squares. I might also use \cite{Orderud05}. ***
 
 \cite{Abbeel-RSS-05} describes a method to automatically learn what the covariance matrices $Q$ and $R$ should be that is an alternative, offline approach to the adaptive EKF from \S\ref{sec:adaptiveekf}. However, when used in conjunction with the adaptive EKF scheme this could allow for faster convergence times when the robots are started and for smaller ranges for the adaptation coefficients $L_Q$ and $L_R$ in (\ref{eq:qadapt}) and (\ref{eq:radapt}). This method takes advantage of ground truth measurements obtained using a system like that described in \S\ref{sec:groundtruth}.
+
+The residual prediction error is used to estimate $Q$ and $R$ using
+
+\begin{align*}
+\left<R_{\text{res}},Q_{\text{res}}\right> = \argmin_{R,Q}\sum_{t=0}^T ||y_t-h(\mu_t)||_2^2
+\end{align*}
+When the state covariance matrix $P$ is \textit{not} a multiple of the identity matrix $I$ then this metric is
+
+\begin{align*}
+\left<R_{\text{res}},Q_{\text{res}}\right> = \argmin_{R,Q}\sum_{t=0}^T (y_t-h(\mu_t))^TP^{-1}(y_t-h(\mu_t))
+\end{align*}
+The error metric used for the residual prediction error method is
+
+\begin{align}
+\label{eq:kftrainingres}
+e = \left(\frac{1}{T}\sum_{t=1}^T ||h(\mu_t)-y_t||^2\right)^{1/2}
+\end{align}
+
+The prediction likelihood method use the metric
+
+\begin{align*}
+\left<R_{\text{pred}},Q_{\text{pred}}\right> = \argmax_{R,Q}\sum_{t=0}^T -\log|2\pi\Omega_t| - (y_t-h(\mu_t))^T\Omega_t^{-1}(y_t-h(\mu_t))
+\end{align*}
+where $\Omega = H_t\Sigma_tH_t^T+P$. The error metric used for the prediction likelihood method is
+
+\begin{align}
+\label{eq:kftrainingpred}
+e = -\frac{1}{T}\sum_{t=1}^T \left(\log|2\pi\Omega_t| - (y_t-h(\mu_t))^T\Omega_t^{-1}(y_t-h(\mu_t))\right)
+\end{align}
+where $\Omega$ is the same as in the above description.
+
+A program was written to implement these algorithms and can be found in Appendix \ref{sec:qrcode}, Listing \ref{code/qr/qr.cc}. The major idea is to use logged data -- both from the output of the Kalman filter running on the robot and ground truth as recorded from the DGPS system -- and try all the possible combinations of $Q$ and $R$ matrices until the metrics identified in (\ref{eq:kftrainingres}) and (\ref{eq:kftrainingpred}) are minimized or maximized to within some convergence criterion. The possible $Q$ and $R$ matrices start with a coarse grid and are reduced to a finer grid at each iteration where the grid is centered around the best estimate found from the previous grid.
 
 \section{Identifty IMU Parameters}
 \label{sec:identifyimuparams}
