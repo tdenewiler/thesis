@@ -17,9 +17,9 @@
    version="1.0"
    sodipodi:docname="urbotaxes.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
-   inkscape:export-filename="/home/thomas/code/thesis/thomas/images/urbotaxes.png"
-   inkscape:export-xdpi="90"
-   inkscape:export-ydpi="90">
+   inkscape:export-filename="/home/thomas/school/thesis/thomas/images/urbotaxes.png"
+   inkscape:export-xdpi="100"
+   inkscape:export-ydpi="100">
   <metadata
      id="metadata2448">
     <rdf:RDF>
@@ -89,7 +89,7 @@
     </clipPath>
   </defs>
   <sodipodi:namedview
-     inkscape:window-height="1150"
+     inkscape:window-height="1148"
      inkscape:window-width="1920"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
@@ -102,8 +102,8 @@
      id="base"
      showgrid="false"
      inkscape:zoom="0.50000001"
-     inkscape:cx="1253.3844"
-     inkscape:cy="1516.9339"
+     inkscape:cx="1312.5062"
+     inkscape:cy="1583.6187"
      inkscape:window-x="0"
      inkscape:window-y="25"
      inkscape:current-layer="svg2443" />

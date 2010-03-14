@@ -47,7 +47,7 @@ x_{k+1} &= F_kx_k + \Gamma_kw_k \\
 y_k &= H_kx_k + v_k
 \end{split}
 \end{align}
-where $F_k$ is the state transition matrix relating the state at time $k+1$ to time $k$ in the absence of inputs including noise, $\Gamma_k$ is the noise distribution matrix which translates the input vector $w_k$ into the coordinates of the state, $H_k$ is the measurement matrix which relates the measurements to the state vector and $v_k$ is the sensor measurement noise.
+where $F_k$ is the state transition matrix relating the state at time $k+1$ to time $k$ in the absence of inputs or noise, $\Gamma_k$ is the noise distribution matrix which translates the input vector $w_k$ into the coordinates of the state, $H_k$ is the measurement matrix which relates the measurements to the state vector and $v_k$ is the sensor measurement noise.
 
 The prediction update step marches the system dynamics forward in time using the equations
 
@@ -80,13 +80,18 @@ The state vector used in the ACS EKF follows that found in \cite{Kelly_1994_338}
 \begin{align*}
 x_k = \left[\begin{array}{c c c c c c c c} x & y & z & v & \theta & \phi & \psi & \omega \end{array}\right]^T
 \end{align*}
-In this vector $x$, $y$ and $z$ are positions, $v$ is velocity, $\theta$, $\phi$ and $\psi$ are Euler angles for pitch, roll and yaw, and $\omega$ is angular velocity as shown in Figure \ref{fig:urbotaxes}.
+In this vector $x$, $y$ and $z$ are positions, $v$ is velocity, $\theta$, $\phi$ and $\psi$ are Euler angles for pitch, roll and yaw, and $\omega$ is angular velocity as shown in Figure \ref{fig:robotaxes}.
 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=.75\textwidth]{images/urbotaxes}
-	\caption{Urbot with axes for position and Euler angles.}
-	\label{fig:urbotaxes}
+	\subfloat[Urbot.]{
+		\label{fig:urbotaxes}\includegraphics[width=.45\textwidth]{images/urbotaxes}
+	} \qquad
+	\subfloat[PackBot.]{
+		\label{fig:pbaxes}\includegraphics[width=.45\textwidth]{images/packbotaxes}
+	}
+	\caption{Robots used in experiments with axes for position and orientation shown..}
+	\label{fig:robotaxes}
 \end{figure}
 
 The continuous state transition matrix is
@@ -132,7 +137,7 @@ v_{k+1} &= 0 \\
 &\qquad+ \cos(\phi_k)/\cos(\theta_k)*\omega_k \\
 \omega_{k+1} &= 0
 \end{align*}
-The state transition matrix is then linearized by taking the Jacobian of the state transition matrix $F$ (c.f. (\ref{eq:kfF}) with respect to the states to get
+The state transition matrix is then linearized by taking the Jacobian of the state transition matrix $F$ (c.f. (\ref{eq:kfF}) with respect to the states to get *** Note that in \cite{Kelly_1994_338}, \S6.2 he shows that $\Phi = I + Fdt$ which is close to what the ACS EKF uses for $\Phi$. ***
 
 \begin{align*}
 \Phi_k = \left[\begin{array}{c c c c c c c c}
