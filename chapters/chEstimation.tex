@@ -94,7 +94,7 @@ In this vector $x$, $y$ and $z$ are positions, $v$ is velocity, $\theta$, $\phi$
 	\label{fig:robotaxes}
 \end{figure}
 
-The continuous state transition matrix is
+The state transition matrix is
 
 \begin{align}
 \label{eq:kfF}
@@ -109,17 +109,57 @@ F = \left[\begin{array}{c c c c c c c c}
 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0
 \end{array}\right]
 \end{align}
-where the elements of $F$ are *** fix this formatting -- look at lecture notes ***
+where the elements of $F$ are
 
 \begin{align*}
-F_{1,4} &= \cos(\psi)*\cos(\theta), \qquad F_{1,5} = -v*\cos(\psi)*\sin(\theta) \\
-F_{1,7} &= -v*\sin(\psi)*\cos(\theta), \qquad F_{2,4} = \sin(\psi)*\cos(\theta) \\
-F_{2,5} &= -v*\sin(\psi)*\sin(\theta), \qquad F_{2,7} = v*\cos(\psi)*\cos(\theta) \\
-F_{3,4} &= -\sin(\theta), \qquad F_{3,5} = -v*\cos(\theta) \\
-F_{5,6} &= -\omega *\cos(\phi), \qquad F_{5,8} = -\sin(\phi) \\
-F_{6,5} &= \omega *\cos(\phi)/\cos^2(\theta), \qquad F_{6,6} = \omega *\tan(\theta)*\sin(\phi) \\
-F_{6,8} &= \tan(\theta)*\cos(\phi), \qquad F_{7,5} = \omega *\sin(\theta)*\cos(\phi)/\cos^2(\theta) \\
-F_{7,6} &= -\omega *\sin(\phi)/\cos(\theta), \qquad F_{7,8} = \cos(\phi)/\cos(\theta)
+\begin{split}
+F_{1,4} &= \cos(\psi)*\cos(\theta)
+\end{split}
+\begin{split}
+F_{1,5} = -v*\cos(\psi)*\sin(\theta)
+\end{split} \\
+\begin{split}
+F_{1,7} &= -v*\sin(\psi)*\cos(\theta)
+\end{split}
+\begin{split}
+F_{2,4} = \sin(\psi)*\cos(\theta) \\
+\end{split} \\
+\begin{split}
+F_{2,5} &= -v*\sin(\psi)*\sin(\theta)
+\end{split}
+\begin{split}
+F_{2,7} = v*\cos(\psi)*\cos(\theta) \\
+\end{split} \\
+\begin{split}
+F_{3,4} &= -\sin(\theta)
+\end{split}
+\begin{split}
+F_{3,5} = -v*\cos(\theta) \\
+\end{split} \\
+\begin{split}
+F_{5,6} &= -\omega *\cos(\phi)
+\end{split}
+\begin{split}
+F_{5,8} = -\sin(\phi) \\
+\end{split} \\
+\begin{split}
+F_{6,5} &= \omega *\cos(\phi)/\cos^2(\theta)
+\end{split}
+\begin{split}
+F_{6,6} = \omega *\tan(\theta)*\sin(\phi) \\
+\end{split} \\
+\begin{split}
+F_{6,8} &= \tan(\theta)*\cos(\phi)
+\end{split}
+\begin{split}
+F_{7,5} = \omega *\sin(\theta)*\cos(\phi)/\cos^2(\theta) \\
+\end{split} \\
+\begin{split}
+F_{7,6} &= -\omega *\sin(\phi)/\cos(\theta)
+\end{split}
+\begin{split}
+F_{7,8} = \cos(\phi)/\cos(\theta)
+\end{split}
 \end{align*}
 This gives the nonlinear state equations as
 
@@ -151,7 +191,7 @@ The state transition matrix is then linearized by taking the Jacobian of the sta
 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1
 \end{array}\right]
 \end{align*}
-This gives the linearized state equations as
+Using the $\Phi_k$ matrix which linearizes about the state variables the state equations become
 
 \begin{align*}
 x_{k+1} &= x_k + \cos(\psi_k)*\cos(\theta_k)*\Delta T*v_k \\
@@ -163,7 +203,7 @@ v_{k+1} &= v_k \\
 \psi_{k+1} &= \psi_k + \cos(\phi_k)*\Delta T/\cos(\theta_k)*\omega_k \\
 \omega_{k+1} &= \omega_k \\
 \end{align*}
-And the process noise matrix is
+The process noise matrix is
 
 \begin{align*}
 \Gamma_k = \left[\begin{array}{c c c c c c c c}
@@ -190,6 +230,7 @@ where the elements of $\Gamma$ are
 \Gamma_{3,2} &= -\sin(\theta) \\
 \Gamma_{3,3} &= \cos(\theta)*\cos(\phi)
 \end{align*}
+This gives all of the dynamics used for calculating the state of the robots.
 
 \subsection{Adaptive Extended Kalman Filter}
 \label{sec:adaptiveekf}

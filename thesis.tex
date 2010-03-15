@@ -29,11 +29,12 @@
 % Document specific information.
 \include{header}
 
-% The title, copyright, and signature pages.
-\begin{frontmatter}
-% \makefrontmatter
+% The title, copyright, and signature pages. Note that /makefrontmatter is commented out
+% because it gives an error for some reason. It works in the template but not when it is
+% split out into this other tex file. Despite giving an error the front matter does show
+% up in the compiled PDF -- it's just annoying that it displays the error and then jumps
+% to that line so that's why it's commented out for now.
 \include{frontmatter}
-\end{frontmatter}
 
 % Meat and potatoes.
 \include{chapters/chIntroduction}
