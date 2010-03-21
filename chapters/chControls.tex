@@ -20,7 +20,7 @@ There are separate PID controllers used for each of $x$ position, $y$ position a
 \begin{split}
 E_P &= \psi_{\text{ref}_k} - \psi_k \\
 E_I &= \sum_{i=0}^{k}E_{P_i}*\Delta T \\
-E_D &= \left(\psi_k - \psi_{k-1}\right)*\Delta T
+E_D &= \frac{\psi_k - \psi_{k-1}}{\Delta T}
 \end{split}
 \end{align}
 where $\psi_{\text{ref}_k}$ is the desired heading at the current time, $\psi_k$ is the current heading estimate, $\psi_{k-1}$ is the previous heading estimate and $\Delta T$ is the time elapsed since the last PID control calculation was performed. The contribution of each error is then weighted by a gain to obtain the final output command, $u$, such that
