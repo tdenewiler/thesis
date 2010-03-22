@@ -32,9 +32,9 @@ A model of the system dynamics is necessary to be able to propagate the state of
 For the robots used in these experiments the state vector used follows that found in \cite{Kelly_1994_338}, \cite{Kelly_1994_333} which avoids issues of non-observability by using the principal motion assumption *** explain this more *** where the state variables are
 
 \begin{align*}
-x_k = \left[\begin{array}{c c c c c c c c} x & y & z & v & \theta & \phi & \psi & \omega \end{array}\right]^T.
+x_k = \left[\begin{array}{c c c c c c c c} x & y & z & V & \theta & \phi & \psi & \omega \end{array}\right]^T.
 \end{align*}
-In this vector $x$, $y$ and $z$ are positions, $v$ is velocity, $\theta$, $\phi$ and $\psi$ are Euler angles for pitch, roll and yaw, and $\omega$ is angular velocity as shown in Figure \ref{fig:robotaxes}.
+In this vector $x$, $y$ and $z$ are positions, $V$ is velocity, $\theta$, $\phi$ and $\psi$ are Euler angles for pitch, roll and yaw, and $\omega$ is angular velocity as shown in Figure \ref{fig:robotaxes}.
 
 \begin{figure}[ht!]
 	\centering
@@ -54,12 +54,12 @@ The nonlinear state equations to model the dynamics are
 \begin{align}
 \label{eq:kfnonlineardynamics}
 \begin{split}
-x_{k+1} &= \cos(\psi_k)*\cos(\theta_k)*v_k - v_k*\cos(\psi_k)*\sin(\theta_k)*\theta_k \\
-&\qquad- v_k*\sin(\psi_k)*\cos(\theta_k)*\psi_k \\
-y_{k+1} &= \sin(\psi_k)*\cos(\theta_k)*v_k - v_k*\sin(\psi_k)*\sin(\theta_k)*\theta_k \\
-&\qquad+ v_k*\cos(\psi_k)*\cos(\theta_k)*\psi_k \\
-z_{k+1} &= -\sin(\theta_k)*v_k - v_k*\cos(\theta_k)*\theta_k \\
-v_{k+1} &= 0 \\
+x_{k+1} &= \cos(\psi_k)*\cos(\theta_k)*V_k - V_k*\cos(\psi_k)*\sin(\theta_k)*\theta_k \\
+&\qquad- V_k*\sin(\psi_k)*\cos(\theta_k)*\psi_k \\
+y_{k+1} &= \sin(\psi_k)*\cos(\theta_k)*V_k - V_k*\sin(\psi_k)*\sin(\theta_k)*\theta_k \\
+&\qquad+ V_k*\cos(\psi_k)*\cos(\theta_k)*\psi_k \\
+z_{k+1} &= -\sin(\theta_k)*V_k - V_k*\cos(\theta_k)*\theta_k \\
+V_{k+1} &= 0 \\
 \theta_{k+1} &= -\omega_k *\cos(\phi_k)*\phi_k - \sin(\phi_k)*\omega_k \\
 \phi_{k+1} &= \omega_k *\cos(\phi_k)/\cos^2(\theta_k)*\theta_k + \omega_k *\tan(\theta_k)*\sin(\phi_k)*\phi_k \\
 &\qquad+ \tan(\theta_k)*\cos(\phi_k)*\omega_k \\
@@ -139,25 +139,25 @@ where the elements of $F$ are
 F_{1,4} &= \cos(\psi)*\cos(\theta),
 \end{split}
 \begin{split}
-F_{1,5} = -v*\cos(\psi)*\sin(\theta),
+F_{1,5} = -V*\cos(\psi)*\sin(\theta),
 \end{split} \\
 \begin{split}
-F_{1,7} &= -v*\sin(\psi)*\cos(\theta),
+F_{1,7} &= -V*\sin(\psi)*\cos(\theta),
 \end{split}
 \begin{split}
 F_{2,4} = \sin(\psi)*\cos(\theta),
 \end{split} \\
 \begin{split}
-F_{2,5} &= -v*\sin(\psi)*\sin(\theta),
+F_{2,5} &= -V*\sin(\psi)*\sin(\theta),
 \end{split}
 \begin{split}
-F_{2,7} = v*\cos(\psi)*\cos(\theta),
+F_{2,7} = V*\cos(\psi)*\cos(\theta),
 \end{split} \\
 \begin{split}
 F_{3,4} &= -\sin(\theta),
 \end{split}
 \begin{split}
-F_{3,5} = -v*\cos(\theta),
+F_{3,5} = -V*\cos(\theta),
 \end{split} \\
 \begin{split}
 F_{5,6} &= -\omega *\cos(\phi),
@@ -184,15 +184,15 @@ F_{7,6} &= -\omega *\sin(\phi)/\cos(\theta),
 F_{7,8} = \cos(\phi)/\cos(\theta).
 \end{split}
 \end{align*}
-To linearize the dynamics found in (\ref{eq:kfnonlineardynamics}) so that the Kalman filter can use them the derivative must be taken with respect to the state. This results in
+To linearize the dynamics found in (\ref{eq:kfnonlineardynamics}) so that the Kalman filter can use them the derivative must be taken with respect to the state. This results in the state space equations
 
 \begin{align}
 \label{eq:kflinearized}
 \begin{split}
-x_{k+1} &= x_k + \cos(\psi_k)*\cos(\theta_k)*\Delta T*v_k \\
-y_{k+1} &= y_k + \sin(\psi_k)*\cos(\theta_k)*\Delta T*v_k \\
-z_{k+1} &= z_k - \sin(\theta_k)*\Delta T*v_k \\
-v_{k+1} &= v_k \\
+x_{k+1} &= x_k + \cos(\psi_k)*\cos(\theta_k)*\Delta T*V_k \\
+y_{k+1} &= y_k + \sin(\psi_k)*\cos(\theta_k)*\Delta T*V_k \\
+z_{k+1} &= z_k - \sin(\theta_k)*\Delta T*V_k \\
+V_{k+1} &= V_k \\
 \theta_{k+1} &= \theta_k - \sin(\phi_k)*\Delta T*\omega_k \\
 \phi_{k+1} &= \phi_k + \tan(\theta_k)*\cos(\phi_k)*\Delta T*\omega_k \\
 \psi_{k+1} &= \psi_k + \cos(\phi_k)*\Delta T/\cos(\theta_k)*\omega_k \\
@@ -295,7 +295,7 @@ With a highly accurate estimate of ground truth established it becomes possible 
 \label{sec:trainingkfparams}
 *** Investigate the difference between adaptive filtering and training. It seems like they accomplish the same thing, namely, convergence to some values for the covariance matrices. Do they use the same metrics? Do they converge to the same covariance matrices? Is it just online vs. offline training? Would a neural network be a good candidate for finding $Q$ and $R$ as well? All of these methods seem to be curve fitting in the multi-dimensional state space. Look at \S3.3 of \cite{Simon06OptimalEstimation} for details on how measurements affect state estimate via recursive least squares. I might also use \cite{Orderud05}. ***
 
-\cite{Abbeel-RSS-05} describes a method to automatically learn what the covariance matrices $Q$ and $R$ should be that is an alternative, offline approach to the adaptive EKF from \S\ref{sec:adaptiveekf}. However, when used in conjunction with the adaptive EKF scheme this could allow for faster convergence times when the robots are started and for smaller ranges for the adaptation coefficients $L_Q$ and $L_R$ in (\ref{eq:qadapt}) and (\ref{eq:radapt}). This method takes advantage of ground truth measurements obtained using a system like that described in \S\ref{sec:groundtruth}.
+\cite{Abbeel-RSS-05} describes a method to automatically learn what the covariance matrices $Q$ and $R$ should be that is an alternative, offline approach to the adaptive EKF from \S\ref{sec:adaptiveekf}. However, when used in conjunction with the adaptive EKF scheme this could allow for faster convergence times when the robots are started and for smaller ranges for the adaptation coefficients $L_Q$ and $L_R$ in (\ref{eq:qadapt}) and (\ref{eq:radapt}). This method takes advantage of ground truth measurements obtained using a DGPS system like that described in \S\ref{sec:groundtruth}. Note that in the following expressions the term $h(\mu_t)$ is the position output by the Kalman filter so that the goal is to find values of $Q$ and $R$ that cause the output of the Kalman filter to match ground truth as closely as possible.
 
 The residual prediction error is used to estimate $Q$ and $R$ using
 

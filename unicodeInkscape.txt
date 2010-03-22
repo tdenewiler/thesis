@@ -1,0 +1,24 @@
+These are the unicode characters for greek letters and symbols I have found useful in Inkscape.
+
+221E	\infty
+03c4	\tau
+03c9	\omega
+03b5	\epsilon
+03bb	\lambda
+0394	\Delta
+03c0	\pi
+03d5	\phi
+03b4	\delta
+03b3	\gamma
+03c3	\sigma
+03be	\xi
+03c6	\varphi
+03b8	\theta
+03b2	\Beta
+03a6	\Phi
+03b7	\eta
+2202	\partial
+03c8	\psi
+03c5	\nu
+03bc	\mu
+03b1	\alpha
