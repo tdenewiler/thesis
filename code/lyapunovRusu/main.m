@@ -28,10 +28,10 @@ u = zeros(length(t));
 for i = 1:length(t)
     xpos(i) = sqrt(y(i,1)^2 * (cos(y(i,3))^2));
     ypos(i) = xpos(i) * tan(y(i,3));
-%     w(i) = k * y(i,2) + gamma * (cos(y(i,2)) * ...
-%         sin(y(i,2)) / y(i,2)) * (y(i,2) + h * y(i,3));
-    w(i) = k * y(i,2) + gamma * cos(y(i,2)) * sin(y(i,2)) + ...
-        (h * y(i,3) * sin(y(i,2))) / (y(i,2) * y(i,1));
+    w(i) = k * y(i,2) + gamma * (cos(y(i,2)) * ...
+        sin(y(i,2)) / y(i,2)) * (y(i,2) + h * y(i,3));
+%     w(i) = k * y(i,2) + gamma * cos(y(i,2)) * sin(y(i,2)) + ...
+%         (h * y(i,3) * sin(y(i,2))) / (y(i,2) * y(i,1));
     u(i) = gamma * cos(y(i,2)) * y(i,1);
 end
 

@@ -177,7 +177,9 @@ Substituting $\dot{V}_1$ from (\ref{eq:V1dotfinal}) and $\dot{V}_2$ from (\ref{e
 \label{eq:Vfinal}
 \dot{V} = \dot{V}_1 + \dot{V}_2 = -\lambda^2e^2\cos^2\alpha - k\alpha^2 \leq 0.
 \end{align}
-By using the expressions for $u$ in (\ref{eq:lyapunovu}) and $\omega$ in (\ref{eq:lyapunovomega}) and substituting those values back into the kinematic model from (\ref{eq:lyapunovkinematics}) gives
+This expression is equal to zero only when $\alpha=0$ \textit{and} $e=0$, which only occurs when the robot has reached its goal pose. Therefore, at any point along the robots trajectory other than the goal point this function is negative definite and is *** stable.
+
+Using the expressions for $u$ in (\ref{eq:lyapunovu}) and $\omega$ in (\ref{eq:lyapunovomega}) and substituting those values back into the kinematic model from (\ref{eq:lyapunovkinematics}) gives
 
 \begin{align}
 \label{eq:lyapunovfinalkinematics}
