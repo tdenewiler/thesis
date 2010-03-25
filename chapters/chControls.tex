@@ -57,9 +57,9 @@ They start with a kinematic model of the robot where
 \begin{align}
 \label{eq:lyapunovkinematics1}
 \begin{split}
-\dot{x} &= u*\cos(\phi) \\
-\dot{y} &= u*\sin(\phi) \\
-\dot{\phi} &= \omega.
+\dot{x} &= u\cos(\psi) \\
+\dot{y} &= u\sin(\psi) \\
+\dot{\psi} &= \omega.
 \end{split}.
 \end{align}
 The expressions in (\ref{eq:lyapunovkinematics1}) are then converted to the following equations via a coordinate transformation based on Figure \ref{fig:pblyapunov}
@@ -69,7 +69,7 @@ The expressions in (\ref{eq:lyapunovkinematics1}) are then converted to the foll
 \begin{split}
 e &= \sqrt{x^2+y^2} \\
 \theta &= \atanh(y,x) \\
-\alpha &= \theta - \phi.
+\alpha &= \theta - \psi.
 \end{split}
 \end{align}
 Substituting (\ref{eq:lyapunovkinematics2}) into (\ref{eq:lyapunovkinematics1}) results in
@@ -77,19 +77,19 @@ Substituting (\ref{eq:lyapunovkinematics2}) into (\ref{eq:lyapunovkinematics1}) 
 \begin{align}
 \label{eq:lyapunovkinematics3}
 \begin{split}
-\dot{e} &= -u*\cos(\theta-\phi) \\
-\dot{\theta} &= u*\frac{\sin\alpha}{e} \\
-\dot{\phi} &= \omega.
+\dot{e} &= -u*\cos(\theta-\psi) \\
+\dot{\theta} &= u\frac{\sin\alpha}{e} \\
+\dot{\psi} &= \omega.
 \end{split}
 \end{align}
-Finally, replacing $\alpha$ with $\theta-\phi$ results in a kinematic model of
+Finally, replacing $\alpha$ with $\theta-\psi$ results in a kinematic model of
 
 \begin{align}
 \label{eq:lyapunovkinematics}
 \begin{split}
-\dot{e} &= -u*\cos\alpha \\
-\dot{\alpha} &= -\omega + u*\frac{\sin\alpha}{e} \\
-\dot{\theta} &= u*\frac{\sin\alpha}{e}.
+\dot{e} &= -u\cos\alpha \\
+\dot{\alpha} &= -\omega + u\frac{\sin\alpha}{e} \\
+\dot{\theta} &= u\frac{\sin\alpha}{e}.
 \end{split}
 \end{align}
 
@@ -104,12 +104,11 @@ where $\lambda$ and $h$ are positive constants that can be used to tune the cont
 \begin{align}
 \label{eq:Vderivatives}
 \begin{split}
-\dot{V}_1 &= \lambda e\dot{e} = \lambda e (-u*\cos\alpha) = -\lambda eu\cos\alpha \\
+\dot{V}_1 &= \lambda e\dot{e} = \lambda e (-u\cos\alpha) = -\lambda eu\cos\alpha \\
 \dot{V}_2 &= \alpha\dot{\alpha}+h\theta\dot{\theta} \\
 &= -\alpha\omega + \alpha u\frac{\sin\alpha}{e} + h\theta u\frac{\sin\alpha}{e} \\
 &= \alpha\left(-\omega + u\frac{\sin\alpha}{e} + h\theta\frac{1}{\alpha}\frac{\sin\alpha}{e}\right) \\
-&= \alpha\left(-\omega + u\frac{\sin\alpha}{\alpha}\frac{(\alpha+h\theta)}{e}\right) \text{version 1} \\
-&= \alpha\left(-\omega + \frac{\sin\alpha}{\alpha}\frac{(u\alpha+h\theta)}{e}\right) \text{version 2}
+&= \alpha\left(-\omega + u\frac{\sin\alpha}{\alpha}\frac{(\alpha+h\theta)}{e}\right)
 \end{split}
 \end{align}
 and from there the total derivative is found as
@@ -117,8 +116,7 @@ and from there the total derivative is found as
 \begin{align}
 \label{eq:lyapunovfunctionderivative}
 \begin{split}
-\dot{V} &= \dot{V}_1 + \dot{V}_2 = -\lambda e u\cos\alpha + \alpha\left(-\omega+u\frac{\sin\alpha}{\alpha}\frac{(\alpha+h\theta)}{e}\right) \text{version 1} \\
-\dot{V} &= \dot{V}_1 + \dot{V}_2 = -\lambda e u\cos\alpha + \alpha\left(-\omega+\frac{\sin\alpha}{\alpha}\frac{(u\alpha+h\theta)}{e}\right) \text{version 2}.
+\dot{V} &= \dot{V}_1 + \dot{V}_2 = -\lambda e u\cos\alpha + \alpha\left(-\omega+u\frac{\sin\alpha}{\alpha}\frac{(\alpha+h\theta)}{e}\right).
 \end{split}
 \end{align}
 
@@ -126,13 +124,13 @@ Now it needs to be shown that $\dot{V}\leq0$ which can be done by showing that $
 
 \begin{align}
 \label{eq:lyapunovu}
-u = \lambda e\cos\alpha
+u = \gamma e\cos\alpha
 \end{align}
-Replacing $u$ in (\ref{eq:Vderivatives}) with this value results in
+where $\gamma$ is a positive constant different from $\lambda$. Replacing $u$ in (\ref{eq:Vderivatives}) with this value results in
 
 \begin{align}
 \label{eq:V1dotfinal}
-\dot{V}_1 = -\lambda eu\cos\alpha = -\lambda^2e^2\cos^2\alpha.
+\dot{V}_1 = -\lambda eu\cos\alpha = -\lambda\gamma e^2\cos^2\alpha.
 \end{align}
 Thus, $V_1$ converges asymptotically to a positive defined limit.
 
@@ -142,12 +140,8 @@ Replacing $u$ in the expression for $\dot{V}_2$ in (\ref{eq:Vderivatives}) resul
 \label{eq:V2dotreplaceu}
 \begin{split}
 \dot{V}_2 &= \alpha\left(-\omega+u\frac{\sin\alpha}{\alpha}\frac{(\alpha+h\theta)}{e}\right) \\
-&= \alpha\left(-\omega+\lambda e\frac{\cos\alpha\sin\alpha}{\alpha}\frac{(\alpha+h\theta)}{e}\right) \\
-&= \alpha\left(-\omega+\lambda(\alpha+h\theta)\frac{\cos\alpha\sin\alpha}{\alpha}\right) \text{version 1} \\
-\dot{V}_2 &= \alpha\left(-\omega+\frac{\sin\alpha}{\alpha}\frac{(u\alpha+h\theta)}{e}\right) \\
-&= \alpha\left(-\omega+\frac{\sin\alpha}{\alpha}\frac{(\lambda e\alpha\cos\alpha+h\theta)}{e}\right) \\
-&= \alpha\left(-\omega+\frac{\sin\alpha}{\alpha}\left(\lambda\alpha\cos\alpha+\frac{h\theta}{e}\right)\right) \\
-&= \alpha\left(-\omega+\lambda\cos\alpha\sin\alpha + \frac{h\theta\sin\alpha}{\alpha e}\right) \text{version 2}.
+&= \alpha\left(-\omega+\gamma e\frac{\cos\alpha\sin\alpha}{\alpha}\frac{(\alpha+h\theta)}{e}\right) \\
+&= \alpha\left(-\omega+\gamma(\alpha+h\theta)\frac{\cos\alpha\sin\alpha}{\alpha}\right).
 \end{split}
 \end{align}
 Similarly, $\dot{V}_2$ is negative if $\omega$ takes the form
@@ -155,8 +149,7 @@ Similarly, $\dot{V}_2$ is negative if $\omega$ takes the form
 \begin{align}
 \label{eq:lyapunovomega}
 \begin{split}
-\omega &= k\alpha + \lambda\frac{\cos\alpha\sin\alpha}{\alpha}\left(\alpha+h\theta\right) \text{version 1} \\
-\omega &= k\alpha + \lambda\cos\alpha\sin\alpha + \frac{h\theta\sin\alpha}{\alpha e} \text{version 2}
+\omega &= k\alpha + \gamma\frac{\cos\alpha\sin\alpha}{\alpha}\left(\alpha+h\theta\right)
 \end{split}
 \end{align}
 where $k$ is a positive constant. Substituting this value of $\omega$ into (\ref{eq:V2dotreplaceu}) gives
@@ -164,10 +157,8 @@ where $k$ is a positive constant. Substituting this value of $\omega$ into (\ref
 \begin{align}
 \label{eq:V2dotfinal}
 \begin{split}
-\dot{V}_2 &= \alpha\left(-k\alpha-\lambda\frac{\cos\alpha\sin\alpha}{\alpha}(\alpha+h\theta) + \lambda\frac{\cos\alpha\sin\alpha}{\alpha}(\alpha+h\theta)\right) \\
-&= -k\alpha^2 \leq 0 \text{version 1} \\
-\dot{V}_2 &= \alpha\left(-k\alpha - \lambda\cos\alpha\sin\alpha - \frac{h\theta\sin\alpha}{\alpha e} + \lambda\cos\alpha\sin\alpha - \frac{h\theta\sin\alpha}{\alpha e}\right) \\
-&= -k\alpha^2 \leq 0 \text{version 2}.
+\dot{V}_2 &= \alpha\left(-k\alpha-\gamma\frac{\cos\alpha\sin\alpha}{\alpha}(\alpha+h\theta) + \gamma\frac{\cos\alpha\sin\alpha}{\alpha}(\alpha+h\theta)\right) \\
+&= -k\alpha^2 \leq 0.
 \end{split}
 \end{align}
 
@@ -175,7 +166,7 @@ Substituting $\dot{V}_1$ from (\ref{eq:V1dotfinal}) and $\dot{V}_2$ from (\ref{e
 
 \begin{align}
 \label{eq:Vfinal}
-\dot{V} = \dot{V}_1 + \dot{V}_2 = -\lambda^2e^2\cos^2\alpha - k\alpha^2 \leq 0.
+\dot{V} = \dot{V}_1 + \dot{V}_2 = -\lambda\gamma e^2\cos^2\alpha - k\alpha^2 \leq 0.
 \end{align}
 This expression is equal to zero only when $\alpha=0$ \textit{and} $e=0$, which only occurs when the robot has reached its goal pose. Therefore, at any point along the robots trajectory other than the goal point this function is negative definite and is *** stable.
 
@@ -184,8 +175,8 @@ Using the expressions for $u$ in (\ref{eq:lyapunovu}) and $\omega$ in (\ref{eq:l
 \begin{align}
 \label{eq:lyapunovfinalkinematics}
 \begin{split}
-\dot{e} &= -\lambda\alpha e\cos^2\alpha \\
-\dot{\alpha} &= -\left(k\alpha + \lambda h\frac{\cos\alpha\sin\alpha}{\alpha}\right) \\
-\dot{\theta} &= \lambda\cos\alpha\sin\alpha
+\dot{e} &= -\gamma e\cos^2\alpha \\
+\dot{\alpha} &= -\left(k\alpha + \gamma h\frac{\cos\alpha\sin\alpha}{\alpha}\right) \\
+\dot{\theta} &= \gamma\cos\alpha\sin\alpha
 \end{split}
 \end{align}
