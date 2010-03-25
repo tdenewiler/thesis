@@ -1,14 +1,22 @@
 \chapter{State Estimation}
 \label{ch:estimation}
-The Space and Naval Warfare Systems Center, San Diego (SSC-SD) robotics group has developed the Autonomous Capabilities Suite (ACS) which incorporates many different technologies into a single software package that can be run on a wide variety of robots and is able to easily accomodate different payload and sensor suites \cite{Sights06}. One of the ACS libraries is the adaptive extended Kalman filter which is used on the EOD robots for state estimation and is the main method used for answering the question ``Where am I?''. The idea behind the Kalman filter is relatively straightforward. The robot has some basic idea of where it is in the world but there is some uncertainty involved in that estimate due to different measurement accuracies from multiple sensors that measure the same state, noise in the individual sensor measurements and an imperfect model of how the robot moves through the world. Some of the uncertainty of the model can be explained by the fact that not all of the necessary measurements are being carried out and the states can be unobservable. *** Say more here about noise/uncertainty. ***
+The Space and Naval Warfare Systems Center, San Diego (SSC-SD) robotics group has developed the Autonomous Capabilities Suite (ACS) which incorporates many different technologies into a single software package that can be run on a wide variety of robots and is able to easily accomodate different payload and sensor suites \cite{Sights06}. One of the ACS libraries is the adaptive extended Kalman filter which is used on the EOD robots for state estimation and is the main method used for answering the question ``Where am I?''. The idea behind the Kalman filter is relatively straightforward. The robot has some basic idea of where it is in the world using its sensors but there is some uncertainty involved in that estimate due to:
+\begin{itemize}
+\item different measurement accuracies from the sensors,
+\item multiple sensors measuring the same state,
+\item imperfect models of the robot dynamics.
+\end{itemize}
+Some of the uncertainty of the model can be explained by the fact that not all of the necessary measurements are being carried out and the states can be unobservable. *** Say more here about noise/uncertainty. ***
 
-An example is a robot driving in a straight line where the left track may be moving on a flat surface while the right track is moving on an uneven surface as in Figure \ref{fig:topography}. The wheel encoders that measure how far each track is moving will report that the right track is traveling a greater distance than the left track which could mean that the robot is turning counter-clockwise or that the robot tracks are moving over different surface types. At the same time the robot will be getting measurements about its heading from both the IMU and GPS sensors that will have some noise as well. In this example both the IMU and GPS sensors would likely say that the robot is traveling in a straight line on average (as long as the controller is performing adequately). The job of the Kalman filter is to determine how much each sensor should be trusted when trying to determine where the robot really is in the world and how fast it is moving. This is accomplished by looking at each of the noise parameters for both the system model and the measurements as being zero mean, white noise, uncorrelated, Gaussian variables ... *** Clean up this language. Consider putting it in a different section like \S\ref{sec:duals}. ***
+An example is trying to determine the heading of a robot driving in a straight line where the left track is moving on a flat surface while the right track is moving on an uneven surface as in Figure \ref{fig:topology}. The wheel encoders measure how far each track is moving and will report that the right track is traveling a greater distance than the left track which could mean that the robot is turning counter-clockwise or that the robot tracks are moving over different surface topologies. At the same time the robot will be getting measurements about its heading from both the IMU and GPS sensors that will have some noise as well. As long as the controller is performing adequately the IMU and GPS sensors would likely say that the robot is traveling in a straight line. The job of the Kalman filter is to determine how much to trust the IMU, GPS and wheel encoders when calculating the robot heading.
+
+This is accomplished by looking at each of the noise parameters for both the system model and the measurements as being zero mean, white noise, uncorrelated, Gaussian variables ... *** Clean up this language. Consider putting it in a different section like \S\ref{sec:duals}. ***
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=.5\textwidth]{images/topography}
-	\caption{Different topographies for the left track and the right track when the ground is smooth on the left side and bumpy on the right side. The top line is for the left track and the bottom line is for the right track.}
-	\label{fig:topography}
+	\caption{Different topologies for the left track and the right track when the ground is smooth on the left side and bumpy on the right side. The top line is for the left track and the bottom line is for the right track.}
+	\label{fig:topology}
 \end{figure}
 
 \section{State Space Models}
@@ -23,13 +31,13 @@ Kalman filters and control systems (see Chapter \ref{ch:controls}) use the idea 
 \end{split}
 \end{align}
 
-The state variables are given in vector form by $x$ and the sensor measurements are contained in the vector $y$. The state space equations are a means of representing how the state of a system changes through time based on the initial state of the system and the inputs, $u$, to the system which allows the trajectory (or motion through time) and the effect of the trajectory on the measurements to be calculated using compact notation.The inputs are assumed to include any external forces applied to the system as well as actuation provided by the system itself. The function $h(x,t)$ transforms the measurements into state variables which is important when the units of a sensor are not the same as the units of the state.
+The state variables are given in vector form by $x$ and the sensor measurements are contained in the vector $y$. The state space equations are a means of representing how the state of a system changes through time based on the initial state of the system and the inputs to the system which allows the trajectory (or motion through time) to be calculated using compact notation. The inputs are assumed to include any external forces applied to the system as well as actuation provided by the system itself. The function $h(x,t)$ transforms the measurements into state variables which is important when the units of a sensor are not the same as the units of the state.
 
 \subsection{System Dynamics Model}
 \label{sec:dynamics}
-A model of the system dynamics is necessary to be able to propagate the state of the system forward in time in the absence of measurements. It is impossible to create a perfect model of the system and even a nearly perfect model of the system will likely be too involved to compute fast enough for it to be useful. The best result that is typically available is a model with a large amount of assumptions where the most important aspects of the dynamics are captured in the model.
+A model of the system dynamics is necessary to be able to propagate the state of the system forward in time in the absence of measurements. It is impossible to create a perfect model of the system and even a nearly perfect model of the system will likely be too complex to compute fast enough for it to be useful. The best result that is typically available is a model with a large amount of assumptions where the most important aspects of the dynamics are captured in the model.
 
-For the robots used in these experiments the state vector used follows that found in \cite{Kelly_1994_338}, \cite{Kelly_1994_333} which avoids issues of non-observability by using the principal motion assumption *** explain this more *** where the state variables are
+For the robots used in these experiments the state vector used follows that found in \cite{Kelly_1994_338}, \cite{Kelly_1994_333} where the state variables are
 
 \begin{align*}
 x_k = \left[\begin{array}{c c c c c c c c} x & y & z & V & \theta & \phi & \psi & \omega \end{array}\right]^T.
@@ -71,7 +79,7 @@ V_{k+1} &= 0 \\
 
 \section{The Kalman Filter}
 \label{sec:kalmanfilter}
-The ACS Kalman filter is typical of all Kalman filters in that it consists of a prediction update step and a measurement update step where the prediction update is run as fast as possible and the measurement update is run whenever new sensor data becomes available as in Figure \ref{fig:kf}. The prediction update step uses a model of the system dynamics and a measurement of elapsed time to determine where the system is in the world and will inevitably have errors due to effects that are not captured by the model, especially when the system dynamics are linearized. The measurement update step is basically a feedback step to help correct for errors in the system model using sensors to provide current data \cite{Kelly_1994_338}.
+The ACS Kalman filter is typical of all Kalman filters in that it consists of a prediction update step and a measurement update step where the prediction update is run as fast as possible and the measurement update is run whenever new sensor data becomes available as in Figure \ref{fig:kf}. The prediction update step uses a model of the system dynamics and a measurement of elapsed time to determine where the system is in the world and will inevitably have errors due to effects that are not captured by the model. This is especially true when the system dynamics are linearized. The measurement update step is basically a feedback step to help correct for errors in the system model using sensors to provide current data \cite{Kelly_1994_338}.
 
 \begin{figure}[ht!]
 	\centering
@@ -89,7 +97,7 @@ x_{k+1} &= F_kx_k + \Gamma_kw_k \\
 y_k &= H_kx_k + v_k
 \end{split}
 \end{align}
-where $F_k$ is the state transition matrix relating the state at time $k+1$ to time $k$ in the absence of inputs or noise, $\Gamma_k$ is the noise distribution matrix which translates the input vector $w_k$ into the coordinates of the state, $H_k$ is the measurement matrix which relates the measurements to the state vector and $v_k$ is the sensor measurement noise.
+where $F_k$ is the state transition matrix relating the state at time $k+1$ to time $k$ in the absence of inputs or noise, $\Gamma_k$ is the noise distribution matrix which translates the input vector $w_k$ into the coordinates of the state vector, $H_k$ is the measurement matrix which relates the measurements to the state vector and $v_k$ is the sensor measurement noise.
 
 The prediction update step marches the system dynamics forward in time using the equations
 
@@ -110,8 +118,7 @@ K_k &= P_k^-H_k^T\left[H_kP_k^-H_k^T + R_k\right]^{-1} \\
 P_k^+ &= \left[I - K_kH_k\right]P_k^-.
 \end{split}
 \end{align}
-
-The prediction update step relies on knowing $\Phi_k$, $\Gamma_k$ and the disturbance covariance matrix, $Q_k$, while the measurement update step needs to know $H_k$ and the measurement covariance matrix, $R_k$. Using (\ref{eq:kfpredictionupdate}) and (\ref{eq:kfmeasurementupdate}) an estimate of the state of the robot can be obtained at any time for use by the controls algorithms.
+where $P_k$ is the state covariance matrix, $K_k$ is the Kalman gain, $Q_k$ is the process covariance matrix giving a measure of the expected noise in the system model and $R_k$ is the measurement covariance matrix giving the expected noise of the sensors. The prediction update step relies on knowing $\Phi_k$, $\Gamma_k$ and $Q_k$. The measurement update step needs to know $H_k$ and $R_k$. Using (\ref{eq:kfpredictionupdate}) and (\ref{eq:kfmeasurementupdate}) an estimate of the state of the robot can be obtained at any time for use by the controls algorithms or to give feedback to a human operator.
 
 \subsection{Extended Kalman Filter}
 \label{sec:extendedkf}
