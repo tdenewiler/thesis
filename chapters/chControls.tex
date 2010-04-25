@@ -120,7 +120,7 @@ and from there the total derivative is found as
 \end{split}
 \end{align}
 
-Now it needs to be shown that $\dot{V}\leq0$ which can be done by showing that $\dot{V}_1\leq0$ and $\dot{V}_2\leq0$. This can be shown for $\dot{V}_1$ if $u$ takes the form
+Now it needs to be shown that $\dot{V}\leq0$ which can be done by showing that $\dot{V}_1\leq0$ and $\dot{V}_2\leq0$. This is true for $\dot{V}_1$ if $u$ takes the form
 
 \begin{align}
 \label{eq:lyapunovu}
@@ -180,3 +180,6 @@ Using the expressions for $u$ in (\ref{eq:lyapunovu}) and $\omega$ in (\ref{eq:l
 \dot{\theta} &= \gamma\cos\alpha\sin\alpha
 \end{split}
 \end{align}
+
+\subsection{Curvature of Resulting Trajectory}
+*** Say something about how the parameters $h$, $k$ and $\gamma$ determine the curvature of the resulting trajectory. The important thing to recognize is that, even though there are three parameters to tune with the control Lyapunov function, a stable trajectory is guaranteed with control Lyapunov functions and the parameters affect only the curvature of the trajectory. With PID controllers there are more parameters to tune and they affect whether the resulting control law is stable as well as the response profile. The free parameters for Lyapunov are considered design variables and are beneficial. ***
