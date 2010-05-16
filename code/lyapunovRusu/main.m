@@ -48,10 +48,10 @@ k = 6;
 [t, y] = ode45(@f3, [0 time], [e a theta gamma h k]);
 
 % Set up vectors to hold x and y positions, yaw speed and velocity of robot.
-xpos = zeros(length(t));
-ypos = zeros(length(t));
-w = zeros(length(t));
-u = zeros(length(t));
+xpos = zeros(1,length(t));
+ypos = zeros(1,length(t));
+w = zeros(1,length(t));
+u = zeros(1,length(t));
 
 % At each time step calculate the forward velocity and angular rate commands
 % to issue to the robot.
