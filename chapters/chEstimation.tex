@@ -1,21 +1,20 @@
 \chapter{State Estimation}
 \label{ch:estimation}
-The Space and Naval Warfare Systems Center, San Diego (SSC-SD) robotics group has developed the Autonomous Capabilities Suite (ACS) which incorporates many different technologies into a single software package that can be run on a wide variety of robots and is able to easily accomodate different payload and sensor suites \cite{Sights06}. One of the ACS libraries is the adaptive extended Kalman filter which is used on the EOD robots for state estimation and is the main method used for answering the question ``Where am I?''. The idea behind the Kalman filter is relatively straightforward. The robot has some basic idea of where it is in the world using its sensors but there is some uncertainty involved in that estimate due to:
+The Space and Naval Warfare Systems Center, San Diego (SSC-SD) robotics group has developed the Autonomous Capabilities Suite (ACS) which incorporates many different technologies into a single software package that can be run on a wide variety of robots and is able to easily accomodate different payload and sensor suites \cite{Sights06}. One of the ACS libraries is the adaptive extended Kalman filter which is used on the EOD robots for state estimation and is the main method used for answering the question ``Where am I?''. The idea behind the Kalman filter is relatively straightforward as the robot has some basic idea of where it is in the world using its sensors but there is some uncertainty involved in that estimate due to:
 \begin{itemize}
 \item different measurement accuracies from the sensors,
 \item multiple sensors measuring the same state,
 \item imperfect models of the robot dynamics.
 \end{itemize}
-Some of the uncertainty of the model can be explained by the fact that not all of the necessary measurements are being carried out and the states can be unobservable. *** Say more here about noise/uncertainty. ***
 
-An example is trying to determine the heading of a robot driving in a straight line where the left track is moving on a flat surface while the right track is moving on an uneven surface as in Figure \ref{fig:topology}. The wheel encoders measure how far each track is moving and will report that the right track is traveling a greater distance than the left track which could mean that the robot is turning counter-clockwise or that the robot tracks are moving over different surface topologies. At the same time the robot will be getting measurements about its heading from both the IMU and GPS sensors that will have some noise as well. As long as the controller is performing adequately the IMU and GPS sensors would likely say that the robot is traveling in a straight line. The job of the Kalman filter is to determine how much to trust the IMU, GPS and wheel encoders when calculating the robot heading.
+*** Put in a picture of the PackBot driving with one track going over two-by-fours. ***
 
-This is accomplished by looking at each of the noise parameters for both the system model and the measurements as being zero mean, white noise, uncorrelated, Gaussian variables ... *** Clean up this language. Consider putting it in a different section like \S\ref{sec:duals}. ***
+An example is trying to determine the heading of a robot that is driving in a straight line where the left track is moving on a flat surface while the right track is moving on an uneven surface as in Figure \ref{fig:topology}. The wheel encoders measure the distance traveled by each track and will report that the right track is traveling a greater distance than the left track which could mean that (a) the robot is turning counter-clockwise or (b) the robot tracks are moving over different surface topologies. At the same time the robot will be getting measurements about its heading from both the IMU and GPS sensors where each of those sensors will have some noise as well. As long as the controller is performing adequately and the robot is indeed traveling in a straight line with a constant heading then the IMU and GPS sensor measurements would likely indicate that the robot is traveling in a straight line. The job of the Kalman filter is to determine how much to trust the IMU, GPS and wheel encoders when calculating the robot heading and to give an accurate estimate of the actual state of the robot at any given time, especially in situations like this example where there are possible conflicting measurements.
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=.5\textwidth]{images/topography}
-	\caption{Different topologies for the left track and the right track when the ground is smooth on the left side and bumpy on the right side. The top line is for the left track and the bottom line is for the right track.}
+	\caption{Different topologies for the left track and the right track when the ground is smooth on the left side and bumpy on the right side. The top line is for the left track and the bottom line is for the right track. The right track travels a greater distance than the left track.}
 	\label{fig:topology}
 \end{figure}
 
@@ -31,30 +30,24 @@ Kalman filters and control systems (see Chapter \ref{ch:controls}) use the idea 
 \end{split}
 \end{align}
 
-The state variables are given in vector form by $x$ and the sensor measurements are contained in the vector $y$. The state space equations are a means of representing how the state of a system changes through time based on the initial state of the system and the inputs to the system which allows the trajectory (or motion through time) to be calculated using compact notation. The inputs are assumed to include any external forces applied to the system as well as actuation provided by the system itself. The function $h(x,t)$ transforms the measurements into state variables which is important when the units of a sensor are not the same as the units of the state.
+The state variables are given in vector form by $x$ and the sensor measurements are contained in the vector $y$. The state space equations are a means of representing how the state of a system changes through time based on the initial state of the system and the inputs to the system which allows the trajectory (or motion through time) to be calculated using compact notation. The inputs are assumed to include any external forces applied to the system as well as actuation provided by the system itself. The function $h(x,t)$ transforms the sensor measurements into state variables which is important when the units of a sensor are not the same as the units of the state.
 
 \subsection{System Dynamics Model}
 \label{sec:dynamics}
-A model of the system dynamics is necessary to be able to propagate the state of the system forward in time in the absence of measurements. It is impossible to create a perfect model of the system and even a nearly perfect model of the system will likely be too complex to compute fast enough for it to be useful. The best result that is typically available is a model with a large amount of assumptions where the most important aspects of the dynamics are captured in the model.
+A model of the system dynamics is necessary in order to propagate the state of the system forward in time in the absence of measurements. It is impossible to create a perfect model of the system and even a nearly perfect model of the system will likely be too complex to compute fast enough for it to be useful. The best result that is typically available is a model with a large amount of assumptions where the most important aspects of the dynamics are captured in the model.
 
 For the robots used in these experiments the state vector used follows that found in \cite{Kelly_1994_338}, \cite{Kelly_1994_333} where the state variables are
 
 \begin{align*}
 x_k = \left[\begin{array}{c c c c c c c c} x & y & z & V & \theta & \phi & \psi & \omega \end{array}\right]^T.
 \end{align*}
-In this vector $x$, $y$ and $z$ are positions, $V$ is velocity, $\theta$, $\phi$ and $\psi$ are Euler angles for pitch, roll and yaw, and $\omega$ is angular velocity as shown in Figure \ref{fig:robotaxes}.
+In this vector $x$, $y$ and $z$ are positions, $V$ is linear velocity, $\theta$, $\phi$ and $\psi$ are Euler angles for pitch, roll and yaw, and $\omega$ is angular velocity as shown in Figure \ref{fig:robotaxes}.
 
 \begin{figure}[ht!]
-	\centering
-% 	\subfloat[Urbot.]{
-% 		\label{fig:urbotaxes}\includegraphics[width=.45\textwidth]{images/urbotaxes}
-% 	} \qquad
-% 	\subfloat[PackBot.]{
-% 		\label{fig:pbaxes}
-		\includegraphics[width=.65\textwidth]{images/packbotaxes}
-% 	}
-	\caption{PackBot used in experiments with axes for position and orientation shown.}
-	\label{fig:robotaxes}
+    \centering
+    \includegraphics[width=.75\textwidth]{images/packbotaxes}
+    \caption{PackBot used in experiments with axes for position and orientation shown.}
+    \label{fig:robotaxes}
 \end{figure}
 
 The nonlinear state equations to model the dynamics are
@@ -122,9 +115,9 @@ where $P_k$ is the state covariance matrix, $K_k$ is the Kalman gain, $Q_k$ is t
 
 \subsection{Extended Kalman Filter}
 \label{sec:extendedkf}
-The basic Kalman filter makes the assumption that both the system model contained in $F_k$ and the measurement model in $H_k$ are linear. The extended Kalman filter (EKF) allows for nonlinear models to be used for $F_k$, $H_k$ or both by linearizing the models around the state estimate. To linearize the models the Jacobian, or matrix of partial derivatives, is taken about the estimated state.
+The basic Kalman filter makes the assumption that both the system model contained in $F_k$ and the measurement model in $H_k$ are linear. The extended Kalman filter (EKF) allows for nonlinear models (such as that found in (\ref{eq:kfnonlineardynamics})) to be used for $F_k$, $H_k$ or both by linearizing the models around the state estimate. To linearize the models the Jacobian, or matrix of partial derivatives, is taken about the estimated state.
 
-The state transition matrix, based on the dynamics described in (\ref{eq:kfnonlineardynamics}), is
+The nonlinear state transition matrix, based on the dynamics described in (\ref{eq:kfnonlineardynamics}), is
 
 \begin{align}
 \label{eq:kfF}
@@ -191,22 +184,26 @@ F_{7,6} &= -\omega *\sin(\phi)/\cos(\theta),
 F_{7,8} = \cos(\phi)/\cos(\theta).
 \end{split}
 \end{align*}
-To linearize the dynamics found in (\ref{eq:kfnonlineardynamics}) so that the Kalman filter can use them the derivative must be taken with respect to the state. This results in the state space equations
+To linearize the dynamics found in (\ref{eq:kfnonlineardynamics}) so that the standard Kalman filter equations can be used the derivative must be taken with respect to the state. This can be approximated by using the expression
 
 \begin{align}
-\label{eq:kflinearized}
-\begin{split}
-x_{k+1} &= x_k + \cos(\psi_k)*\cos(\theta_k)*\Delta T*V_k \\
-y_{k+1} &= y_k + \sin(\psi_k)*\cos(\theta_k)*\Delta T*V_k \\
-z_{k+1} &= z_k - \sin(\theta_k)*\Delta T*V_k \\
-V_{k+1} &= V_k \\
-\theta_{k+1} &= \theta_k - \sin(\phi_k)*\Delta T*\omega_k \\
-\phi_{k+1} &= \phi_k + \tan(\theta_k)*\cos(\phi_k)*\Delta T*\omega_k \\
-\psi_{k+1} &= \psi_k + \cos(\phi_k)*\Delta T/\cos(\theta_k)*\omega_k \\
-\omega_{k+1} &= \omega_k.
-\end{split}
+\label{eq:kflinearexpansion}
+\Phi_k = I + F_kdt
 \end{align}
-This results in the Jacobian of the state transition matrix $F$ (c.f. (\ref{eq:kfF})) with respect to the states is given in matrix form by *** Note that in \cite{Kelly_1994_338}, \S6.2 he shows that $\Phi = I + Fdt$ which is close to what the ACS EKF uses for $\Phi$. ***
+% \begin{align}
+% \label{eq:kflinearized}
+% \begin{split}
+% x_{k+1} &= x_k + \cos(\psi_k)*\cos(\theta_k)*\Delta T*V_k \\
+% y_{k+1} &= y_k + \sin(\psi_k)*\cos(\theta_k)*\Delta T*V_k \\
+% z_{k+1} &= z_k - \sin(\theta_k)*\Delta T*V_k \\
+% V_{k+1} &= V_k \\
+% \theta_{k+1} &= \theta_k - \sin(\phi_k)*\Delta T*\omega_k \\
+% \phi_{k+1} &= \phi_k + \tan(\theta_k)*\cos(\phi_k)*\Delta T*\omega_k \\
+% \psi_{k+1} &= \psi_k + \cos(\phi_k)*\Delta T/\cos(\theta_k)*\omega_k \\
+% \omega_{k+1} &= \omega_k.
+% \end{split}
+% \end{align}
+It is also useful to invoke the low dynamics assumption which says that, for the duration of a single time step, the position estimates are only influenced by the linear velocity (and not the angular velocity) of the robot while the Euler angles are only influenced by the angular velocity of the robot and allows for several terms in the state transition matrix to be set to zero. This assumption is valid when the accelerations of the robot are at or near the level of the noise associated with the sensor measuring accelerations on the robot and is consistent with the operating regime associated with the robots in these experiments. This results in the Jacobian of the state transition matrix $F$ (c.f. (\ref{eq:kfF})) with respect to the states and is given in matrix form by
 
 \begin{align*}
 \Phi_k = \left[\begin{array}{c c c c c c c c}
@@ -247,7 +244,7 @@ where the elements of $\Gamma$ are
 \Gamma_{3,2} &= -\sin(\theta) \\
 \Gamma_{3,3} &= \cos(\theta)*\cos(\phi).
 \end{align*}
-This gives all of the dynamics used for calculating the state of the robots.
+This gives expressions use to calculate all of the dynamics for the state of the robots.
 
 \subsection{Adaptive Extended Kalman Filter}
 \label{sec:adaptiveekf}
@@ -287,7 +284,7 @@ It can be seen that the estimates of both covariance matrices employ a running a
 \label{sec:groundtruth}
 Quantitatively evaluating the performance of Kalman filters can be accomplished in several ways, the best of which is to analyze the output of the Kalman filter against ground truth. Although it is nearly impossible to establish ground truth over a large area in practice the closer the measurements are to an absolute position in the world the better. To determine ground truth for the robots in these experiments a differential GPS (DGPS) system was created independently of the sensors on the robot so that very accurate measurements of the robots actual position could be logged and then used in a post-processing step to determine how well the Kalman filter estimate corresponds to ground truth.
 
-The DGPS system consists of a GPS receiver and serial radio that make up the base station and a GPS receiver, serial radio and small computer that make up the roaming station as in Figure \ref{fig:dgps}. The GPS receivers are both Novatel OEM4-G2 receivers using the Real Time Kinematics algorithm. The base station is located in a static position and is configured to use a fixed position which is compared to what the current position would be if it were not fixed. The difference between the fixed position and the calculated position are used to generate corrections that would put the position of the GPS antenna at the fixed position and those corrections are sent to and applied at the roaming station resulting in a standard deviation of $2$ $cm$ for the position output of the roaming station. The errors are due to the effects of the GPS signal passing through the atmosphere from the satellites to the antenna as well as to multipath effects closer to the ground. The DGPS corrections are used for each satellite that the ground station and the roaming station share in the constellation of satellites they are using in their solution of a position estimate. The DGPS system is bootstrapped to the robot during testing runs to log data at a rate of $20$ $Hz$ and is only used as a tool to improve Kalman filter performance and is not meant to be used during normal operation.
+The DGPS system consists of a GPS receiver and serial radio that make up the base station and a GPS receiver, serial radio and small computer that make up the roaming station as in Figure \ref{fig:dgps}. The GPS receivers are both Novatel OEM4-G2 receivers using the Real Time Kinematics algorithm. The base station is located in a static position and is configured to use a fixed position which is compared to what the current position would be if it were not fixed. The difference between the fixed position and the calculated position are used to generate corrections that would put the position of the GPS antenna at the fixed position and those corrections are sent to and applied at the roaming station resulting in a standard deviation of $2$ $cm$ for the position output of the roaming station. The errors are due to the effects of the GPS signal passing through the atmosphere from the satellites to the antenna as well as to multipath effects closer to the ground. The DGPS corrections are used for each satellite that the ground station and the roaming station share in the constellation of satellites they are using in their solution of a position estimate. The DGPS system is bootstrapped to the robot during testing runs to log data at a rate of $20$ $Hz$ and is only used as a tool to improve Kalman filter performance and is not meant to be used during normal operation. The C code used to setup and log data from the DGPS system is shown in Listing \ref{sec:dgpscode} of Appendix \ref{ch:code}. The same code is used for both the base station and the roaming station and changes modes based on a configuration file variable.
 
 With a highly accurate estimate of ground truth established it becomes possible to not only study the performance of the Kalman filter but to also begin determining whether to focus efforts in improving the autonomous navigation behaviors of the robots via the estimation or controls algorithms.
 
@@ -335,6 +332,8 @@ e = -\frac{1}{T}\sum_{t=1}^T \left(\log|2\pi\Omega_t| - (y_t-h(\mu_t))^T\Omega_t
 where $\Omega$ is the same as in the above description.
 
 A program was written to implement these algorithms and can be found in Appendix \ref{sec:qrcode}, Listing \ref{code/qr/qr.cc}. The major idea is to use logged data -- both from the output of the Kalman filter running on the robot and ground truth as recorded from the DGPS system -- and try all the possible combinations of $Q$ and $R$ matrices until the metrics identified in (\ref{eq:kftrainingres}) and (\ref{eq:kftrainingpred}) are minimized or maximized to within some convergence criterion. The possible $Q$ and $R$ matrices start with a coarse grid and are reduced to a finer grid at each iteration where the grid is centered around the best estimate found from the previous grid.
+
+*** Show a picture of how the grid search through the parameter space works and talk about some of the shortcomings, especially in regards to getting stuck in local minima. Then, the Future Work chapter can talk about possible alternatives to this grid search algorithm. ***
 
 \section{Identifty IMU Parameters}
 \label{sec:identifyimuparams}
