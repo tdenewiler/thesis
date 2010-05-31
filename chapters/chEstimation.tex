@@ -335,6 +335,74 @@ A program was written to implement these algorithms and can be found in Appendix
 
 *** Show a picture of how the grid search through the parameter space works and talk about some of the shortcomings, especially in regards to getting stuck in local minima. Then, the Future Work chapter can talk about possible alternatives to this grid search algorithm. ***
 
+% {\bf procedure} $SlowSort(A,i,j)$
+% \begin{algorithmic}[1]
+% \IF{$i\geq j$}
+% 	\STATE Return
+% \ENDIF
+% \STATE $m\gets \lfloor (i+j)/2 \rfloor$
+% \STATE $SlowSort(A,i,m)$
+% \STATE $SlowSort(A,m+1,j)$
+% \IF{$A[m]>A[j]$}
+% 	\STATE exchange $A[j],A[m]$
+% \ENDIF
+% \STATE $SlowSort(A,i,j-1)$
+% \end{algorithmic}
+
+\subsection{Numerical Analysis of Training Program}
+\label{sec:trainingNumericalAnalysis}
+The program in Listing \ref{code/qr/qr.cc} of Appendix \ref{sec:qrcode} is a brute-force grid-based approach to finding the optimal $Q$ and $R$ matrices for the Kalman filter. The number of matrices attempted can grow to a very large number when all elements of the matrices are varied so an optional algorithm was developed that trains using only diagonal $Q$ and $R$ matrices. This is not an unreasonable restriction as the original $Q$ and $R$ matrices found by hand-tuning or from the output of the adaptive Kalman filter from \S\ref{sec:adaptiveekf} used only diagonal $Q$ and $R$ matrices. The number of possible matrices that are used during training is a function of the number of states used in the Kalman filter and the number of measurements where
+
+\begin{align}
+\label{eq:trainingFullMatrices}
+\begin{split}
+n_Q &= 3^{n_{states}^2} \\
+n_R &= 3^{n_{measurements}^2} \\
+n_{full} &= n_Q \times n_R
+\end{split}
+\end{align}
+for varying all elements of $Q$ and $R$ and
+
+\begin{align}
+\label{eq:trainingDiagonalMatrices}
+\begin{split}
+n_Q &= 3^{n_{states}} \\
+n_R &= 3^{n_{measurements}} \\
+n_{diagonal} &= n_Q \times n_R
+\end{split}
+\end{align}
+for varying only the diagonal elements of $Q$ and $R$. During the experiments conducted the number of states is $8$ and the number of measurements is $5$ which gives
+
+\begin{align*}
+\begin{split}
+n_Q &= 3^{8^2} = 3433683820292512484657849089281 \\
+n_R &= 3^{5^2} = 847288609443 \\
+n_{full} &= 3433683820292512484657849089281 \times 847288609443 \\
+&= 2909321189362570808630465826492242446680483
+\end{split}
+\end{align*}
+per grid level when varying all elements of $Q$ and $R$ and
+
+\begin{align*}
+\begin{split}
+n_Q &= 3^8 = 6561 \\
+n_R &= 3^5 = 243 \\
+n_{diagonal} &= 6561 \times 243 = 1594323
+\end{split}
+\end{align*}
+per grid level when varying only the diagonal elements of $Q$ and $R$. The ratio is
+
+\begin{align}
+\label{eq:trainingRatio}
+\begin{split}
+r &= \frac{n_{full}}{n_{diagonal}} \\
+&= \frac{3^{n_{states}^2} \times 3^{n_{measurements}^2}}{3^{n_{states}} \times 3^{n_{measurements}}} \\
+&= 3^{n_{states}} \times 3^{n_{measurements}} \\
+&= 3^8 \times 3^5 = 1594323
+\end{split}
+\end{align}
+which means that it will take $1,594,323$ times longer to run the training program varying all of the matrix elements compared to only varying the diagonal elements. This can make the difference between finding optimal $Q$ and $R$ matrices and not finding them with the amount of states and measurements used in these experiments.
+
 \section{Identifty IMU Parameters}
 \label{sec:identifyimuparams}
 *** Looking at \cite{ChungOjeda01}. Would need access to a rotary table to perform tests. ***
