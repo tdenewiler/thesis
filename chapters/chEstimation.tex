@@ -356,8 +356,8 @@ The program in Listing \ref{code/qr/qr.cc} of Appendix \ref{sec:qrcode} is a bru
 \begin{align}
 \label{eq:trainingFullMatrices}
 \begin{split}
-n_Q &= 3^{n_{states}^2} \\
-n_R &= 3^{n_{measurements}^2} \\
+n_Q &= 2^{n_{states}^2} \\
+n_R &= 2^{n_{measurements}^2} \\
 n_{full} &= n_Q \times n_R
 \end{split}
 \end{align}
@@ -366,8 +366,8 @@ for varying all elements of $Q$ and $R$ and
 \begin{align}
 \label{eq:trainingDiagonalMatrices}
 \begin{split}
-n_Q &= 3^{n_{states}} \\
-n_R &= 3^{n_{measurements}} \\
+n_Q &= 2^{n_{states}} \\
+n_R &= 2^{n_{measurements}} \\
 n_{diagonal} &= n_Q \times n_R
 \end{split}
 \end{align}
@@ -375,19 +375,19 @@ for varying only the diagonal elements of $Q$ and $R$. During the experiments co
 
 \begin{align*}
 \begin{split}
-n_Q &= 3^{8^2} = 3433683820292512484657849089281 \\
-n_R &= 3^{5^2} = 847288609443 \\
-n_{full} &= 3433683820292512484657849089281 \times 847288609443 \\
-&= 2909321189362570808630465826492242446680483
+n_Q &= 2^{8^2} = 18446744073709551616 \\
+n_R &= 2^{5^2} = 33554432 \\
+n_{full} &= n_Q \times n_R \\
+&= 618970019642690137449562112
 \end{split}
 \end{align*}
 per grid level when varying all elements of $Q$ and $R$ and
 
 \begin{align*}
 \begin{split}
-n_Q &= 3^8 = 6561 \\
-n_R &= 3^5 = 243 \\
-n_{diagonal} &= 6561 \times 243 = 1594323
+n_Q &= 2^8 = 256 \\
+n_R &= 2^5 = 25 \\
+n_{diagonal} &= n_Q \times n_R = 6400
 \end{split}
 \end{align*}
 per grid level when varying only the diagonal elements of $Q$ and $R$. The ratio is
@@ -396,12 +396,12 @@ per grid level when varying only the diagonal elements of $Q$ and $R$. The ratio
 \label{eq:trainingRatio}
 \begin{split}
 r &= \frac{n_{full}}{n_{diagonal}} \\
-&= \frac{3^{n_{states}^2} \times 3^{n_{measurements}^2}}{3^{n_{states}} \times 3^{n_{measurements}}} \\
-&= 3^{n_{states}} \times 3^{n_{measurements}} \\
-&= 3^8 \times 3^5 = 1594323
+&= \frac{2^{n_{states}^2} \times 2^{n_{measurements}^2}}{2^{n_{states}} \times 2^{n_{measurements}}} \\
+&= 2^{n_{states}} \times 2^{n_{measurements}} \\
+&= 2^8 \times 2^5 = 8192
 \end{split}
 \end{align}
-which means that it will take $1,594,323$ times longer to run the training program varying all of the matrix elements compared to only varying the diagonal elements. This can make the difference between finding optimal $Q$ and $R$ matrices and not finding them with the amount of states and measurements used in these experiments.
+which means that it will take $8,192$ times longer to run the training program varying all of the matrix elements compared to only varying the diagonal elements. This can make the difference between finding optimal $Q$ and $R$ matrices and not finding them with the amount of states and measurements used in these experiments.
 
 \section{Identifty IMU Parameters}
 \label{sec:identifyimuparams}
