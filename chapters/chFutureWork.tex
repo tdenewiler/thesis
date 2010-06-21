@@ -1,7 +1,5 @@
 \chapter{Future Work}
 \label{ch:futurework}
-*** Suggest avenues of study for future work. ***
-
 \begin{enumerate}
 \item Use the learning algorithm for indoor robots as there is no reason why a robot needs to have GPS to benefit from using the DGPS system for training the $Q$ and $R$ matrices in the EKF. A test area would need to be set up outdoors so that DGPS can be used and the normal sensors also work by bouncing off walls and what not but the DGPS ground truth position can be converted to the local coordinate system and used to generate an error metric for the EKF position output.
 \item Add a high quality IMU that serves as ground truth for Euler angles to the DGPS system so that the training algorithm attempts to minimize the errors between Euler angles in addition to position.
