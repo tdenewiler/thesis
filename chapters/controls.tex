@@ -37,22 +37,35 @@ When the characteristics of a robot are changed the PID gains must also be modif
 
 Table \ref{tab:PIDGainEffects} shows how increasing the different gain values affects the performance of the controller output in terms of rise time, overshoot, settling time and steady state error. It can be seen that a large amount of coupling exists between the gains and attempting to fix one aspect of the controller output can have unintended consequences that cause other aspects of controller output to perform suboptimally. This is in contrast to the gains that arise for Lyapunov controllers as seen in \S\ref{sec:trajectoryCurvature}.
 
+%\begin{table}[ht!]
+%	\small
+%	\centering
+%	\begin{tabular}{@{\extracolsep{\fill}} | c || c | c | c | c |}
+%		\hline
+%		Parameter    & Rise Time      & Overshoot & Settling Time & Steady State Error \\
+%		\hline\hline
+%		$K_p$        & Decrease       & Increase  & Small Change  & Decrease \\
+%		\hline
+%		$K_i$        & Decrease       & Increase  & Increase      & Eliminate \\
+%		\hline
+%		$K_d$        & Small Decrease & Decrease  & Decrease      & None \\
+%		\hline
+%	\end{tabular}
+%	\caption{Effects on controller output of modifying PID gains.}
+%	\label{tab:PIDGainEffects}
+%\end{table}
+
 \begin{table}[ht!]
-	\small
-	\centering
-	\begin{tabular}{@{\extracolsep{\fill}} | c || c | c | c | c |}
-		\hline
-		Parameter    & Rise Time      & Overshoot & Settling Time & Steady State Error \\
-		\hline\hline
-		$K_p$        & Decrease       & Increase  & Small Change  & Decrease \\
-		\hline
-		$K_i$        & Decrease       & Increase  & Increase      & Eliminate \\
-		\hline
-		$K_d$        & Small Decrease & Decrease  & Decrease      & None \\
-		\hline
-	\end{tabular}
-	\caption{Effects on controller output of modifying PID gains.}
-	\label{tab:PIDGainEffects}
+\small
+\centering
+\begin{tabular}{@{}llllr@{}} \toprule
+Parameter    & Rise Time      & Overshoot & Settling Time & Steady State Error \\ \midrule
+$K_p$        & Decrease       & Increase  & Small Change  & Decrease \\
+$K_i$        & Decrease       & Increase  & Increase      & Eliminate \\
+$K_d$        & Small Decrease & Decrease  & Decrease      & None \\ \bottomrule
+\end{tabular}
+\caption{Effects on controller output of modifying PID gains.}
+\label{tab:PIDGainEffects}
 \end{table}
 
 \section{Lyapunov Controller}

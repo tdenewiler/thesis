@@ -45,7 +45,7 @@ In this vector $x$, $y$ and $z$ are positions, $V$ is linear velocity, $\theta$,
 
 \begin{figure}[ht!]
     \centering
-    \includegraphics[width=.75\textwidth]{images/packbotaxes}
+    \includegraphics[width=.69\textwidth]{images/packbotaxes}
     \caption{PackBot used in experiments with axes for position and orientation shown.}
     \label{fig:robotaxes}
 \end{figure}
@@ -98,7 +98,7 @@ The prediction update step marches the system dynamics forward in time using the
 \label{eq:kfpredictionupdate}
 \begin{split}
 \hat{x}_{k+1}^- &= \Phi_k\hat{x}_k^+ \\
-P_{k+1}^- &= F_kP_k^+F_k^T + \Gamma_kQ_k\Gamma_k^T
+P_{k+1}^- &= \Phi_kP_k^+\Phi_k^T + \Gamma_kQ_k\Gamma_k^T
 \end{split}
 \end{align}
 and the measurement update step provides feedback from sensor data using the equations
