@@ -257,8 +257,8 @@ Class]
 \def\partname{Part}
 %             ~~~~
 % abstract environment:
-\def\abstractshortname{Abstract of the Dissertation} % Used for TOC
-\def\abstractlongname{Abstract of the Dissertation} % Used for Header
+\def\abstractshortname{Abstract of the Thesis} % Used for TOC
+\def\abstractlongname{Abstract of the Thesis} % Used for Header
 %                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % dedication:
 \def\dedicationname{Dedication}
@@ -361,7 +361,7 @@ Class]
     {\bfseries
      {\@title} \par}
     \bigskip \medskip
-    A dissertation submitted in partial satisfaction of the \par 
+    A Thesis submitted in partial satisfaction of the \par 
 	\smallskip
     requirements for the degree \par 
 	\smallskip
@@ -427,7 +427,7 @@ All rights reserved.}
 \begin{center}
 \vspace{.25in}
 \vspace{\@approvalspace}
-\makebox[4in][l]{\parbox{3.5in}{\fmfont The dissertation of {\@author} 
+\makebox[4in][l]{\parbox{3.5in}{\fmfont The Thesis of {\@author} 
 is approved, and it is acceptable in quality and form for publication 
 on microfilm and electronically: }}\\
 \begin{tabular*}{4in}[t]{r@{\extracolsep{\fill}}r}
