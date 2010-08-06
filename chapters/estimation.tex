@@ -117,7 +117,14 @@ The variables $\hat{x}_k^-$ and $\hat{x}_k^+$ in (\ref{eq:kfpredictionupdate}) a
 
 \subsection{Extended Kalman Filter}
 \label{sec:extendedkf}
-The basic Kalman filter makes the assumption that both the system model contained in $F_k$ and the measurement model in $H_k$ are linear. The extended Kalman filter (EKF) allows for nonlinear models (such as that found in (\ref{eq:kfnonlineardynamics})) to be used for $F_k$, $H_k$ or both by linearizing the models around the state estimate. To linearize the models the Jacobian, or matrix of partial derivatives, is taken about the estimated state.
+The basic Kalman filter makes the assumption that both the system model contained in $F_k$ and the measurement model in $H_k$ are linear. The extended Kalman filter (EKF) allows for nonlinear models (such as that given by (\ref{eq:kfnonlineardynamics})) to be used for $F_k$, $H_k$ or both by linearizing the models around the state estimate. To linearize the models the Jacobian, or matrix of partial derivatives, is taken about the estimated state. The idea of linearization of a nonlinear model is shown in Figure \ref{fig:KFLinearization} where it can be seen that the mean value is retained but the variances are different.
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.6\textwidth]{images/KFLinearization}
+	\caption{Effects of linearizing a nonlinear model.}
+	\label{fig:KFLinearization}
+\end{figure}
 
 The nonlinear state transition matrix, based on the dynamics described in (\ref{eq:kfnonlineardynamics}), is
 
