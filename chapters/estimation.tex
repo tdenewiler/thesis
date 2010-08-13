@@ -59,7 +59,7 @@ In this vector $x$, $y$ and $z$ are positions, $V$ is linear velocity, $\theta$,
 
 \section{The Kalman Filter}
 \label{sec:kalmanfilter}
-The ACS Kalman filter is typical of all Kalman filters in that it consists of a prediction update step and a measurement update step where the prediction update is run as fast as possible and the measurement update is run whenever new sensor data becomes available as in Figure \ref{fig:kf}. The prediction update step uses a model of the system dynamics and a measurement of elapsed time to determine where the system is in the world and will inevitably have errors. Some of the errors are due to effects that are not captured in the models and simplifying assumptions that are made in order to be able to calculate the system model in real-time using embedded computers. The measurement update step is basically a feedback step to help correct for errors in the system model using sensors to provide current data \cite{Kelly_1994_338}.
+The ACS Kalman filter is typical of all Kalman filters in that it consists of a prediction update step and a measurement update step where the prediction update is run as fast as possible and the measurement update is run whenever new sensor data becomes available as in Figure \ref{fig:kf}. The prediction update step uses a model of the system dynamics and a measurement of elapsed time to determine where the system is in the world and will inevitably have errors. Some of the errors are due to effects that are not captured in the models, (im)precision of the clock on the computer for measuring time and simplifying assumptions that are made in order to be able to calculate the system model in real-time using embedded computers. The measurement update step is basically a feedback step to help correct for errors in the system model using sensors to provide current data \cite{Kelly_1994_338}.
 
 \begin{figure}[ht!]
 	\centering
@@ -68,7 +68,7 @@ The ACS Kalman filter is typical of all Kalman filters in that it consists of a 
 	\label{fig:kf}
 \end{figure}
 
-The Kalman filters that run on the small UGVs used in these experiments run on digital computers and are necessarily used in discretize time rather than continuous time because of the nature of computers. From \cite{Kelly_1994_338}, \cite{Simon06OptimalEstimation} the discretized versions of (\ref{eq:statespace}) mean that the state space equations are
+The Kalman filters that run on the small UGVs used in these experiments run on digital computers and are necessarily used in discrete time rather than continuous time because of the nature of computers. From \cite{Kelly_1994_338}, \cite{Simon06OptimalEstimation} the discretized versions of (\ref{eq:statespace}) mean that the state space equations are
 
 \begin{align}
 \label{eq:kfstatemodel}
