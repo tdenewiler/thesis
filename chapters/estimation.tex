@@ -133,8 +133,21 @@ The basic Kalman filter makes the assumption that both the system model containe
 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=.9\textwidth]{images/KFLinearization2}
-	\caption{Effects of linearizing a nonlinear model. Left is medium dynamics, center is slow dynamics, right is fast dynamics.}
+    \subfloat[Slow dynamics.] {
+	    \label{images/KFLinearizationSlow}
+        \includegraphics[width=.3\textwidth]{images/KFLinearizationSlow}
+    }
+    \hfill
+    \subfloat[Medium dynamics.] {
+        \label{images/KFLinearizationMedium}
+	    \includegraphics[width=.3\textwidth]{images/KFLinearizationMedium}
+    }
+    \hfill
+    \subfloat[Fast dynamics.] {
+        \label{images/KFLinearizationFast}
+	    \includegraphics[width=.3\textwidth]{images/KFLinearizationFast}
+    }
+	\caption{Effects of linearizing a nonlinear model. Success depends on the speed of the dynamics, either \subref{images/KFLinearizationSlow} slow, \subref{images/KFLinearizationMedium} medium or \subref{images/KFLinearizationFast} fast.}
 	\label{fig:KFLinearization}
 \end{figure}
 
@@ -243,6 +256,10 @@ which results in
 %\Gamma_{3,3} &= \cos(\theta)*\cos(\phi).
 %\end{align*}
 This gives the necessary expressions to calculate the dynamics for the state of the robots in the prediction update step.
+
+\subsection{Determining Heading}
+\label{sec:determineHeading}
+*** Discuss the problem of knowing which way is forward on the robot. Talk about how the KF was originally tuned to work with the majority of time spent indoors where there are lots of big metal things that can interfere with the magnetometers on IMUs so the heading measurement was mostly ignored. The heading was mostly updated using the gyros from and integrating using the system model from (\ref{eq:kfjacobianresult}) as well as using GPS when it was available outdoors. Talk about the issue of heading flipping $180^\circ$ due to GPS heading and how velocity was not taken into account. Talk about adding compass heading and encoder velocity sensors as well as constraining heading jumps and determining the direction of the heading vector based on velocity direction from the encoders. Mention that this is useful not only for estimation but also for the control algorithm developed in Chapter \ref{ch:controls} since that controller can output commands for driving in reverse and when the heading flips the control algorithm would become unstable. Show plots where the heading can be shown to flip when the velocity changes directions. There are four sources of magnetometer errors -- hard iron errors, soft iron errors, scale factor errors and misalignment errors \cite{ParkinsonHeadingEstimation01}. ***
 
 \subsection{Adaptive Extended Kalman Filter}
 \label{sec:adaptiveekf}
@@ -416,4 +433,4 @@ which means that it will take $1,594,323$ times longer to run the training progr
 
 \section{Identifty IMU Parameters}
 \label{sec:identifyimuparams}
-*** Looking at \cite{ChungOjeda01}. Would need access to a rotary table to perform tests. ***
+*** Looking at \cite{ChungOjeda01}. Would need access to a rotary table to perform tests. Also look at \cite{ParkinsonHeadingEstimation01} for better estimation of heading. ***
