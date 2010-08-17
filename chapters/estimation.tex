@@ -1,6 +1,6 @@
 \chapter{State Estimation}
 \label{ch:estimation}
-The Space and Naval Warfare Systems Center, Pacific (SSCPAC) robotics group has developed the Autonomous Capabilities Suite (ACS) which incorporates many different robotics related algorithms into a single software package that can be run on a wide variety of robots and is able to easily accomodate different payload and sensor suites \cite{Sights06}. One of the ACS libraries is the adaptive extended Kalman filter which is used on the EOD robots for state estimation and is the main method used for answering the question ``Where am I?''. The idea behind the Kalman filter is relatively straightforward in that the robot has some basic idea of where it is in the world using its sensors but there is uncertainty involved in that estimate due to:
+The SSCPAC robotics group has developed the Autonomous Capabilities Suite (ACS) which incorporates many different robotics related algorithms into a single software package that can be run on a wide variety of robots and is able to easily accomodate different payload and sensor suites \cite{Sights06}. One of the ACS libraries is the adaptive extended Kalman filter which is used on the EOD robots for state estimation and is the main method used for answering the question ``Where am I?''. The idea behind the Kalman filter is relatively straightforward in that the robot has some basic idea of where it is in the world using its sensors but there is uncertainty involved in that estimate due to:
 \begin{itemize}
 \item different measurement accuracies from the sensors,
 \item multiple sensors measuring the same state,
@@ -48,13 +48,13 @@ For the robots used in these experiments the state vector used follows that foun
 \begin{align*}
 x_k = \left[\begin{array}{c c c c c c c c} x & y & z & V & \theta & \phi & \psi & \omega \end{array}\right]^T.
 \end{align*}
-In this vector $x$, $y$ and $z$ are positions, $V$ is linear velocity, $\theta$, $\phi$ and $\psi$ are Euler angles for pitch, roll and yaw, and $\omega$ is angular velocity as shown in Figure \ref{fig:robotaxes}.
+In this vector $x$, $y$ and $z$ are positions, $V$ is linear velocity, $\theta$, $\phi$ and $\psi$ are Euler angles for pitch, roll and yaw, and $\omega$ is angular velocity as shown in Figure \ref{fig:packbotaxes}.
 
 \begin{figure}[ht!]
     \centering
     \includegraphics[width=.8\textwidth]{images/packbotaxes}
     \caption{PackBot used in experiments with axes for position and orientation shown.}
-    \label{fig:robotaxes}
+    \label{fig:packbotaxes}
 \end{figure}
 
 \section{The Kalman Filter}

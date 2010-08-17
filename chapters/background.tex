@@ -30,7 +30,14 @@ The \href{http://www.spawar.navy.mil/robots/land/mprs/mprs.html}{Urbot} is an ex
 
 \section{MOCU \& JAUS}
 \label{sec:mocujaus}
-The Multi-Robot Operator Control Unit (MOCU) is a highly configurable front-end for simultaneous command and control of multiple systems and was created at SSC-SD \cite{PowellMOCU08}. MOCU has the ability to use a variety of communications protocols for interfacing to different systems and uses the Joint Architecture for Unmanned Systems (JAUS) to send and receive data to all of the UGVs used in this research \cite{RoweJAUS08}. *** Get a screenshot of MOCU when the PackBot and hopefully Urbot are being controlled. ***
+The Multi-Robot Operator Control Unit (MOCU) in Figure \ref{fig:mocu} is a highly configurable front-end for simultaneous command and control of multiple systems and was created at SPAWAR Systems Center, Pacific (SSCPAC) \cite{PowellMOCU08}. MOCU has the ability to use a variety of communications protocols for interfacing to different systems and uses the Joint Architecture for Unmanned Systems (JAUS) to send and receive data to all of the UGVs used in this research \cite{RoweJAUS08}. A combination of teleoperation using a joystick controller and autonomous navigation were used to collect data and test new ideas for estimation and controls. From within MOCU waypoints can be drawn on the overhead image and from those waypoints a route is generated and uploaded to the robot using the JAUS protocol. The robot will then attempt to drive that route autonomously and send back status information to MOCU using the controls and estimation code that is the focus of this research.
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.75\textwidth]{images/mocuPackbotScreenshot}
+	\caption{Controlling PackBot with MOCU}
+	\label{fig:mocu}
+\end{figure}
 
 \section{The Duals: Estimation \& Controls}
 \label{sec:duals}
