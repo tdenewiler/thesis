@@ -31,7 +31,7 @@ The Kalman filter is a method to merge physical models and sensor data to come u
 
 \section{State Space Models}
 \label{sec:statespacemodels}
-Kalman filters and modern control systems (see Chapter \ref{ch:controls}) use the idea of a multi-dimensional state space to encapsulate all of the relevant information that is known about a system. In the case of robots like the ones used in these experiments the dynamics are captured by position, orientation and linear and angular velocities. The general nonlinear equations to describe the state space of a system are
+Kalman filters and modern control systems (see Chapter \ref{ch:controls}) use the idea of a multi-dimensional state space to encapsulate all of the relevant information that is known about a system. In the case of robots like the ones used in these experiments the states of interest are position, orientation and linear and angular velocities. In general a system is described by nonlinear equations that describe how the state variables change through time and how measurements of the system are related to the states as given by
 
 \begin{align}
 \label{eq:statespace}
@@ -41,7 +41,7 @@ Kalman filters and modern control systems (see Chapter \ref{ch:controls}) use th
 \end{split}
 \end{align}
 
-The state variables are given in vector form by $x$ and the sensor measurements are contained in the vector $y$. The state space equations are a means of representing how the state of a system changes through time based on the initial state of the system and the inputs to the system, $u$, which allows the trajectory (or motion through time) to be calculated using compact notation. The inputs are assumed to include any external forces applied to the system as well as actuation provided by the system itself. The function $h(x,t)$ transforms the sensor measurements into state variables which is important when the units of a sensor are not the same as the units of the state.
+The state variables are given in vector form by $x$ and the sensor measurements are contained in the vector $y$. The state space equations are a means of representing with compact notations how the state of a system changes through time based on the initial state of the system and the inputs to the system, $u$, which allows the trajectory (or motion through time) to be calculated. The inputs are assumed to include any external forces applied to the system as well as actuation provided by the system itself. The function $h(x,t)$ transforms the sensor measurements into state variables which is important when the units of a sensor are not the same as the units of the state.
 
 For the robots used in these experiments the state vector used follows that found in \cite{Kelly_1994_338}, \cite{Kelly_1994_333} where the state variables are
 
@@ -52,7 +52,7 @@ In this vector $x$, $y$ and $z$ are positions, $V$ is linear velocity, $\theta$,
 
 \begin{figure}[ht!]
     \centering
-    \includegraphics[width=.69\textwidth]{images/packbotaxes}
+    \includegraphics[width=.8\textwidth]{images/packbotaxes}
     \caption{PackBot used in experiments with axes for position and orientation shown.}
     \label{fig:robotaxes}
 \end{figure}
@@ -68,7 +68,7 @@ The ACS Kalman filter is typical of all Kalman filters in that it consists of a 
 	\label{fig:kf}
 \end{figure}
 
-The Kalman filters that run on the small UGVs used in these experiments run on digital computers and are necessarily used in discrete time rather than continuous time because of the nature of computers. From \cite{Kelly_1994_338}, \cite{Simon06OptimalEstimation} the discretized versions of (\ref{eq:statespace}) mean that the state space equations are
+The Kalman filters that run on the small UGVs used in these experiments run on digital computers and are necessarily used in discrete time rather than continuous time because of the nature of computers. Additionally, the standard Kalman filter equations make the assumption that the system and measurement models are linear. From \cite{Kelly_1994_338}, \cite{Simon06OptimalEstimation} the discretized and linearized versions of (\ref{eq:statespace}) mean that the state space equations are represented as
 
 \begin{align}
 \label{eq:kfstatemodel}
@@ -77,7 +77,7 @@ x_{k+1} &= \Phi_kx_k + w_k \\
 y_k &= H_kx_k + v_k
 \end{split}
 \end{align}
-where $\Phi_k$ is the state transition matrix relating the state at time $k+1$ to time $k$ in the absence of inputs or noise and models the steady-state system dynamics, $w_k$ is system noise due to an imperfect model, $H_k$ is the measurement matrix which relates the measurements to the state vector and $v_k$ is the sensor measurement noise. The Kalman filter uses an unforced model so all inputs are considered disturbances to the steady-state dynamics. This means that $w_k$ includes noise, modeling errors, external forces and actuator forces.
+where $\Phi_k$ is the state transition matrix relating the state at time $k+1$ to time $k$ in the absence of inputs or noise and models the system dynamics, $w_k$ is system noise due to an imperfect model, $H_k$ is the measurement matrix which relates the measurements to the state vector and $v_k$ is the sensor measurement noise. The Kalman filter uses an unforced model so all inputs are considered disturbances to the steady-state dynamics. This means that $w_k$ includes noise, modeling errors, external forces and actuator forces.
 
 The prediction update step marches the system dynamics forward in time using the equations
 
@@ -100,7 +100,58 @@ P_k^+ &= \left[I - K_kH_k\right]P_k^-.
 \end{align}
 where $P_k$ is the state covariance matrix, $K_k$ is the Kalman gain, $Q_k$ is the process covariance matrix giving a measure of the expected noise in the system model and $R_k$ is the measurement covariance matrix giving the expected noise of the sensors. Using (\ref{eq:kfpredictionupdate}) and (\ref{eq:kfmeasurementupdate}) an estimate of the state of the robot can be obtained at any time for use by the controls algorithms or to give feedback to a human operator.
 
+*** Somewhere, maybe here, I want to say that $P_k$ is a measure of how good the state estimate is likely to be and that the gain $K_k$ weights whether the state estimate is based on the system model or the measurements. The gain $K_k$ is a function of the process and measurement covariance matrices so it really matters how those variances are set up relative to one another more than that they are absolutely correct values. ***
+
 The variables $\hat{x}_k^-$ and $\hat{x}_k^+$ in (\ref{eq:kfpredictionupdate}) and (\ref{eq:kfmeasurementupdate}) refer to estimates of the state variables before and after the measurement update step in the Kalman filter, respectively.
+
+\subsection{Models in the Kalman Filter}
+\label{sec:kfModels}
+The Kalman filter relies on several models that are used to determine estimates of the states for a system. The ACS Kalman filter uses four such models:
+
+\begin{itemize}
+\item System dynamics model,
+\item measurement model,
+\item system noise model,
+\item measurement noise model.
+\end{itemize}
+
+It is important to recognize that the interaction between these four models determines how well the Kalman filter output will represent the true state of the robot.
+
+\subsection{Assumptions in the System Model}
+\label{sec:kfAssumptions}
+It is nearly impossible to develop models that completely capture all of the attributes of most systems, including robots that are expected to operate in many different physical environments, so assumptions are made to simplify the system model. The following assumptions allow the prediction update step to be calculated in a reasonable amount of time using modern computers so that a state estimate is available that the control systems can act upon in real time. The assumptions also allow a single system model to be abstracted and used on multiple similar but different robotic vehicles.
+
+\subsubsection{Low Dynamics Assumption}
+\label{sec:kfLowDynamicsAssumption}
+The first assumption made is that, from one time step to the next, the robot will not be accelerating fast enough in any direction for the sensors on the robot to be able to measure the accelerations. This means that the two velocities, linear and angular, in the state vector will be assumed to be constant. The benefit of this assumption is that there are six fewer states that must be tracked in the state vector, one for acceleration about each axis of the robot.
+
+\subsubsection{Principal Motion Assumption}
+\label{sec:kfPrincipalMotionAssumption}
+The second assumption says that, during a single time step, the position of the robot will only be a function of linear velocity and the orientation of the robot will only be a function of the angular velocity. Figure \ref{fig:packbotaxes} helps in visualizing the effect of rotating the robot about its center and how that will not affect the position of the robot. This assumption allows several terms in the system model to be set to zero.
+
+\subsection{Continuous to Discrete Time Transform}
+\label{sec:kfContToDiscTransform}
+The system model will be developed using continuous time nonlinear differential equations but the Kalman filter on the robots will be running on digital computers so the model will need to be converted to discrete time. In continuous time the system model will be
+
+\begin{align*}
+\dot{x} = Fx
+\end{align*}
+and in discrete time the system model will be
+
+\begin{align*}
+x_{k+1} = \Phi_k x_k.
+\end{align*}
+The transformation from continuous to discrete time obeys an exponential matrix transformation with a Taylor series approximation *** reference??? *** given by
+
+\begin{align*}
+\Phi_k = e^{F\Delta_T} = I + F\Delta_T + \frac{(F\Delta_T)^2}{2!} + \ldots + \frac{(F\Delta_T)^n}{n!}
+\end{align*}
+Using the system model developed in (\ref{eq:kfjacobianresult}) *** not that equation but the linearized version with assumptions applied!!! *** the term $F^2=0$ so all of the higher order terms go to zero and the result is
+
+\begin{align}
+\label{eq:kfContToDiscTransform}
+\Phi_k = I + F\Delta_T
+\end{align}
 
 \subsection{System Dynamics Model}
 \label{sec:dynamics}
@@ -177,7 +228,7 @@ which results in
 \begin{align}
 \label{eq:kfjacobianresult}
 \frac{d}{dt}\left[\begin{array}{c}
-\Delta x \\ \Delta y \\ \Delta z \\ \Delta V \\ \Delta \theta \\ \Delta \phi \\ \Delta \psi \\ \Delta \omega
+x \\ y \\ z \\ V \\ \theta \\ \phi \\ \psi \\ \omega
 \end{array}\right] =
 \underbrace{\left[\begin{array}{c c c c c c c c}
 0 & 0 & 0 & c\psi c\theta & -V c\psi s\theta               & 0                     & -V s\psi c\theta & 0 \\
@@ -190,76 +241,56 @@ which results in
 0 & 0 & 0 & 0             & 0                              & 0                     & 0                & 0
 \end{array}\right]}_{F}
 \left[\begin{array}{c}
-\Delta x \\ \Delta y \\ \Delta z \\ \Delta V \\ \Delta \theta \\ \Delta \phi \\ \Delta \psi \\ \Delta \omega
+x \\ y \\ z \\ V \\ \theta \\ \phi \\ \psi \\ \omega
 \end{array}\right].
 \end{align}
 }
+Applying the principal motion assumption to set the terms relating position and angular velocity as well as orientation and linear velocity to zero in addition to converting from continuous to discrete time to put ones on the diagonal gives
 
-*** Talk about converting from continuous to discrete time, low dynamics assumption and principal motion assumption. ***
+\begin{align}
+\label{eq:kfSystemModelWithAssumptions}
+x_{k+1} = 
+\underbrace{\left[\begin{array}{c c c c c c c c}
+1 & 0 & 0 & c\psi c\theta \Delta_T & 0 & 0 & 0 & 0 \\
+0 & 1 & 0 & s\psi c\theta \Delta_T & 0 & 0 & 0 & 0\\
+0 & 0 & 1 & -s\theta \Delta_T & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 1 & 0 & 0 & -s\phi \Delta_T \\
+0 & 0 & 0 & 0 & 0 & 1 & 0 & t\theta c\phi \Delta_T \\
+0 & 0 & 0 & 0 & 0 & 0 & 1 & c\phi \Delta_T/c\theta \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 1
+\end{array}\right]}_{\Phi_k}
+\left[\begin{array}{c}
+x \\ y \\ z \\ V \\ \theta \\ \phi \\ \psi \\ \omega
+\end{array}\right]_k
+\end{align}
+This is the system model that is used in the prediction update step of the Kalman filter equations to calculate the state of the robot in between measurements.
 
-%\begin{align}
-%\label{eq:kflinearexpansion}
-%\Phi_k = I + F_kdt
-%\end{align}
-% \begin{align}
-% \label{eq:kflinearized}
-% \begin{split}
-% x_{k+1} &= x_k + \cos(\psi_k)*\cos(\theta_k)*\Delta T*V_k \\
-% y_{k+1} &= y_k + \sin(\psi_k)*\cos(\theta_k)*\Delta T*V_k \\
-% z_{k+1} &= z_k - \sin(\theta_k)*\Delta T*V_k \\
-% V_{k+1} &= V_k \\
-% \theta_{k+1} &= \theta_k - \sin(\phi_k)*\Delta T*\omega_k \\
-% \phi_{k+1} &= \phi_k + \tan(\theta_k)*\cos(\phi_k)*\Delta T*\omega_k \\
-% \psi_{k+1} &= \psi_k + \cos(\phi_k)*\Delta T/\cos(\theta_k)*\omega_k \\
-% \omega_{k+1} &= \omega_k.
-% \end{split}
-% \end{align}
-%It is also useful to invoke the low dynamics assumption which says that, for the duration of a single time step, the position estimates are only influenced by the linear velocity (and not the angular velocity) of the robot while the Euler angles are only influenced by the angular velocity of the robot and allows for several terms in the state transition matrix to be set to zero. This assumption is valid when the accelerations of the robot are at or near the level of the noise associated with the sensor measuring accelerations on the robot and is consistent with the operating regime associated with the robots in these experiments. *** This is the low dynamics assumption. Talk about how the low dynamics assumption further simplifies the model from the true physics. Now we have both linearizing and low dynamics making the model simpler and faster to compute but less accurate. These are trade-offs and the learning algorithm attempts to overcome some of the trade-offs by learning a better model given the assumptions made to simplify the calculations by using post-processing. *** This results in the Jacobian of the state transition matrix $F$ (c.f. (\ref{eq:kfF})) with respect to the states and is given in matrix form by *** Re-write this sentence. ***
+\subsection{Measurement Model}
+\label{sec:kfMeasurementModel}
 
-%\begin{align*}
-%\Phi_k = \left[\begin{array}{c c c c c c c c}
-%1 & 0 & 0 & \cos(\psi)*\cos(\theta)*\Delta T & 0 & 0 & 0 & 0 \\
-%0 & 1 & 0 & \sin(\psi)*\cos(\theta)*\Delta T & 0 & 0 & 0 & 0\\
-%0 & 0 & 1 & -\sin(\theta)*\Delta T & 0 & 0 & 0 & 0\\
-%0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
-%0 & 0 & 0 & 0 & 1 & 0 & 0 & -\sin(\phi)*\Delta T \\
-%0 & 0 & 0 & 0 & 0 & 1 & 0 & \tan(\theta)*\cos(\phi)*\Delta T \\
-%0 & 0 & 0 & 0 & 0 & 0 & 1 & \cos(\phi)*\Delta T/\cos(\theta) \\
-%0 & 0 & 0 & 0 & 0 & 0 & 0 & 1
-%\end{array}\right].
-%\end{align*}
-%The process noise matrix $\Gamma$ gives a sense of what the errors in the state dynamics are expected to be and is found as *** $\Gamma$ has inputs, noise, modeling errors, ...? Say what's really in here. ***
-%
-%\begin{align*}
-%\Gamma_k = \left[\begin{array}{c c c c c c c c}
-%\Gamma_{1,1} & \Gamma_{1,2} & \Gamma_{1,3} & 0 & 0 & 0 & 0 & 0 \\
-%\Gamma_{2,1} & \Gamma_{2,2} & \Gamma_{2,3} & 0 & 0 & 0 & 0 & 0 \\
-%\Gamma_{3,1} & \Gamma_{3,2} & \Gamma_{3,3} & 0 & 0 & 0 & 0 & 0 \\
-%0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
-%0 & 0 & 0 & 0 & \cos(\phi) & 0 & \sin(\phi) & 0 \\
-%0 & 0 & 0 & 0 & -\tan(\theta)*\sin(\phi) & 1 & \tan(\theta)*\cos(\phi) & 0 \\
-%0 & 0 & 0 & 0 & -\sin(\phi) / \cos(\theta) & 0 & \cos(\phi)/\cos(\theta) & 0 \\
-%0 & 0 & 0 & 0 & 0 & 0 & 0 & 1
-%\end{array}\right]
-%\end{align*}
-%where the elements of $\Gamma$ are
-%
-%\begin{align*}
-%\Gamma_{1,1} &= \sin(\psi)*\cos(\phi)-\cos(\psi)\sin(\theta)*\sin(\phi) \\
-%\Gamma_{1,2} &= \cos(\psi)*\cos(\theta) \\
-%\Gamma_{1,3} &= \sin(\psi)*\sin(\phi)+\cos(\psi)*\sin(\theta)*\cos(\phi) \\
-%\Gamma_{2,1} &= -\cos(\psi)*\cos(\phi)-\sin(\psi)\sin(\theta)*\sin(\phi) \\
-%\Gamma_{2,2} &= \sin(\psi)*\cos(\theta) \\
-%\Gamma_{2,3} &= -\cos(\psi)*\sin(\phi)-\sin(\psi)*\sin(\theta)*\cos(\phi) \\
-%\Gamma_{3,1} &= -\cos(\theta)*\sin(\phi) \\
-%\Gamma_{3,2} &= -\sin(\theta) \\
-%\Gamma_{3,3} &= \cos(\theta)*\cos(\phi).
-%\end{align*}
-This gives the necessary expressions to calculate the dynamics for the state of the robots in the prediction update step.
+\subsection{Noise Models}
+\label{sec:kfNoiseModels}
 
-\subsection{Determining Heading}
-\label{sec:determineHeading}
-*** Discuss the problem of knowing which way is forward on the robot. Talk about how the KF was originally tuned to work with the majority of time spent indoors where there are lots of big metal things that can interfere with the magnetometers on IMUs so the heading measurement was mostly ignored. The heading was mostly updated using the gyros from and integrating using the system model from (\ref{eq:kfjacobianresult}) as well as using GPS when it was available outdoors. Talk about the issue of heading flipping $180^\circ$ due to GPS heading and how velocity was not taken into account. Talk about adding compass heading and encoder velocity sensors as well as constraining heading jumps and determining the direction of the heading vector based on velocity direction from the encoders. Mention that this is useful not only for estimation but also for the control algorithm developed in Chapter \ref{ch:controls} since that controller can output commands for driving in reverse and when the heading flips the control algorithm would become unstable. Show plots where the heading can be shown to flip when the velocity changes directions. There are four sources of magnetometer errors -- hard iron errors, soft iron errors, scale factor errors and misalignment errors \cite{ParkinsonHeadingEstimation01}. ***
+\subsection{Kalman Gain}
+\label{kfKalmanGain}
+
+\section{Establishing Ground Truth}
+\label{sec:groundtruth}
+Quantitatively evaluating the performance of Kalman filters can be accomplished in several ways, the best of which is to analyze the output of the Kalman filter against ground truth. Although it is nearly impossible to establish ground truth over a large area in practice the closer the measurements are to an absolute position in the world the better. To determine ground truth for the robots in these experiments a differential GPS (DGPS) system was created independently of the sensors on the robot so that very accurate measurements of the robots actual position could be logged and then used in a post-processing step to determine how well the Kalman filter estimate corresponds to ground truth.
+
+The DGPS system consists of a GPS receiver and serial radio that make up the base station and a GPS receiver, serial radio and small computer that make up the roaming station as in Figure \ref{fig:dgps}. The GPS receivers are both Novatel receivers using the Real Time Kinematics algorithm. The base station is located in a static position and is configured to use a fixed position which is compared to what the current position would be if it were not fixed. The difference between the fixed position and the calculated position are used to generate corrections that would put the position of the GPS antenna at the fixed position and those corrections are sent to and applied at the roaming station resulting in a standard deviation of $2$ $cm$ for the position output of the roaming station. The errors are due to the effects of the GPS signal passing through the atmosphere from the satellites to the antenna as well as to multipath effects closer to the ground. The DGPS corrections are used for each satellite that the ground station and the roaming station share in the constellation of satellites they are using in their solution of a position estimate. The DGPS system is bootstrapped to the robot during testing runs to log data at a rate of $20$ $Hz$ and is only used as a tool to improve Kalman filter performance and is not meant to be used during normal operation.
+
+With a highly accurate estimate of ground truth established it becomes possible to not only study the performance of the Kalman filter but to also begin determining whether to focus efforts in improving the autonomous navigation behaviors of the robots via the estimation or controls algorithms.
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.6\textwidth]{images/dgps}
+	\caption{Differential GPS system diagram.}
+	\label{fig:dgps}
+\end{figure}
+
+\section{Identifying Noise Models}
 
 \subsection{Adaptive Extended Kalman Filter}
 \label{sec:adaptiveekf}
@@ -295,22 +326,7 @@ where $y_k$ are actual measurement data and $\hat{y}_k^+ = h_k\hat{x}_k^+$ is ca
 
 It can be seen that the estimates of both covariance matrices employ a running average algorithm and vary the weight of recent measurements and state updates via the adaptation coefficients $L_Q$ and $L_R$. *** Give example here? Explain more? Maybe, but only if I really start to compare it to the learned parameters and want to give a sense of what the differences are between the two methods. ***
 
-\section{Establishing Ground Truth}
-\label{sec:groundtruth}
-Quantitatively evaluating the performance of Kalman filters can be accomplished in several ways, the best of which is to analyze the output of the Kalman filter against ground truth. Although it is nearly impossible to establish ground truth over a large area in practice the closer the measurements are to an absolute position in the world the better. To determine ground truth for the robots in these experiments a differential GPS (DGPS) system was created independently of the sensors on the robot so that very accurate measurements of the robots actual position could be logged and then used in a post-processing step to determine how well the Kalman filter estimate corresponds to ground truth.
-
-The DGPS system consists of a GPS receiver and serial radio that make up the base station and a GPS receiver, serial radio and small computer that make up the roaming station as in Figure \ref{fig:dgps}. The GPS receivers are both Novatel receivers using the Real Time Kinematics algorithm. The base station is located in a static position and is configured to use a fixed position which is compared to what the current position would be if it were not fixed. The difference between the fixed position and the calculated position are used to generate corrections that would put the position of the GPS antenna at the fixed position and those corrections are sent to and applied at the roaming station resulting in a standard deviation of $2$ $cm$ for the position output of the roaming station. The errors are due to the effects of the GPS signal passing through the atmosphere from the satellites to the antenna as well as to multipath effects closer to the ground. The DGPS corrections are used for each satellite that the ground station and the roaming station share in the constellation of satellites they are using in their solution of a position estimate. The DGPS system is bootstrapped to the robot during testing runs to log data at a rate of $20$ $Hz$ and is only used as a tool to improve Kalman filter performance and is not meant to be used during normal operation.
-
-With a highly accurate estimate of ground truth established it becomes possible to not only study the performance of the Kalman filter but to also begin determining whether to focus efforts in improving the autonomous navigation behaviors of the robots via the estimation or controls algorithms.
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=.6\textwidth]{images/dgps}
-	\caption{Differential GPS system diagram.}
-	\label{fig:dgps}
-\end{figure}
-
-\section{Discriminative Training of Kalman Filter Parameters}
+\subsection{Discriminative Training of Kalman Filter Parameters}
 \label{sec:trainingkfparams}
 *** Investigate the difference between adaptive filtering and training. It seems like they accomplish the same thing, namely, convergence to some values for the covariance matrices. Do they use the same metrics? Do they converge to the same covariance matrices? Is it just online vs. offline training? Would a neural network be a good candidate for finding $Q$ and $R$ as well? All of these methods seem to be curve fitting in the multi-dimensional state space. Look at \S3.3 of \cite{Simon06OptimalEstimation} for details on how measurements affect state estimate via recursive least squares. I might also use \cite{Orderud05}. ***
 
@@ -368,8 +384,8 @@ A program was written to implement these algorithms where the major idea is to u
 \label{sec:trainingNumericalAnalysis}
 The training program used here is a brute-force grid-based approach to finding the optimal $Q$ and $R$ matrices for the Kalman filter. The number of matrices attempted can grow to a very large number when all elements of the matrices are varied so an optional algorithm was developed that trains using only diagonal $Q$ and $R$ matrices. This is not an unreasonable restriction as the original $Q$ and $R$ matrices found by hand-tuning or from the output of the adaptive Kalman filter from \S\ref{sec:adaptiveekf} used only diagonal $Q$ and $R$ matrices. The number of possible matrices that are used during training is a function of the number of states used in the Kalman filter and the number of measurements where
 
-\begin{align}
-\label{eq:trainingFullMatrices}
+\begin{align*}
+%\label{eq:trainingFullMatrices}
 \begin{split}
 n_Q &= 3^{n_{states}^2} \\
 n_R &= 3^{n_{measurements}^2} \\
@@ -377,11 +393,11 @@ n_R &= 3^{n_{measurements}^2} \\
 % n_R &= 2^{n_{measurements}^2} \\
 n_{full} &= n_Q \times n_R
 \end{split}
-\end{align}
+\end{align*}
 for varying all elements of $Q$ and $R$ and
 
-\begin{align}
-\label{eq:trainingDiagonalMatrices}
+\begin{align*}
+%\label{eq:trainingDiagonalMatrices}
 \begin{split}
 % n_Q &= 2^{n_{states}} \\
 % n_R &= 2^{n_{measurements}} \\
@@ -389,7 +405,7 @@ n_Q &= 3^{n_{states}} \\
 n_R &= 3^{n_{measurements}} \\
 n_{diagonal} &= n_Q \times n_R
 \end{split}
-\end{align}
+\end{align*}
 for varying only the diagonal elements of $Q$ and $R$. During the experiments conducted the number of states is $8$ and the number of measurements is $5$ which gives
 
 \begin{align*}
@@ -417,8 +433,8 @@ n_{diagonal} &= n_Q \times n_R = 1594323
 \end{align*}
 per grid level when varying only the diagonal elements of $Q$ and $R$. The ratio is
 
-\begin{align}
-\label{eq:trainingRatio}
+\begin{align*}
+%\label{eq:trainingRatio}
 \begin{split}
 r &= \frac{n_{full}}{n_{diagonal}} \\
 % &= \frac{2^{n_{states}^2} \times 2^{n_{measurements}^2}}{2^{n_{states}} \times 2^{n_{measurements}}} \\
@@ -428,8 +444,25 @@ r &= \frac{n_{full}}{n_{diagonal}} \\
 &= 3^{n_{states}} \times 3^{n_{measurements}} \\
 &= 3^8 \times 3^5 = 1594323
 \end{split}
-\end{align}
+\end{align*}
 which means that it will take $1,594,323$ times longer to run the training program varying all of the matrix elements compared to only varying the diagonal elements. This can make the difference between finding optimal $Q$ and $R$ matrices and not finding them with the amount of states and measurements used in these experiments.
+
+\section{Determining Heading}
+\label{sec:determineHeading}
+*** Discuss the problem of knowing which way is forward on the robot. Talk about how the KF was originally tuned to work with the majority of time spent indoors where there are lots of big metal things that can interfere with the magnetometers on IMUs so the heading measurement was mostly ignored. The heading was mostly updated using the gyros from and integrating using the system model from (\ref{eq:kfjacobianresult}) as well as using GPS when it was available outdoors. Talk about the issue of heading flipping $180^\circ$ due to GPS heading and how velocity was not taken into account. Talk about adding compass heading and encoder velocity sensors as well as constraining heading jumps and determining the direction of the heading vector based on velocity direction from the encoders. Mention that this is useful not only for estimation but also for the control algorithm developed in Chapter \ref{ch:controls} since that controller can output commands for driving in reverse and when the heading flips the control algorithm would become unstable. Show plots where the heading can be shown to flip when the velocity changes directions. There are four sources of magnetometer errors -- hard iron errors, soft iron errors, scale factor errors and misalignment errors \cite{ParkinsonHeadingEstimation01}. ***
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.8\textwidth]{images/pbDataReverseHeading}
+	\caption{Heading and Velocity Reversed}
+	\label{fig:pbDataReverseHeading}
+\end{figure}
+
+*** Figure \ref{fig:pbDataReverseHeading} used encoders and GPS for linear velocity measurements, Microstrain and GPS for heading measurements and Microstrain for yaw rate measurement. The Kalman filter output for heading and the GPS velocity measurements can be seen to flip $180^\circ$ when the robot starts to drive in reverse but the encoders accurately measure the direction of the velocity vector. During the time that the robot is driving in reverse the yaw rate stays slightly negative so the yaw value should be decreasing slightly. The robot drives in reverse from about $65 s - 76s$ as noted in the image. ***
+
+\subsection{Additional Sensors}
+\label{sec:kfAdditionalSensors}
+*** Talk about adding the compass and using encoder data. ***
 
 \section{Identifty IMU Parameters}
 \label{sec:identifyimuparams}
