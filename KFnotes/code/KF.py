@@ -29,10 +29,10 @@ Yaw2Drift = 0
 
 # Set up ground truth for state variables and sensor measurements.
 # The state vector is x = [X Y Z V theta(pitch) phi(roll) psi(yaw) w(ang rate)]
-x = numpy.zeros((N+2,8))
-y = numpy.zeros((N+2,9))
-psi1 = numpy.zeros((N+2,1))
-psi2 = numpy.zeros((N+2,1))
+x = numpy.zeros((N+1,8))
+y = numpy.zeros((N+1,9))
+psi1 = numpy.zeros((N+1,1))
+psi2 = numpy.zeros((N+1,1))
 R = 100 # Path is a circle, radius R.
 angle = 0
 for i in range(0,N+1):
@@ -91,7 +91,7 @@ Pp = diag(P)
 Kk = numpy.zeros((8*(N-1),9))
 
 # Run the KF equations.
-for i in range(0,N-1):
+for i in range(0,N):
     # State transition matrix based on dynamics.
     F = array([ [1,0,0,cos(xh[7])*cos(xh[5]),0,0,0,0],
                 [0,1,0,sin(xh[7])*cos(xh[5]),0,0,0,0],
