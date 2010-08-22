@@ -2,14 +2,14 @@
 
 # Kalman filter example program for differential drive robots.
 # Perfect measurements are available for all the states except for yaw.
-# Yaw has three sensors that have adjustable amounts of noise and drift.
+# Yaw has two sensors that have adjustable amounts of noise and drift.
 # Output is RMS errors for position and heading plus plots showing some of the state variables.
 
 from scipy import *
 import numpy
 import pylab
 
-pngres = '-r600'
+pngres = 600
 saveimages = 0
 
 # Number of time steps.
@@ -85,7 +85,7 @@ R[7,7] = Yaw2Noise
 # Initialization of state estimate and filter covariance.
 xh = x[0,]
 P = Q
-P[6,6] = max(Yaw1Noise,Yaw2Noise)
+P[6,6] = max(2000*Yaw1Noise,2000*Yaw2Noise)
 xhat = xh
 Pp = diag(P)
 Kk = numpy.zeros((8*(N-1),9))
@@ -121,35 +121,41 @@ pylab.figure(1)
 lyaw =  pylab.plot(x[:,6])
 lpsi1 = pylab.plot(psi1)
 lpsi2 = pylab.plot(psi2)
-lxhat = pylab.plot(xhat[:,6])
+lxhat = pylab.plot(xhat[:,6], 'kx')
 pylab.title('Yaw')
 pylab.xlabel('Time (s)')
 pylab.ylabel('Yaw (radians)')
 pylab.legend((lyaw, lpsi1, lpsi2, lxhat), ('Ground Truth', 'Sensor 1', 'Sensor 2', 'KF'))
 pylab.axis('equal')
+if saveimages:
+    pylab.savefig("../images/kfSimYaw.png", dpi=pngres)
 
 # Plot the yaw estimate zoomed in.
 pylab.figure(2)
 lyaw = pylab.plot(x[:,6])
 lpsi1 = pylab.plot(psi1)
 lpsi2 = pylab.plot(psi2)
-lxhat = pylab.plot(xhat[:,6])
+lxhat = pylab.plot(xhat[:,6], 'kx')
 pylab.title('Yaw')
 pylab.xlabel('Time (s)')
 pylab.ylabel('Yaw (radians)')
 pylab.legend((lyaw, lpsi1, lpsi2, lxhat), ('Ground Truth', 'Sensor 1', 'Sensor 2', 'KF'))
 pylab.axis([55.5, 61, 0.5, 4])
+if saveimages:
+    pylab.savefig("../images/kfSimYawZoom.png", dpi=pngres)
 
 # Plot the actual and estimated position.
 pylab.figure(3)
 lpos = pylab.plot(x[:,0], x[:,1])
-lposhat = pylab.plot(xhat[:,0], xhat[:,1])
+lposhat = pylab.plot(xhat[:,0], xhat[:,1], 'kx')
 pylab.title('Position')
 pylab.xlabel('X (m)')
 pylab.ylabel('Y (m)')
 pylab.legend((lpos, lposhat), ('Ground Truth','KF'))
 pylab.axis('equal')
 pylab.show()
+if saveimages:
+    pylab.savefig("../images/kfSimPosition.png", dpi=pngres)
 
 # Calculate the RMS errors.
 epos = 0
