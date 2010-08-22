@@ -2,7 +2,7 @@
 % Perfect measurements are available for all the states except for yaw.
 % Yaw has three sensors that have adjustable amounts of noise and drift.
 % Output is RMS errors for position and heading plus plots showing some of the state variables.
-clc; clear all;
+clear all;
 pngres = '-r600';
 saveimages = 0;
 
@@ -11,9 +11,8 @@ N = 100;
 
 % Sensor behavior variables. At least one Noise value must be > 0 else the inverse in the gain
 % calculation is ill-conditioned.
-% 0.01744 radians = 1 degree, 0.08722 radians = 5 degrees, 0.1745 radians = 10 degrees.
-Yaw1Noise = 0.01744;
-Yaw2Noise = 0.08722;
+Yaw1Noise = 1 * pi / 180;
+Yaw2Noise = 5 * pi / 180;
 Yaw1Drift = 0;
 Yaw2Drift = 0;
 
@@ -36,7 +35,7 @@ for i = 1:N+1
     xi(5) = 0;
     xi(6) = 0;
     xi(7) = -1 * atan2(xi(2),xi(1));
-    xi(8) = pi/2/(2*pi*R/4)/xi(4);
+    xi(8) = 4*xi(4)/R;
     x = [x; xi];
     angle = angle + 2*pi/N;
     
@@ -109,8 +108,8 @@ hold on;
 plot(x(:,7), 'g');
 plot(psi1, 'b');
 plot(psi2, 'r');
-plot(xhat(7,:), 'k.');
-%errorbar(xhat(7,:), Pp(7,:), 'k.');
+plot(xhat(7,:), 'kx');
+%errorbar(xhat(7,:), Pp(7,:), 'kx');
 title('Yaw');
 xlabel('Time (s)');
 ylabel('Yaw (radians)');
@@ -127,8 +126,8 @@ hold on;
 plot(x(:,7), 'g');
 plot(psi1, 'b');
 plot(psi2, 'r');
-plot(xhat(7,:), 'k.');
-%errorbar(xhat(7,:), Pp(7,:), 'k.');
+plot(xhat(7,:), 'kx');
+%errorbar(xhat(7,:), Pp(7,:), 'kx');
 title('Yaw');
 xlabel('Time (s)');
 ylabel('Yaw (radians)');
@@ -144,7 +143,7 @@ end
 figure(3)
 hold on;
 plot(x(:,1), x(:,2), 'g');
-plot(xhat(1,:), xhat(2,:), 'k');
+plot(xhat(1,:), xhat(2,:), 'kx');
 title('Position');
 xlabel('X (m)');
 ylabel('Y (m)');
