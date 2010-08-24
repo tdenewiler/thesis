@@ -141,16 +141,16 @@ and in discrete time the system model will be
 \begin{align*}
 x_{k+1} = \Phi_k x_k.
 \end{align*}
-The transformation from continuous to discrete time obeys an exponential matrix transformation with a Taylor series approximation *** reference??? *** given by
+The transformation from continuous to discrete time obeys an exponential matrix transformation with a Taylor series approximation \cite{Gopal93} given by
 
 \begin{align*}
 \Phi_k = e^{F\Delta_T} = I + F\Delta_T + \frac{(F\Delta_T)^2}{2!} + \ldots + \frac{(F\Delta_T)^n}{n!}
 \end{align*}
-Using the system model developed in (\ref{eq:kfjacobianresult}) *** not that equation but the linearized version with assumptions applied!!! *** the term $F^2=0$ so all of the higher order terms go to zero and the result is
+A first order Taylor series approximation is good enough if the nonlinearities in the system are small enough and in the case of the robots used in these experiments that is assumed to be the case so the transformation used is simply
 
 \begin{align}
 \label{eq:kfContToDiscTransform}
-\Phi_k = I + F\Delta_T
+\Phi_k = I + F\Delta_T.
 \end{align}
 
 \subsection{System Dynamics Model}
@@ -268,12 +268,59 @@ as the system model that is used in the prediction update step of the Kalman fil
 
 \subsection{Measurement Model}
 \label{sec:kfMeasurementModel}
+The measurement model converts sensor data to the state variable coordinate system and for a standard sensor suite is by far the simplest model used in the ACS Kalman filter. The idea is that, for a sensor that measures one of the states, the data that is output by the sensor has to have the same units and be in the same range as the state variable. This is best illustrated by an example.
+
+Suppose a compass and an IMU both measure the yaw state variable and the compass output is $0 - 360^\circ$ whereas the IMU output is $0 - 2\pi~rads$ and the yaw state in the Kalman filter is tracked in the range $0 - 2\pi$. If, for one time step, both compass and IMU measurements are available to be incorporated into the Kalman filter then the measurement update step from (\ref{eq:kfmeasurementupdate}) is run and the $H$ matrix is
+
+\begin{align*}
+H = \left[\begin{array}{c c c c c c c c}
+0 & 0 & 0 & 0 & 0 & 0 & \frac{\pi}{180^\circ} & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 1 & 0
+\end{array}\right].
+\end{align*}
+
+There is one row per sensor measurement and one column per state in the measurement matrix so in this example $H$ is a $2\times8$ matrix. The compass measurement corresponds to the first row and the data is converted from degrees to radians. The IMU measurement corresponds to the second row and, since the units of the sensor data are the same as the units of the state variable, the data is not transformed at all.
+
+In the case when there is a single sensor measuring each of the states and those sensors output data that is in the correct units and range of the state variables then $H=I$.
 
 \subsection{Noise Models}
 \label{sec:kfNoiseModels}
+The noise models attempt to estimate noise coming in from the terms in the equations
+
+\begin{align*}
+\begin{split}
+x_{k+1} &= \Phi_kx_k + w_k \\
+y_k &= H_kx_k + v_k
+\end{split}
+\end{align*}
+
+The Kalman filter uses two different noise models, one for system noise $w_k$ and one for measurement noise $v_k$. The system noise model attempts to capture all of the effects due to an imperfect system model, linearization of the model, the low dynamics assumption and the principal motion assumption. The measurement noise model tries to compensate for sensors that do not model the environment perfectly.
+
+Noise in the Kalman filter is assumed to be zero mean with a Gaussian distribution. The models are set up as covariance matrices that describe the Gaussian distribution of each of the noise terms for either the states or the sensors where the state noise model is given by $Q$ and the measurement noise model is given by $R$.
 
 \subsection{Kalman Gain}
 \label{kfKalmanGain}
+The Kalman gain matrix is used in the measurement update step (\ref{eq:kfmeasurementupdate}) and essentially weights whether the state estimate will rely more on the system model or the measurements and is given by
+
+\begin{align*}
+K_k &= P_k^-H_k^T\left[H_kP_k^-H_k^T + R_k\right]^{-1}
+\end{align*}
+
+where
+
+\begin{align*}
+P_{k+1}^- &= \Phi_kP_k^+\Phi_k^T + Q_k.
+\end{align*}
+
+From these equations it can be seen that all four models used in the Kalman filter are used to calculate the Kalman gain matrix since $\Phi$, $Q$, $H$ and $R$ are all present. In the measurement update step the Kalman gain is multiplied by the difference between the measured values $y_k$ of the state and the expected values of those measurements based on the system model $\hat{y}_k$ where $\hat{y}_k = H\hat{x}_k^-$ is what the sensors would report if there were no noise in the measurements and the system model were perfect. The state estimate from the measurement update step is
+
+\begin{align*}
+\hat{x}_k^+ &= \hat{x}_k^- + K_k\left[y_k - H_k\hat{x}_k^-\right].
+\end{align*}
+
+If the sensor data matches the system model prediction then the term $y_k-H_k\hat{x}_k^-=0$ and the Kalman gain is ignored but that rarely, if ever, happens in practice. The interesting question then becomes whether to trust the noisy sensors or the imperfect system model to determine the state estimate. A large gain value will adjust the previous estimate from the prediction update step by a larger amount which means that the sensor data is weighted more heavily than the system model. Conversely a small gain value will cause the estimate from the measurement update step to trust the system model more than the sensor data. It is important to note that the Kalman gain matrix $K$ can have large values for some states (and sensors) and small values for other states (and sensors).
+
+As discussed in \S\ref{sec:kfMeasurementModel} the measurement model is fairly simple so the Kalman gain is really a function of the system model and the noise models. If the system model is a very good approximation to the real system then the system noise model should reflect that by having small values in $Q$ and if the sensors are very good then the measurement noise model will have small values in $R$. Thus the Kalman gain matrix tends to take on values relative to the ratio of the elements of the $Q$ and $R$ noise models. From this it can be seen that developing accurate noise models is very important to the performance of the Kalman filter. When the noise models are not set up correctly then the state estimate covariance $P_K$ begins to grow larger.
 
 \section{Establishing Ground Truth}
 \label{sec:groundtruth}
