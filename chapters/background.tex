@@ -66,3 +66,7 @@ The GPS receiver in the PackBot payload by is a \href{http://www.novatel.com/pro
 \subsection{Compass}
 \label{sec:bgCompass}
 Originally this sensor was not used on the PackBot but after initial testing it was determined that the heading reported by the Microstrain 3DM-GX1 was not very reliable and a \href{http://www.oceanserver-store.com/os3axdico3.html}{Ocean Server } compass was added to the PackBot payload bay.
+
+\subsection{Wheel Encoders}
+\label{sec:bgEncoders}
+The PackBot is manufactured with wheel encoders that are read by the main PackBot computer and used to calculate a linear velocity and angular velocity that can be read by the payload computer when communicating with the main PackBot computer. Initially the wheel encoder data was not being used for backwards compatibility with other small UGVs that do not have wheel encoders but the systems that do not have wheel encoders are no longer used by EOD groups so that data has been incorporated into the sensor suite used by the algorithms in this thesis.
