@@ -144,7 +144,7 @@ The transformation from continuous to discrete time obeys an exponential matrix 
 \begin{align*}
 \Phi_k = e^{F\Delta_T} = I + F\Delta_T + \frac{(F\Delta_T)^2}{2!} + \ldots + \frac{(F\Delta_T)^n}{n!}
 \end{align*}
-A first order Taylor series approximation is good enough if the nonlinearities in the system are small enough and in the case of the robots used in these experiments that is assumed to be the case so the transformation used is simply
+A first order Taylor series approximation is good enough when $\Delta_T$ is small and if the nonlinearities in the system are small enough. In the case of the robots used in these experiments that is assumed to be the case so the transformation used is simply
 
 \begin{align}
 \label{eq:kfContToDiscTransform}
@@ -295,7 +295,7 @@ y_k &= H_kx_k + v_k.
 
 The Kalman filter uses two different noise models, one for system noise $w_k$ and one for measurement noise $v_k$. The system noise model attempts to capture all of the effects due to an imperfect system model, linearization of the model, the low dynamics assumption and the principal motion assumption. The measurement noise model tries to compensate for sensors that do not model the environment perfectly.
 
-Noise in the Kalman filter is assumed to be zero mean with a Gaussian distribution. The models are set up as covariance matrices that describe the Gaussian distribution of each of the noise terms for either the states or the sensors where the state noise model is given by $Q$ and the measurement noise model is given by $R$. When the noise in the system is \textit{not} Gaussian then the Kalman filter is the best linear estimator and performance will degrade gracefully as non-Gaussian noise enters the system \cite{Simon10}.
+Noise in the Kalman filter is assumed to be zero mean with a Gaussian distribution. The models are set up as covariance matrices that describe the Gaussian distribution of each of the noise terms for either the states or the sensors where the state noise model is given by $Q$ and the measurement noise model is given by $R$. When the noise in the system is \textit{not} Gaussian then the Kalman filter is the best linear estimator and performance will degrade gracefully as non-Gaussian noise enters the system \cite{Simon10}. As noted in \cite{AndersonMoore79} when dropping the Gaussian assumption all of the Kalman filter equations will propagate exactly the same for the mean and covariance of the states and measurements except that any information about higher order moments is lost and the probability density functions cannot be reproduced. This means that the Gaussian assumption is valid when the higher order moments do not have a large effect on the noise distributions. When the higher order moments are significant then the Kalman filter performance will degrade gracefully and still be the optimal linear filter.
 
 \subsection{Kalman Gain}
 \label{kfKalmanGain}
