@@ -1,6 +1,5 @@
 \chapter{Future Work}
 \label{ch:futurework}
-*** Suggest avenues of study for future work. ***
 
 \begin{enumerate}
 \item Use the learning algorithm for indoor robots as there is no reason why a robot needs to have GPS to benefit from using the DGPS system for training the $Q$ and $R$ matrices in the EKF. A test area would need to be set up outdoors so that DGPS can be used and the normal sensors also work by bouncing off walls and what not but the DGPS ground truth position can be converted to the local coordinate system and used to generate an error metric for the EKF position output.
@@ -10,4 +9,5 @@
 \item Instead of the naive, brute force method of trying all the $Q$ and $R$ matrices use a better machine learning algorithm. This could either be a neural network using FANN or a gradient descent approach that leads the elements of $Q$ and $R$ in the proper direction when minimizing the derivative of the errors computed using either the residual or the prediction error metrics. It would be great to try all of the different methods, have theory showing which ones should work better and then have data to show how well the results match with the theory. Some analysis of which methods work best and under what circumstances would be hugely beneficial, not to mention interesting.
 \item Try LQR/LQG controllers and compare them.
 \item Log input and output data from the robots and apply the general realization algorithm \cite{deCallafonGRA08} to generate a state space model. Then use that model with LQG.
+\item Mention that the parameter training of \cite{Abbeel05discriminativetraining} was recently used by \cite{SakaiKuroda10}.
 \end{enumerate}
