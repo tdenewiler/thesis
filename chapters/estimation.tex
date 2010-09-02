@@ -504,12 +504,19 @@ which means that it will take $1,594,323$ times longer to run the training progr
 
 \begin{figure}[ht!]
 	\centering
+	\includegraphics[width=.8\textwidth]{images/GEHeadingReverse2}
+	\caption{Route Driven by PackBot}
+	\label{fig:GEHeadingReverse}
+\end{figure}
+
+\begin{figure}[ht!]
+	\centering
 	\includegraphics[width=.8\textwidth]{images/pbDataReverseHeading}
 	\caption{Heading and Velocity Reversed}
 	\label{fig:pbDataReverseHeading}
 \end{figure}
 
-*** Figure \ref{fig:pbDataReverseHeading} used encoders and GPS for linear velocity measurements, Microstrain and GPS for heading measurements and Microstrain for yaw rate measurement. The Kalman filter output for heading and the GPS velocity measurements can be seen to flip $180^\circ$ when the robot starts to drive in reverse but the encoders accurately measure the direction of the velocity vector. During the time that the robot is driving in reverse the yaw rate stays slightly negative so the yaw value should be decreasing slightly. The robot drives in reverse from about $65 s - 76s$ as noted in the image. ***
+*** Figures \ref{fig:pbDataReverseHeading} and \ref{fig:GEHeadingReverse} used encoders and GPS for linear velocity measurements, Microstrain and GPS for heading measurements and Microstrain for yaw rate measurement. The Kalman filter output for heading and the GPS velocity measurements can be seen to flip $180^\circ$ when the robot starts to drive in reverse but the encoders accurately measure the direction of the velocity vector. During the time that the robot is driving in reverse the yaw rate stays slightly negative so the yaw value should be decreasing slightly. The robot drives in reverse from about $65 s - 76s$ as noted in the image. ***
 
 \subsection{Additional Sensors}
 \label{sec:kfAdditionalSensors}
