@@ -19,7 +19,6 @@ The Kalman filter is a method to merge physical models and sensor data to come u
 \section{State Space Models}
 \label{sec:statespacemodels}
 Kalman filters and modern control systems (see Chapter \ref{ch:controls}) use the idea of a multi-dimensional state space to encapsulate all of the relevant information that is known about a system. In the case of robots like the ones used in these experiments the states of interest are position, orientation and linear and angular velocities. In general a system is described by nonlinear equations that describe how the state variables change through time and how measurements of the system are related to the states as given by
-
 \begin{align}
 \label{eq:statespace}
 \begin{split}
@@ -31,7 +30,6 @@ Kalman filters and modern control systems (see Chapter \ref{ch:controls}) use th
 The state variables are given in vector form by $x$ and the sensor measurements are contained in the vector $y$. The state space equations are a means of representing with compact notations how the state of a system changes through time based on the initial state of the system and the inputs to the system, $u$, which allows the trajectory (or motion through time) to be calculated. The inputs are assumed to include any external forces applied to the system as well as actuation provided by the system itself. The function $h(x,t)$ transforms the sensor measurements into state variables which is important when the units of a sensor are not the same as the units of the state.
 
 For the robots used in these experiments the state vector used follows that found in \cite{Kelly_1994_338}, \cite{Kelly_1994_333} where the state variables are
-
 \begin{align*}
 x_k = \left[\begin{array}{c c c c c c c c} x & y & z & V & \theta & \phi & \psi & \omega \end{array}\right]^T.
 \end{align*}
@@ -56,7 +54,6 @@ The ACS Kalman filter is typical of all Kalman filters in that it consists of a 
 \end{figure}
 
 The Kalman filters that run on the small UGVs used in these experiments run on digital computers and are necessarily used in discrete time rather than continuous time because of the nature of computers. Additionally, the standard Kalman filter equations make the assumption that the system and measurement models are linear. From \cite{Kelly_1994_338}, \cite{Simon06OptimalEstimation} the discretized and linearized versions of (\ref{eq:statespace}) mean that the state space equations are represented as
-
 \begin{align}
 \label{eq:kfstatemodel}
 \begin{split}
@@ -67,7 +64,6 @@ y_k &= H_kx_k + v_k
 where $\Phi_k$ is the state transition matrix relating the state at time $k+1$ to time $k$ in the absence of inputs or noise and models the system dynamics, $w_k$ is system noise due to an imperfect model, $H_k$ is the measurement matrix which relates the measurements to the state vector and $v_k$ is the sensor measurement noise. The Kalman filter uses an unforced model so all inputs are considered disturbances to the steady-state dynamics. This means that $w_k$ includes noise, modeling errors, external forces and actuator forces.
 
 The prediction update step marches the system dynamics forward in time using the equations
-
 \begin{align}
 \label{eq:kfpredictionupdate}
 \begin{split}
@@ -76,7 +72,6 @@ P_{k+1}^- &= \Phi_kP_k^+\Phi_k^T + Q_k
 \end{split}
 \end{align}
 and the measurement update step provides feedback from sensor data using the equations
-
 \begin{align}
 \label{eq:kfmeasurementupdate}
 \begin{split}
@@ -92,7 +87,6 @@ The variables $\hat{x}_k^-$ in (\ref{eq:kfpredictionupdate}) and $\hat{x}_k^+$ i
 \subsection{Models in the Kalman Filter}
 \label{sec:kfModels}
 The Kalman filter relies on several models that are used to determine estimates of the states for a system. The ACS Kalman filter uses four such models:
-
 \begin{itemize}
 \item System dynamics model $\Phi$,
 \item measurement model $H$,
@@ -117,22 +111,18 @@ The second assumption says that, during a single time step, the position of the 
 \subsection{Continuous to Discrete Time Transform}
 \label{sec:kfContToDiscTransform}
 The system model will be developed using continuous time nonlinear differential equations but the Kalman filter on the robots will be running on digital computers so the model will need to be converted to discrete time. In continuous time the system model will be
-
 \begin{align*}
 \dot{x} = Fx
 \end{align*}
 and in discrete time the system model will be
-
 \begin{align*}
 x_{k+1} = \Phi_k x_k.
 \end{align*}
 The transformation from continuous to discrete time obeys an exponential matrix transformation with a Taylor series approximation \cite{Gopal93} given by
-
 \begin{align*}
 \Phi_k = e^{F\Delta_T} = I + F\Delta_T + \frac{(F\Delta_T)^2}{2!} + \ldots + \frac{(F\Delta_T)^n}{n!}
 \end{align*}
 A first order Taylor series approximation is good enough when $\Delta_T$ is small and if the nonlinearities in the system are small enough. In the case of the robots used in these experiments that is assumed to be the case so the transformation used is simply
-
 \begin{align}
 \label{eq:kfContToDiscTransform}
 \Phi_k = I + F\Delta_T.
@@ -143,7 +133,6 @@ A first order Taylor series approximation is good enough when $\Delta_T$ is smal
 A model of the system dynamics is necessary in order to propagate the state of the system forward in time in the absence of measurements. It is impossible to create a perfect model of the system and even a nearly perfect model of the system will likely be too complex to compute fast enough for it to be useful. The best result that is typically available is a model with a large amount of assumptions where the most important aspects of the dynamics are captured in the model.
 
 A nonlinear, continuous time model based on robot kinematics is developed in the body frame coordinate system using the states from section \ref{sec:statespacemodels} is given by
-
 \begin{align}
 \label{eq:kfnonlineardynamics}
 \begin{split}
@@ -188,7 +177,6 @@ The basic Kalman filter makes the assumption that both the system model containe
 \end{figure}
 
 The nonlinear state dynamics were described in (\ref{eq:kfnonlineardynamics}). The Jacobian of that state vector equation is calculated using
-
 %{\tiny
 \begin{align*}
 \frac{d}{dt}\left[\begin{array}{c}
@@ -210,7 +198,6 @@ x \\ y \\ z \\ V \\ \theta \\ \phi \\ \psi \\ \omega
 \end{align*}
 %}
 which results in
-
 %{\scriptsize
 {\footnotesize
 \begin{align}
@@ -234,7 +221,6 @@ x \\ y \\ z \\ V \\ \theta \\ \phi \\ \psi \\ \omega
 \end{align}
 }
 Applying the principal motion assumption to set the terms relating position and angular velocity as well as orientation and linear velocity to zero in addition to converting from continuous to discrete time to put ones on the diagonal gives
-
 \begin{align}
 \label{eq:kfSystemModelWithAssumptions}
 x_{k+1} = 
@@ -259,7 +245,6 @@ as the system model that is used in the prediction update step of the Kalman fil
 The measurement model converts sensor data to the state variable coordinate system and for a standard sensor suite is by far the simplest model used in the ACS Kalman filter. The idea is that, for a sensor that measures one of the states, the data that is output by the sensor has to have the same units and be in the same range as the state variable. This is best illustrated by an example.
 
 Suppose a compass and an IMU both measure the yaw state variable and the compass output is $0 - 360^\circ$ whereas the IMU output is $0 - 2\pi~rads$ and the yaw state in the Kalman filter is tracked in the range $0 - 2\pi ~ rads$. If, for one time step, both compass and IMU measurements are available to be incorporated into the Kalman filter then the measurement update step from (\ref{eq:kfmeasurementupdate}) is run and the $H$ matrix is
-
 \begin{align*}
 H = \left[\begin{array}{c c c c c c c c}
 0 & 0 & 0 & 0 & 0 & 0 & \frac{\pi}{180^\circ} & 0 \\
@@ -275,7 +260,6 @@ In the case when there is a single sensor measuring each of the states and those
 \subsection{Noise Models}
 \label{sec:kfNoiseModels}
 The noise models attempt to estimate noise coming in from the terms in the equations
-
 \begin{align*}
 \begin{split}
 x_{k+1} &= \Phi_kx_k + w_k \\
@@ -290,19 +274,15 @@ Noise in the Kalman filter is assumed to be zero mean with a Gaussian distributi
 \subsection{Kalman Gain}
 \label{kfKalmanGain}
 The Kalman gain matrix is used in the measurement update step (\ref{eq:kfmeasurementupdate}) and essentially weights whether the state estimate will rely more on the system model or the measurements and is given by
-
 \begin{align*}
 K_k &= P_k^-H_k^T\left[H_kP_k^-H_k^T + R_k\right]^{-1}
 \end{align*}
-
 where
-
 \begin{align*}
 P_{k+1}^- &= \Phi_kP_k^+\Phi_k^T + Q_k.
 \end{align*}
 
 From these equations it can be seen that all four models used in the Kalman filter are used to calculate the Kalman gain matrix since $\Phi$, $Q$, $H$ and $R$ are all present. In the measurement update step the Kalman gain is multiplied by the difference between the measured values $y_k$ of the state and the expected values of those measurements based on the system model $\hat{y}_k$ where $\hat{y}_k = H\hat{x}_k^-$ is what the sensors would report if there were no noise in the measurements and the system model were perfect. The state estimate from the measurement update step is
-
 \begin{align*}
 \hat{x}_k^+ &= \hat{x}_k^- + K_k\left[y_k - H_k\hat{x}_k^-\right].
 \end{align*}
@@ -339,26 +319,22 @@ Attempting to determine the proper values for the noise models $Q$ in (\ref{eq:k
 In order to improve the noise models the ACS Kalman filter has been implemented with an adaptive scheme to update the covariance matrices $Q$ and $R$ in real time as the robot moves around and sensor measurements are taken into account to help overcome the time intensive nature of determining these matrices and add a degree of robustness to the state estimate \cite{Sights06}, \cite{Mehra72}, \cite{Busse03adaptiveEKF}. Estimates of $Q$ and $R$ are updated at alternating time steps in the EKF. Recall from (\ref{eq:kfpredictionupdate}) and (\ref{eq:kfmeasurementupdate}) that $\hat{x}_k^+$ and $P_k^+$ are known after the measurement update step and $\hat{x}_k^-$ and $P_k^-$ are known after the system update step in the Kalman filter.
 
 As shown in \cite{Busse03adaptiveEKF} the first step is to calculate $Q^\star$ using
-
 \begin{align*}
 % \label{eq:qstar}
 Q^\star = \left(\hat{x}_k^+-\hat{x}_k^-\right)\left(\hat{x}_k^+-\hat{x}_k^-\right)^T + P_k^- - P_k^+ - \hat{Q}_k^-.
 \end{align*}
 Then the estimate of $Q$ is updated such that
-
 \begin{align}
 \label{eq:qadapt}
 \hat{Q}_k^+ = \hat{Q}_k^- + \frac{1}{L_Q}\left(Q^\star-\hat{Q}_k^-\right).
 \end{align}
 
 Next $R^\star$ is calculated using
-
 \begin{align*}
 % \label{eq:rstar}
 R^\star = \left(y_k-\hat{y}_k^+\right)\left(y_k-\hat{y}_k^+\right)^T - H_kP_k^+H_k^T
 \end{align*}
 where $y_k$ are actual measurement data and $\hat{y}_k^+ = h_k\hat{x}_k^+$ is calculated after the measurement update step. Then the estimate of $R$ is updated such that
-
 \begin{align}
 \label{eq:radapt}
 \hat{R}_k^+ = \hat{R}_k^- + \frac{1}{L_R}\left(R^\star-\hat{R}_k^-\right).
@@ -372,29 +348,24 @@ It can be seen that the estimates of both covariance matrices employ a running a
 \cite{Abbeel-RSS-05} describes a method to automatically learn what the covariance matrices $Q$ and $R$ should be that is an alternative, offline approach to the adaptive EKF from section \ref{sec:adaptiveekf}. However, when used in conjunction with the adaptive EKF scheme this could allow for faster convergence times when the robots are started and for smaller ranges for the adaptation coefficients $L_Q$ and $L_R$ in (\ref{eq:qadapt}) and (\ref{eq:radapt}). This method takes advantage of ground truth measurements obtained using a DGPS system like that described in section \ref{sec:groundtruth}. Note that in the following expressions the term $h(\mu_t)$ is the position output by the Kalman filter and $y$ is the DGPS position output so the goal is to find values of $Q$ and $R$ that minimizes the difference between the output of the Kalman filter and DGPS ground truth.
 
 There are several metrics that can be applied to the data with the two most relevant metrics being the residual error metric and the prediction likelihood error metric. The residual prediction error is used to estimate $Q$ and $R$ using
-
 \begin{align*}
 \left<R_{\text{res}},Q_{\text{res}}\right> = \argmin_{R,Q}\sum_{t=0}^T ||y_t-h(\mu_t)||_2^2.
 \end{align*}
 When the state covariance matrix $P$ is \textit{not} a multiple of the identity matrix $I$ then this metric is
-
 \begin{align*}
 \left<R_{\text{res}},Q_{\text{res}}\right> = \argmin_{R,Q}\sum_{t=0}^T (y_t-h(\mu_t))^TP^{-1}(y_t-h(\mu_t)).
 \end{align*}
 The error metric used for the residual prediction error method is
-
 \begin{align}
 \label{eq:kftrainingres}
 e = \left(\frac{1}{T}\sum_{t=1}^T ||h(\mu_t)-y_t||^2\right)^{1/2}.
 \end{align}
 
 The prediction likelihood method use the metric
-
 \begin{align*}
 \left<R_{\text{pred}},Q_{\text{pred}}\right> = \argmax_{R,Q}\sum_{t=0}^T -\log|2\pi\Omega_t| - (y_t-h(\mu_t))^T\Omega_t^{-1}(y_t-h(\mu_t))
 \end{align*}
 where $\Omega = H_t\Sigma_tH_t^T+P$. The error metric used for the prediction likelihood method is
-
 \begin{align}
 \label{eq:kftrainingpred}
 e = -\frac{1}{T}\sum_{t=1}^T \left(\log|2\pi\Omega_t| - (y_t-h(\mu_t))^T\Omega_t^{-1}(y_t-h(\mu_t))\right)
@@ -406,7 +377,6 @@ A program was written to implement these algorithms where logged data -- both fr
 \subsection{Numerical Analysis of Training Program}
 \label{sec:trainingNumericalAnalysis}
 The training program used here is a brute-force coordinate descent approach to finding the optimal $Q$ and $R$ matrices for the Kalman filter. The number of matrices attempted can grow to a very large number when all elements of the matrices are varied so an optional algorithm was developed that trains using only diagonal $Q$ and $R$ matrices. This is not an unreasonable restriction as the original $Q$ and $R$ matrices found by hand-tuning or from the output of the adaptive Kalman filter from section \ref{sec:adaptiveekf} used only diagonal $Q$ and $R$ matrices. The number of possible matrices that are used during training is a function of the number of states used in the Kalman filter and the number of measurements where
-
 \begin{align*}
 %\label{eq:trainingFullMatrices}
 \begin{split}
@@ -418,7 +388,6 @@ n_{full} &= n_Q \times n_R
 \end{split}
 \end{align*}
 for varying all elements of $Q$ and $R$ and
-
 \begin{align*}
 %\label{eq:trainingDiagonalMatrices}
 \begin{split}
@@ -430,7 +399,6 @@ n_{diagonal} &= n_Q \times n_R
 \end{split}
 \end{align*}
 for varying only the diagonal elements of $Q$ and $R$. During the experiments conducted the number of states is $8$ and the number of measurements is $5$ which gives
-
 \begin{align*}
 \begin{split}
 % n_Q &= 2^{8^2} = 18446744073709551616 \\
@@ -443,7 +411,6 @@ n_{full} &= n_Q \times n_R \\
 \end{split}
 \end{align*}
 per grid level when varying all elements of $Q$ and $R$ and
-
 \begin{align*}
 \begin{split}
 % n_Q &= 2^8 = 256 \\
@@ -455,7 +422,6 @@ n_{diagonal} &= n_Q \times n_R = 1594323
 \end{split}
 \end{align*}
 per grid level when varying only the diagonal elements of $Q$ and $R$. The ratio is
-
 \begin{align*}
 %\label{eq:trainingRatio}
 \begin{split}
