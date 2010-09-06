@@ -35,7 +35,7 @@ The only parameters available to tune PID controllers for performance are the ga
 
 When the characteristics of a robot are changed the PID gains must also be modified to reflect those changes. These characteristics include mass, center of mass, particular treads or motors and payloads, as these all affect the dynamics of the system. Gain scheduling is the process of tuning a system to use a different set of gains based on the operating environment or characteristics of the robot, however this is very time consuming. This motivates the search for a better control system for these small robots.
 
-Table \ref{tab:PIDGainEffects} shows how increasing the different gain values affects the performance of the controller output in terms of rise time, overshoot, settling time and steady state error. It can be seen that a large amount of coupling exists between the gains and attempting to fix one aspect of the controller output can have unintended consequences that cause other aspects of controller output to perform suboptimally. This is in contrast to the gains that arise for Lyapunov controllers as seen in \S\ref{sec:trajectoryCurvature}.
+Table \ref{tab:PIDGainEffects} shows how increasing the different gain values affects the performance of the controller output in terms of rise time, overshoot, settling time and steady state error. It can be seen that a large amount of coupling exists between the gains and attempting to fix one aspect of the controller output can have unintended consequences that cause other aspects of controller output to perform suboptimally. This is in contrast to the gains that arise for Lyapunov controllers as seen in section \ref{sec:trajectoryCurvature}.
 
 %\begin{table}[ht!]
 %	\small
@@ -70,7 +70,27 @@ $K_d$        & Small Decrease & Decrease  & Decrease      & None \\ \bottomrule
 
 \section{Lyapunov Controller}
 \label{sec:lyapunov}
-*** Talk about how Lyapunov controllers work \cite{Khalil02}. ***
+An alternative control method do using classical PID controllers is to use model based controllers based on control Lyapunov functions. An intuitive way to conceptualize Lyapunov controllers is by thinking of them as decreasing the overall energy of a system, even when the variables involved in the functions do not represent energy \cite{Khalil02}.
+
+The theorem for Lyapunov stability states that for an equilibrium point $x=0$ and a domain $D\subset\mathbb{R}^n$ that contains $x=0$ and there is a function $V:D\to\mathbb{R}$ that is continuously differentiable such that
+
+\begin{align}
+\label{eq:lyapunovTheorem}
+\begin{split}
+V(0) = 0 \\
+V(x) > 0 \in D-\{0\} \\
+\dot{V}(x) \leq 0 \in D
+\end{split}
+\end{align}
+then the equilibrium point $x=0$ is stable. Additionally, if
+
+\begin{align}
+\label{eq:lyapunovAsymptoticStability}
+\dot{V}(x) < 0 \in D - \{0\}
+\end{align}
+then $x=0$ is asymptotically stable.
+
+It is not always possible to find such a Lyapunov function $V$ but when one is found then this theorem holds and the "energy" of the system will always be positive and decreasing. The "energy" can consist of any variables that make $V(0) = 0$ and $V(x) > 0$ and often consist of the square of the errors that are to be minimized in a system. In that case the errors are always decreasing and the system will reach the desired point.
 
 \subsection{Unicycle-like Robot Kinematics}
 \label{sec:unicycleKinematics}
@@ -83,7 +103,7 @@ $K_d$        & Small Decrease & Decrease  & Decrease      & None \\ \bottomrule
 	\label{fig:pblyapunov}
 \end{figure}
 
-Figure \ref{fig:pblyapunov} will be used as the basis for the equations that follow and will be explained in further detail here. Given a robot at some initial position we want it to move to a goal position with a specific heading where the goal position is the origin of the $<g>$ coordinate system and the desired heading is along the $x$-axis. The states that define the robot's current position, heading, and linear and angular velocities are being calculated using the Kalman filter of \S\ref{sec:extendedkf} whereas the goal position and heading are given as inputs to the robot. Note that the linear velocity is given by $u$ and the angular velocity by $\omega$. The control system attempts to force three separate errors to zero:
+Figure \ref{fig:pblyapunov} will be used as the basis for the equations that follow and will be explained in further detail here. Given a robot at some initial position we want it to move to a goal position with a specific heading where the goal position is the origin of the $<g>$ coordinate system and the desired heading is along the $x$-axis. The states that define the robot's current position, heading, and linear and angular velocities are being calculated using the Kalman filter of section \ref{sec:extendedkf} whereas the goal position and heading are given as inputs to the robot. Note that the linear velocity is given by $u$ and the angular velocity by $\omega$. The control system attempts to force three separate errors to zero:
 \begin{itemize}
 \item $e$, the magnitude of the translation error vector as measured between the current position and goal position,
 \item $\theta$, the angle between the desired heading and the translational error vector $e$,
@@ -141,7 +161,7 @@ The control Lyapunov function is selected to be positive and contain all three e
 \label{eq:lyapunovfunction}
 V = V_1 + V_2 = \frac{1}{2}\lambda e^2 + \frac{1}{2}\left(\alpha^2+h\theta^2\right)
 \end{align}
-where $\lambda$ and $h$ are positive constants that can be used to tune the controller output (see \S\ref{sec:trajectoryCurvature}). Using the kinematics equations in (\ref{eq:lyapunovkinematics}) the derivative of each term of the candidate control Lyapunov function can be found as
+where $\lambda$ and $h$ are positive constants that can be used to tune the controller output (see section \ref{sec:trajectoryCurvature}). Using the kinematics equations in (\ref{eq:lyapunovkinematics}) the derivative of each term of the candidate control Lyapunov function can be found as
 
 \begin{align}
 \label{eq:Vderivatives}
@@ -224,7 +244,7 @@ Using the expressions for $u$ in (\ref{eq:lyapunovu}) and $\omega$ in (\ref{eq:l
 \end{split}
 \end{align}
 
-Combining (\ref{eq:lyapunovu}) and (\ref{eq:lyapunovomega}) gives the following control law to replace the PID controller from \S\ref{sec:pid}:
+Combining (\ref{eq:lyapunovu}) and (\ref{eq:lyapunovomega}) gives the following control law to replace the PID controller from section \ref{sec:pid}:
 
 \begin{align}
 \label{eq:lyapunovControlLaw}

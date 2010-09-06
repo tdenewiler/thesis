@@ -15,8 +15,8 @@
 
 %  The rest of the committee members  must be alphabetized by last name.
 \othermembers{
-Professor Humor Less\\ 
-Professor Ironic Name\\
+Professor 2 \\ 
+Professor 3 \\
 }
 \numberofmembers{3} % |chair| + |cochair| + |othermembers|
 
@@ -36,9 +36,12 @@ Professor Ironic Name\\
 %   however you wish.
 %
 %   3. If you don't want a dedication, it's not required.
-% \begin{dedication} % The style file will format this for you.
-% To two.
-% \end{dedication}
+\begin{dedication} % The style file will format this for you.
+To Grandma Denny, \\
+it's a small step from board games to Kalman filters, \\
+To my parents, \\
+for their time and encouragement in everything.
+\end{dedication}
 
 % \begin{mydedication} % You are responsible for formatting here.
 %   \vspace{1in}
@@ -89,10 +92,13 @@ Professor Ironic Name\\
 %  the OGS Formatting Manual for more information.
 
 \begin{acknowledgements}
-Thanks to whoever deserves credit for Blacks Beach, Porters Pub, and
-every coffee shop in San Diego.
+The enthusiasm and energy of Professor Thomas Bewley has been an inspiration and his support and advice have been invaluable.
 
-Thanks also to hottubs.
+I am grateful to Gideon Prior, Nima Ghods, Amin Rahimi and Steve Stancliff for our many long conversations while learning how to build better robots.
+
+I would also like to thank Mike Bruch and the ACS team (Gaurav Ahuja, Donnie Fellars, Greg Kogut and Brandon Sights) at SPAWAR for their support.
+
+And without the love and encouragement from Silvie I would not have made it this far.
 \end{acknowledgements}
 
 
@@ -117,7 +123,7 @@ Thanks also to hottubs.
 % abstracts can be up to 250 words. The abstract may, however, continue to a
 % second page if necessary.
 \begin{abstract}
-This Thesis will be abstract.
+Increasing the autonomous performance of robots increases the complexity of possible behaviors that can be implemented and their utility to end users. To that end the state estimation and control algorithms for EOD differential drive robots have been studied and improved by incorporating a low-cost compass and encoders to the sensor suite, generating better noise models for the extended Kalman filter and implementing a nonlinear model-based controller. A DGPS system was built and temporarily integrated with the standard robot sensors to measure ground truth positions which were used to find more accurate system and measurement noise covariance values for use with the Kalman filter. Independently a control Lyapunov function was found based on differential drive robot kinematics to output a suitable control law and the results are compared with the previously existing PID controller, especially in regards to the benefits of asymptotic stability. The improved robot performance was implemented using robots and an OCU that are currently fielded and will accelerate development of advanced maneuvers such as retrotraverse over long distances.
 \end{abstract}
 
 \end{frontmatter}
