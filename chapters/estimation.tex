@@ -293,6 +293,53 @@ As discussed in section \ref{sec:kfMeasurementModel} the measurement model is fa
 
 When the models are not set up correctly then the measurements will likely not match the predicted state estimates and the Kalman gains will grow larger during each measurement update step to force the state estimate to trust the measurements more than the system model.
 
+\section{Determining Heading}
+\label{sec:determineHeading}
+An immediate problem that arose during testing which had to be addressed before new techniques such as those in section \ref{sec:kftrainingparams} and \ref{sec:controllyapunov} could be attempted is that the robots did not always know which direction they were heading due to a lack of sensors. The original sensors used to determine heading on the robots were GPS and a gyro in the IMU. GPS worked fine when the robot was driving forward but when the robot began to drive in reverse the heading would rotate $180^\circ$. The angular velocity measurement from the gyro was integrated over time using the system model from (\ref{eq:kfjacobianresult}) and included as a second heading measurement although this measurement tends to drift over longer periods. An Ocean Server OS5000 digital compass was added to get a better estimate of heading in a global coordinate system since the magnetometer performance was better with that sensor than with the Microstrain 3DM-GX1 and wheel encoder measurements of linear and angular velocity were also added. The velocities from the encoders were directly incorporated into the measurement update step and the sign of the linear velocity was used to determine the appropriate to use for GPS heading.
+
+Figure \ref{fig:GEHeadingReverse} shows the routes driven by the robot when testing heading where the heading was reversed on the blue route and the heading was fixed on the red route. Note that on both runs the robot was driven straight forward and then in reverse without turning around. Figure \ref{fig:pbDataReverseHeadingBroken} shows sensor data before adding the encoder data to the Kalman filter and Figure \ref{fig:pbDataReverseHeadingFixed} is the sensor data after incorporating the encoder velocities and using them to fix the GPS velocity direction. In Figure \ref{fig:pbDataReverseHeadingBroken} the heading is seen to flip $\pi ~ rads$ where the velocity reverses since the encoder velocity is not being used but the GPS velocity is going in the wrong direction.
+
+*** Get new data that shows the GPS velocity as being negative because it is fixed by the encoder data and still shows the heading as not flipping. ***
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.8\textwidth]{images/GEHeadingReverseFixed}
+	\caption{Route Driven by PackBot}
+	\label{fig:GEHeadingReverse}
+\end{figure}
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.8\textwidth]{images/pbDataReverseHeading}
+	\caption{Heading and Velocity Reversed}
+	\label{fig:pbDataReverseHeadingBroken}
+\end{figure}
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.8\textwidth]{images/pbDataReverseHeadingFixed}
+	\caption{Heading Fixed When Driving in Reverse}
+	\label{fig:pbDataReverseHeadingFixed}
+\end{figure}
+
+*** Figures \ref{fig:GEHeadingReverse} - \ref{fig:pbDataReverseHeadingFixed} used encoders and GPS for linear velocity measurements, Microstrain and GPS for heading measurements and Microstrain for yaw rate measurement. The Kalman filter output for heading and the GPS velocity measurements can be seen to flip $180^\circ$ when the robot starts to drive in reverse but the encoders accurately measure the direction of the velocity vector. During the time that the robot is driving in reverse the yaw rate stays slightly negative so the yaw value should be decreasing slightly. The robot drives in reverse from about $65 s - 76s$ as noted in the image. ***
+
+*** I can also use Figures \ref{fig:pbDataLowYRVar} and \ref{fig:pbDataHighYRVar} where I captured the compass yaw and KF yaw values when the variance of the yaw rate sensor was low and high. This shows how I can place more trust in the compass than in the Microstrain gyro. I also want to show why I like the compass more than the Microstrain for orientation. ***
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.8\textwidth]{images/pbDataLowYRVar}
+	\caption{Low Variance for Yaw Rate Sensor}
+	\label{fig:pbDataLowYRVar}
+\end{figure}
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.8\textwidth]{images/pbDataHighYRVar}
+	\caption{High Variance for Yaw Rate Sensor}
+	\label{fig:pbDataHighYRVar}
+\end{figure}
+
 \section{Establishing Ground Truth}
 \label{sec:groundtruth}
 Quantitatively evaluating the performance of Kalman filters can be accomplished in several ways, the best of which is to analyze the output of the Kalman filter against ground truth. Although it is nearly impossible to establish ground truth over a large area in practice the closer the measurements are to an absolute position in the world the better. To determine ground truth for the robots in these experiments a differential GPS (DGPS) system was created independently of the sensors on the robot so that very accurate measurements of the robots actual position could be logged and then used in a post-processing step to determine how well the Kalman filter estimate corresponds to ground truth.
@@ -342,7 +389,7 @@ where $y_k$ are actual measurement data and $\hat{y}_k^+ = h_k\hat{x}_k^+$ is ca
 It can be seen that the estimates of both covariance matrices employ a running average algorithm and vary the weight of recent measurements and state updates via the adaptation coefficients $L_Q$ and $L_R$.
 
 \subsection{Discriminative Training of Kalman Filter Parameters}
-\label{sec:trainingkfparams}
+\label{sec:kftrainingparams}
 *** Investigate the difference between adaptive filtering and training. It seems like they accomplish the same thing, namely, convergence to some values for the covariance matrices. Do they use the same metrics? Do they converge to the same covariance matrices? Is it just online vs. offline training? Would a neural network be a good candidate for finding $Q$ and $R$ as well? All of these methods seem to be curve fitting in the multi-dimensional state space. Look at \S3.3 of \cite{Simon06OptimalEstimation} for details on how measurements affect state estimate via recursive least squares. I might also use \cite{Orderud05}. ***
 
 \cite{Abbeel-RSS-05} describes a method to automatically learn what the covariance matrices $Q$ and $R$ should be that is an alternative, offline approach to the adaptive EKF from section \ref{sec:adaptiveekf}. However, when used in conjunction with the adaptive EKF scheme this could allow for faster convergence times when the robots are started and for smaller ranges for the adaptation coefficients $L_Q$ and $L_R$ in (\ref{eq:qadapt}) and (\ref{eq:radapt}). This method takes advantage of ground truth measurements obtained using a DGPS system like that described in section \ref{sec:groundtruth}. Note that in the following expressions the term $h(\mu_t)$ is the position output by the Kalman filter and $y$ is the DGPS position output so the goal is to find values of $Q$ and $R$ that minimizes the difference between the output of the Kalman filter and DGPS ground truth.
@@ -436,53 +483,6 @@ r &= \frac{n_{full}}{n_{diagonal}} \\
 \end{align*}
 which means that it will take $1,594,323$ times longer to run the training program varying all of the matrix elements compared to only varying the diagonal elements. This can make the difference between finding optimal $Q$ and $R$ matrices and not finding them with the amount of states and measurements used in these experiments.
 
-\section{Determining Heading}
-\label{sec:determineHeading}
-*** Discuss the problem of knowing which way is forward on the robot. Talk about how the KF was originally tuned to work with the majority of time spent indoors where there are lots of big metal things that can interfere with the magnetometers on IMUs so the heading measurement was mostly ignored. The heading was mostly updated using the gyros from and integrating using the system model from (\ref{eq:kfjacobianresult}) as well as using GPS when it was available outdoors. Talk about the issue of heading flipping $180^\circ$ due to GPS heading and how velocity was not taken into account. Talk about adding compass heading and encoder velocity sensors as well as constraining heading jumps and determining the direction of the heading vector based on velocity direction from the encoders. Mention that this is useful not only for estimation but also for the control algorithm developed in Chapter \ref{ch:controls} since that controller can output commands for driving in reverse and when the heading flips the control algorithm would become unstable. Show plots where the heading can be shown to flip when the velocity changes directions. There are four sources of magnetometer errors -- hard iron errors, soft iron errors, scale factor errors and misalignment errors \cite{ParkinsonHeadingEstimation01}. ***
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=.8\textwidth]{images/GEHeadingReverseFixed}
-	\caption{Route Driven by PackBot}
-	\label{fig:GEHeadingReverse}
-\end{figure}
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=.8\textwidth]{images/pbDataReverseHeading}
-	\caption{Heading and Velocity Reversed}
-	\label{fig:pbDataReverseHeadingBroken}
-\end{figure}
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=.8\textwidth]{images/pbDataReverseHeadingFixed}
-	\caption{Heading Fixed When Driving in Reverse}
-	\label{fig:pbDataReverseHeadingFixed}
-\end{figure}
-
-*** Figures \ref{fig:GEHeadingReverse} - \ref{fig:pbDataReverseHeadingFixed} used encoders and GPS for linear velocity measurements, Microstrain and GPS for heading measurements and Microstrain for yaw rate measurement. The Kalman filter output for heading and the GPS velocity measurements can be seen to flip $180^\circ$ when the robot starts to drive in reverse but the encoders accurately measure the direction of the velocity vector. During the time that the robot is driving in reverse the yaw rate stays slightly negative so the yaw value should be decreasing slightly. The robot drives in reverse from about $65 s - 76s$ as noted in the image. ***
-
-*** I can also use Figures \ref{fig:pbDataLowYRVar} and \ref{fig:pbDataHighYRVar} where I captured the compass yaw and KF yaw values when the variance of the yaw rate sensor was low and high. This shows how I can place more trust in the compass than in the Microstrain gyro. I also want to show why I like the compass more than the Microstrain for orientation. ***
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=.8\textwidth]{images/pbDataLowYRVar}
-	\caption{Low Variance for Yaw Rate Sensor}
-	\label{fig:pbDataLowYRVar}
-\end{figure}
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=.8\textwidth]{images/pbDataHighYRVar}
-	\caption{High Variance for Yaw Rate Sensor}
-	\label{fig:pbDataHighYRVar}
-\end{figure}
-
-\subsection{Additional Sensors}
-\label{sec:kfAdditionalSensors}
-*** Talk about adding the compass and using encoder data. ***
-
 \section{Identifty IMU Parameters}
 \label{sec:identifyimuparams}
-*** Looking at \cite{ChungOjeda01}. Would need access to a rotary table to perform tests. Also look at \cite{ParkinsonHeadingEstimation01} for better estimation of heading. ***
+*** Looking at \cite{ChungOjeda01}. Would need access to a rotary table to perform tests. Also look at \cite{ParkinsonHeadingEstimation01} for better estimation of heading where it is shown that there are four sources of magnetometer errors -- hard iron errors, soft iron errors, scale factor errors and misalignment errors. ***
