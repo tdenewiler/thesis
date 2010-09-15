@@ -297,34 +297,30 @@ When the models are not set up correctly then the measurements will likely not m
 \label{sec:determineHeading}
 An immediate problem that arose during testing which had to be addressed before new techniques such as those in section \ref{sec:kftrainingparams} and \ref{sec:controllyapunov} could be attempted is that the robots did not always know which direction they were heading due to a lack of sensors. The original sensors used to determine heading on the robots were GPS and a gyro in the IMU. GPS worked fine when the robot was driving forward but when the robot began to drive in reverse the heading would rotate $180^\circ$. The angular velocity measurement from the gyro was integrated over time using the system model from (\ref{eq:kfjacobianresult}) and included as a second heading measurement although this measurement tends to drift over longer periods. An Ocean Server OS5000 digital compass was added to get a better estimate of heading in a global coordinate system since the magnetometer performance was better with that sensor than with the Microstrain 3DM-GX1 and wheel encoder measurements of linear and angular velocity were also added. The velocities from the encoders were directly incorporated into the measurement update step and the sign of the linear velocity was used to determine the appropriate to use for GPS heading.
 
-Figure \ref{fig:GEHeadingReverse} shows the routes driven by the robot when testing heading where the heading was reversed on the blue route and the heading was fixed on the red route. Note that on both runs the robot was driven straight forward and then in reverse without turning around. Figure \ref{fig:pbDataReverseHeadingBroken} shows sensor data before adding the encoder data to the Kalman filter and Figure \ref{fig:pbDataReverseHeadingFixed} is the sensor data after incorporating the encoder velocities and using them to fix the GPS velocity direction. In Figure \ref{fig:pbDataReverseHeadingBroken} the heading is seen to flip $\pi ~ rads$ where the velocity reverses since the encoder velocity is not being used but the GPS velocity is going in the wrong direction.
-
-*** Get new data that shows the GPS velocity as being negative because it is fixed by the encoder data and still shows the heading as not flipping. ***
+Figure \ref{fig:GEHeadingReverse} shows the routes driven by the robot when testing heading where the heading was reversed on the blue route and the heading was fixed on the red route. Figure \ref{fig:pbDataReverseHeadingBroken} shows sensor data before adding the encoder data to the Kalman filter (but using logged encoder data for comparison purposes to show where the velocity was negative) and the heading can be seen to flip $\pi ~ rads$ where the velocity was negative but the GPS velocity is positive. Figure \ref{fig:pbDataReverseHeadingFixed} is the sensor data after incorporating the encoder velocities into the Kalman filter and using the encoder data to reverse the sign of the GPS velocity whenever the encoder velocity is negative which results in a heading estimate that does not flip.
 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=.8\textwidth]{images/GEHeadingReverseFixed}
+	\includegraphics[width=.7\textwidth]{images/GEHeadingReverseFixed}
 	\caption{Route Driven by PackBot}
 	\label{fig:GEHeadingReverse}
 \end{figure}
 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=.8\textwidth]{images/pbDataReverseHeading}
+	\includegraphics[width=.7\textwidth]{images/pbDataReverseHeading}
 	\caption{Heading and Velocity Reversed}
 	\label{fig:pbDataReverseHeadingBroken}
 \end{figure}
 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=.8\textwidth]{images/pbDataReverseHeadingFixed}
+	\includegraphics[width=.7\textwidth]{images/KFDataHeadingReverseFixed}
 	\caption{Heading Fixed When Driving in Reverse}
 	\label{fig:pbDataReverseHeadingFixed}
 \end{figure}
 
-*** Figures \ref{fig:GEHeadingReverse} - \ref{fig:pbDataReverseHeadingFixed} used encoders and GPS for linear velocity measurements, Microstrain and GPS for heading measurements and Microstrain for yaw rate measurement. The Kalman filter output for heading and the GPS velocity measurements can be seen to flip $180^\circ$ when the robot starts to drive in reverse but the encoders accurately measure the direction of the velocity vector. During the time that the robot is driving in reverse the yaw rate stays slightly negative so the yaw value should be decreasing slightly. The robot drives in reverse from about $65 s - 76s$ as noted in the image. ***
-
-*** I can also use Figures \ref{fig:pbDataLowYRVar} and \ref{fig:pbDataHighYRVar} where I captured the compass yaw and KF yaw values when the variance of the yaw rate sensor was low and high. This shows how I can place more trust in the compass than in the Microstrain gyro. I also want to show why I like the compass more than the Microstrain for orientation. ***
+Adding the Ocean Server OS5000 digital compass allowed the variance of the Mictrostrain 3DM-GX1 angular rate sensor to be set much higher than the original variance and led to a more accurate heading estimate. Figure \ref{fig:pbDataLowYRVar} shows data captured while the robot was spinning in place and it can be seen that the compass yaw and Kalman filter heading estimate do not match very well. When the variance of the gyro data was greatly increased the Kalman filter heading estimate began to track the compass heading output very closely as seen in Figure \ref{fig:pbDataHighYRVar}.
 
 \begin{figure}[ht!]
 	\centering
