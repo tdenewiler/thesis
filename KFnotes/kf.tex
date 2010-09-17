@@ -429,6 +429,19 @@ K_k &= P_k^-H_k^T\left[H_kP_k^-H_k^T + R_k\right]^{-1}
 \end{itemize}
 \end{frame}
 
+\begin{frame}{Innovations - Using New Data}
+\begin{itemize}
+\item New sensor data gives new information about the state of the robot and its environment.
+\item Measurements are used to update system model estimate.
+\item The key concept is that the difference between expected measurement values and actual measurements is used to generate new state estimate.
+\item New measurements: $y_k$. Expected measurements: $H_k\hat{x}_k$.
+\item Difference, or "innovations", multiplied by Kalman gain to adjust previous state estimate from system model:
+\begin{align*}
+\hat{x}_k^+ &= \hat{x}_k^- + K_k\left[y_k - H_k\hat{x}_k^-\right]
+\end{align*}
+\end{itemize}
+\end{frame}
+
 \begin{frame}{Example - Estimating Yaw}
 \begin{itemize}
 \item Same system model developed above. Assume sensors measuring ground truth.
