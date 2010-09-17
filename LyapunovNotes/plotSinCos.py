@@ -2,6 +2,7 @@
 from scipy import *
 from pylab import *
 
+saveplots = 1
 xres = 0.001
 x = arange(-pi,pi+xres,xres)
 ysin = sin(x)
@@ -17,9 +18,12 @@ plot(x,yx)
 plot(x,yx0,'k')
 xlabel('x')
 ylabel('y')
-title(r'Effect of $\alpha$ on $\omega$')
+title(r'Useful Trigonometric Functions of $\alpha$')
 legend((r'$\sin(\alpha)$',r'$\cos(\alpha)$',r'$\cos(\alpha)*\sin(\alpha)$',r'$\alpha$'),'upper left')
-#grid(True)
+
+if saveplots:
+    savefig("images/plotSinCos.svg")
+    savefig("images/plotSinCos.png", dpi = 300)
 
 show()
 close()

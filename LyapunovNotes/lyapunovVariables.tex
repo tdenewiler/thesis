@@ -28,31 +28,38 @@ u &= \gamma e\cos\alpha \\
 \caption{Variables needed for Lyapunov controller.}
 \small
 \centering
-\begin{tabular}{@{}llllr@{}} \toprule
-Description                   & Coordinate System & Name      & Figure         & Units \\ \midrule
-Distance error                & N/A               & e         & $e$            & meters \\
-Robot heading                 & Global            & heading   & $\beta$        & radians \\
-Goal heading                  & Global            & thetastar & $\theta^\star$ & radians \\
-Heading error                 & Global            & theta     & $\theta$       & radians \\
-Heading error - robot heading & Local             & alpha     & $\alpha$       & radians \\
-Goal heading - robot heading  & Global            & phi       & $\phi$         & radians \\ \bottomrule
+\begin{tabular}{@{}lllr@{}} \toprule
+Description                   & Figure         & Units   & Range \\ \midrule
+Distance error                & $e$            & meters  & N/A \\
+Robot heading                 & $\psi$         & radians & $(-\pi,\pi]$ \\
+Goal heading                  & $\theta^\star$ & radians & $(-\pi,\pi]$ \\
+Heading error                 & $\theta$       & radians & $(-\pi,\pi]$ \\
+Heading error - robot heading & $\alpha$       & radians & $(-\pi,\pi]$ \\
+Goal heading - robot heading  & $\phi$         & radians & $(-\pi,\pi]$ \\ \bottomrule
 \end{tabular}
 \label{tab:LyapunovVariables}
 \end{table}
 
 The way to calculate the variables is:
 \begin{enumerate}
-\item $e$ is \texttt{goal\_distance} from \texttt{Path\_Executor()}.
-\item $\beta$ is the current heading of the robot in the world coordinate frame and ends up being \texttt{globalPose.yaw} from \texttt{PBGlobalWaypointDriver} which is available from the \texttt{Get\_Heading()} function.
-\item $\alpha$ is the angle between the current heading of the robot $\beta$ and the error vector $e$. It can be found as $\tan(\alpha) = \frac{dx}{e} \Rightarrow \alpha = \tan^{-1}\left(\frac{dx}{e}\right)$ where $dx$ is the horizontal component of the error vector $e$.
-\item $\theta^\star$ is the desired heading which is currently unknown but there are multiple ways that it \textit{could} be set.
+\item $dx$ is the vertical component of the error vector $e$ since the $x-$axis is forward of the vehicle as seen in Figure \ref{fig:packbotaxes}.
+\item $dy$ is the horizontal component of the error vector $e$ as seen in Figure \ref{fig:packbotaxes}.
+\item $e$ can be calculated in several different ways:
+\begin{itemize}
+\item Use \texttt{Path\_Executor()} to set a carrot out front of the robot on the path. The carrot moves out along the next path segment when the robot gets close enough to the end waypoint of the current path segment. This could cause $e$ to be much smaller than it actually is so $\alpha$ will be corrected before it should be and a problem could occur if the robot tries to correct $\theta$ too early.
+\item Use \texttt{sqrt(pow(dx,2) + pow(dy,2))} to get the distance to the end waypoint on the current path segment. This will cause the robot to slow down as it reaches every waypoint, even intermediate ones. Conversely, if $e$ is very large then $u$ could grow to be too large as well and necessitate the use of a limiting value for $u$.
+\item Combine the two methods and use the actual distance to the end waypoint of the current path segment until that value is less than the distance to the carrot and then use the carrot distance for $e$.
+\end{itemize}
+\item $\psi$ is the current heading of the robot in the world coordinate frame and ends up being \texttt{globalPose.yaw} from \texttt{PBGlobalWaypointDriver} which is available from the \texttt{Get\_Heading()} function.
+\item $\alpha$ is the angle between the current heading of the robot $\psi$ and the error vector $e$. It can be found as $\alpha = \tan^{-1}\left(\frac{dx}{dy}\right) - \psi$.
+\item $\theta^\star$ is the desired heading in the global coordinate system and there are multiple ways that it \textit{could} be set.
 \begin{itemize}
 \item $\theta^\star=0$ would just make the desired heading be North.
-\item $\theta^\star=\beta$ would make the desired heading be the same as whatever the current heading happens to be.
+\item $\theta^\star=\psi$ would make the desired heading be the same as whatever the current heading happens to be.
 \item It could be sent in as part of a waypoint, say from MOCU via JAUS.
-\item Look at the current waypoint and next waypoint positions. If there is no next waypoint then just go straight to the current waypoint with $\theta^\star=\beta$. If there is a next waypoint then the $\theta^\star$ could be the angle from the current waypoint to the next waypoint or splitting the difference between heading to the current and next waypoints.
+\item Look at the current waypoint and next waypoint positions. If there is no next waypoint then just go straight to the current waypoint with $\theta^\star=\psi$. If there is a next waypoint then the $\theta^\star$ could be the angle from the current waypoint to the next waypoint or splitting the difference between heading to the current and next waypoints.
 \end{itemize}
-\item $\phi=\theta^\star-\beta$.
+\item $\phi=\theta^\star-\psi$.
 \item $\theta=\alpha + \phi$.
 \end{enumerate}
 Don't forget that all of the angle variables need to be normalized so that they are in the range $(-\pi,\pi]$.
@@ -77,11 +84,11 @@ There are three gains that affect the angular velocity output: $h$, $k$ and $\ga
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=.75\textwidth]{images/plotSinCos}
-	\caption{Plot of $\sin\alpha$, $\cos\alpha$ and $\sin\alpha*\cos\alpha$.}
+	\caption{Plot of $\alpha$, $\sin\alpha$, $\cos\alpha$ and $\sin\alpha*\cos\alpha$.}
 	\label{fig:plotSinCos}
 \end{figure}
 
-When looking at the angular velocity output and the gains there are thirteen combinations that can be used when setting the gain values relative to each other as shown in Table \ref{tab:gainsAngVelOutput}. Note that when two variables are larger than one variable that terms cancel out as the effects of the term with the smaller gain value diminish. The gains also have different effects depending on which quadrant $\alpha$ and $\theta$ are in as shown for $\alpha$ in Figure \ref{fig:robotAlpha}.
+When looking at the angular velocity output and the gains there are thirteen combinations that can be used when setting the gain values relative to each other as shown in Table \ref{tab:gainsAngVelOutput}. Note that when two variables are larger than one variable some terms cancel out as the effects of the term with the smaller gain value diminish. The gains also have different effects depending on which quadrant $\alpha$ and $\theta$ are in as shown for $\alpha$ in Figure \ref{fig:robotAlpha}.
 
 \begin{figure}[ht!]
 	\centering
