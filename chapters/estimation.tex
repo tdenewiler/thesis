@@ -54,13 +54,13 @@ The ACS Kalman filter is typical of all Kalman filters in that it consists of a 
 \end{figure}
 
 The Kalman filters that run on the small UGVs used in these experiments run on digital computers and are necessarily used in discrete time rather than continuous time because of the nature of computers. Additionally, the standard Kalman filter equations make the assumption that the system and measurement models are linear. From \cite{Kelly_1994_338}, \cite{Simon06OptimalEstimation} the discretized and linearized versions of (\ref{eq:statespace}) mean that the state space equations are represented as
-\begin{align}
-\label{eq:kfstatemodel}
+\begin{align*}
+%\label{eq:kfstatemodel}
 \begin{split}
 x_{k+1} &= \Phi_kx_k + w_k \\
 y_k &= H_kx_k + v_k
 \end{split}
-\end{align}
+\end{align*}
 where $\Phi_k$ is the state transition matrix relating the state at time $k+1$ to time $k$ in the absence of inputs or noise and models the system dynamics, $w_k$ is system noise due to an imperfect model, $H_k$ is the measurement matrix which relates the measurements to the state vector and $v_k$ is the sensor measurement noise. The Kalman filter uses an unforced model so all inputs are considered disturbances to the steady-state dynamics. This means that $w_k$ includes noise, modeling errors, external forces and actuator forces.
 
 The prediction update step marches the system dynamics forward in time using the equations
@@ -220,9 +220,9 @@ x \\ y \\ z \\ V \\ \theta \\ \phi \\ \psi \\ \omega
 \end{array}\right].
 \end{align}
 }
-Applying the principal motion assumption to set the terms relating position and angular velocity as well as orientation and linear velocity to zero in addition to converting from continuous to discrete time to put ones on the diagonal gives
-\begin{align}
-\label{eq:kfSystemModelWithAssumptions}
+Applying the principal motion assumption to set the terms relating position and angular velocity as well as orientation and linear velocity to zero in addition to converting from continuous to discrete time to put ones on the diagonal (c.f. (\ref{eq:kfContToDiscTransform})) gives
+\begin{align*}
+%\label{eq:kfSystemModelWithAssumptions}
 x_{k+1} = 
 \underbrace{\left[\begin{array}{c c c c c c c c}
 1 & 0 & 0 & c\psi c\theta \Delta_T & 0 & 0 & 0 & 0 \\
@@ -237,7 +237,7 @@ x_{k+1} =
 \left[\begin{array}{c}
 x \\ y \\ z \\ V \\ \theta \\ \phi \\ \psi \\ \omega
 \end{array}\right]_k
-\end{align}
+\end{align*}
 as the system model that is used in the prediction update step of the Kalman filter equations to calculate the state of the robot in between measurements.
 
 \subsection{Measurement Model}

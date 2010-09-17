@@ -14,19 +14,19 @@ PID controllers use the current state estimate to determine the errors between t
 \end{figure}
 
 There are separate PID controllers used for each of $x$ position, $y$ position and robot heading ($\psi$). The process used to compute an output using a PID controller uses three separate errors and a gain for each of those errors. Looking at the PID controller for heading the errors are
-\begin{align}
-\label{eq:piderrors}
+\begin{align*}
+%\label{eq:piderrors}
 \begin{split}
 E_P &= \psi_{\text{ref}_k} - \psi_k \\
 E_I &= \sum_{i=0}^{k}E_{P_i}*\Delta T \\
 E_D &= \frac{\psi_k - \psi_{k-1}}{\Delta T}
 \end{split}
-\end{align}
+\end{align*}
 where $\psi_{\text{ref}_k}$ is the desired heading at the current time, $\psi_k$ is the current heading estimate, $\psi_{k-1}$ is the previous heading estimate and $\Delta T$ is the time elapsed since the last PID control calculation was performed. The contribution of each error is then weighted by a gain to obtain the final output command, $u$, such that
-\begin{align}
-\label{eq:pidcommand}
+\begin{align*}
+%\label{eq:pidcommand}
 u = K_P*E_P + K_I*E_I + K_D*E_D
-\end{align}
+\end{align*}
 where $K_P$ is the proportional gain, $K_I$ is the integral gain and $K_D$ is the differential gain.
 
 The only parameters available to tune PID controllers for performance are the gains. There are some rules of thumb for tuning gains properly as described in \cite{ZeiglerNichols42} that can work as a good starting point, along with a basic knowledge of what the effects are of modifying the different gains as summarized in Table \ref{tab:PIDGainEffects}. The difficulty in using PID controllers for the small robots used in these experiments is that the gains must be tuned for specific operating scenarios so that a set of gains that work well at full speed on asphalt do not work at all when the robot is driving in soft sand at any velocity. PID controllers work best when they only have to reject a small range of disturbances and the small robots are required to be operated in environments with a large range of disturbances.
@@ -53,26 +53,26 @@ $K_d$        & Small Decrease & Decrease  & Decrease      & None \\ \bottomrule
 An alternative control method do using classical PID controllers is to use model based controllers based on control Lyapunov functions. An intuitive way to conceptualize Lyapunov controllers is by thinking of them as decreasing the overall energy of a system, even when the variables involved in the functions do not represent energy \cite{Khalil02}.
 
 The theorem for Lyapunov stability states that for an equilibrium point $x=0$ and a domain $D\subset\mathbb{R}^n$ that contains $x=0$ and there is a function $V:D\to\mathbb{R}$ that is continuously differentiable and has the following properties 
-\begin{align}
-\label{eq:lyapunovTheorem}
+\begin{align*}
+%\label{eq:lyapunovTheorem}
 \begin{split}
 V(0) = 0 \\
 V(x) > 0 \in D-\{0\} \\
 \dot{V}(x) \leq 0 \in D
 \end{split}
-\end{align}
+\end{align*}
 then the equilibrium point $x=0$ is stable. Additionally, if
-\begin{align}
-\label{eq:lyapunovAsymptoticStability}
+\begin{align*}
+%\label{eq:lyapunovAsymptoticStability}
 \dot{V}(x) < 0 \in D - \{0\}
-\end{align}
+\end{align*}
 then $x=0$ is asymptotically stable.
 
-It is not always possible to find such a Lyapunov function $V$ but when one is found then this theorem holds and the "energy" of the system will always be positive and decreasing. The "energy" can consist of any variables that make $V(0) = 0$ and $V(x) > 0$ and often consist of the square of the errors that are to be minimized in a system. In that case the errors are always decreasing since $\dot{V}(x) < 0$ and the system will reach the desired point.
+It is not always possible to find such a Lyapunov function $V$ but when one is found then this theorem holds and the "energy" of the system will always be positive and decreasing. The "energy" can consist of any variables that make $V(0) = 0$ and $V(x) > 0$ and often consist of a combination of the errors that are to be minimized in a system raised to an even power to make them positive. In that case the errors are always decreasing since $\dot{V}(x) < 0$ and the system will reach the desired state.
 
 \subsection{Unicycle-like Robot Kinematics}
 \label{sec:unicycleKinematics}
-\cite{Rusu05RobotuxLyapunov,Aicardi_UnicycleLyapunov95} describes a method for using a Lyapunov controller for a differential drive robot, similar in nature to the small robots considered in these experiments and typically referred to as a unicycle-like robots in the literature. This section will mostly be a restatement of their work but with more intermediate steps and a slightly different formulation included to make the derivation easier to follow than in some of the referenced papers.
+\cite{Rusu05RobotuxLyapunov,Aicardi_UnicycleLyapunov95} describe a method for using a Lyapunov controller for a differential drive robot, similar in nature to the small robots considered in these experiments and typically referred to as a unicycle-like robots in the literature. This section will mostly be a restatement of their work but with more intermediate steps and a slightly different formulation included to make the derivation easier to follow than in some of the referenced papers.
 
 \begin{figure}[ht!]
 	\centering
@@ -81,7 +81,7 @@ It is not always possible to find such a Lyapunov function $V$ but when one is f
 	\label{fig:pblyapunov}
 \end{figure}
 
-Figure \ref{fig:pblyapunov} will be used as the basis for the equations that follow and will be explained in further detail here. Given a robot at some initial position we want it to move to a goal position with a specific heading where the goal position is the origin of the $<g>$ coordinate system and the desired heading is along the $x$-axis, $\theta^\star$. The states that define the robot's current position, heading, and linear and angular velocities are being calculated using the Kalman filter of section \ref{sec:extendedkf} whereas the goal position and heading are given as inputs to the robot. Note that the linear velocity is given by $u$ and the angular velocity by $\omega$. The control system attempts to force three separate errors to zero:
+Figure \ref{fig:pblyapunov} will be used as the basis for the equations that follow and will be explained in further detail here. Given a robot at some arbitrary initial position we want it to move to a goal position with a specific heading where the goal position is the origin of the $<g>$ coordinate system and the desired heading is along the $x$-axis of the $<g>$ coordinate system labeled $\theta^\star$. The states that define the robot's current position, heading, and linear and angular velocities are calculated using the Kalman filter of section \ref{sec:extendedkf} whereas the goal position and heading are given as inputs to the robot. Note that the linear velocity is given by $u$ and the angular velocity by $\omega$. The control system attempts to force three separate errors to zero:
 \begin{itemize}
 \item $e$, the magnitude of the translation error vector as measured between the current position and goal position,
 \item $\theta$, the angle between the desired heading and the translational error vector $e$,
@@ -97,7 +97,7 @@ Additional variables used to calculate the errors include
 
 Since unicycle-like robots exhibit non-holonomic constraints (they are only able to move forwards or backwards along the direction of their current heading and are not able to perform strafing maneuvers) it is necessary to use all three errors in the control system. The errors can all be calculated using the inputs to the robot of a goal position and goal heading and the state estimate output of the Kalman filter.
 
-A kinematic model of the robot is used to predict how the robot moves
+A kinematic model of the robot is used to predict how the robot moves without considering the effects of the mass of the robot or outside forces (such as friction between the robot tracks and the ground) acting on the robot with
 \begin{align}
 \label{eq:lyapunovkinematics1}
 \begin{split}
@@ -106,7 +106,7 @@ A kinematic model of the robot is used to predict how the robot moves
 \dot{\phi} &= \omega.
 \end{split}
 \end{align}
-The expressions in (\ref{eq:lyapunovkinematics1}) are then converted to a polar coordinate representation via a coordinate transformation and give expressions for the errors that the control system is attempting to drive to zero with the errors as shown in Figure \ref{fig:pblyapunov}
+The expressions in (\ref{eq:lyapunovkinematics1}) are then converted to a polar coordinate representation via a coordinate transformation and give expressions for the errors that the control system is attempting to drive to zero such that
 \begin{align}
 \label{eq:lyapunovkinematics2}
 \begin{split}
@@ -116,14 +116,14 @@ e &= \sqrt{x^2+y^2} \\
 \end{split}
 \end{align}
 Combining (\ref{eq:lyapunovkinematics2}) with (\ref{eq:lyapunovkinematics1}) results in
-\begin{align}
-\label{eq:lyapunovkinematics3}
+\begin{align*}
+%\label{eq:lyapunovkinematics3}
 \begin{split}
 \dot{e} &= -u*\cos(\theta-\phi) \\
 \dot{\theta} &= u\frac{\sin\alpha}{e} \\
 \dot{\phi} &= \omega.
 \end{split}
-\end{align}
+\end{align*}
 Finally, replacing $\alpha$ with $\theta-\phi$ results in a kinematic model of
 \begin{align}
 \label{eq:lyapunovkinematics}
@@ -136,11 +136,11 @@ Finally, replacing $\alpha$ with $\theta-\phi$ results in a kinematic model of
 
 \subsection{Control Lyapunov Function}
 \label{sec:controllyapunov}
-The control Lyapunov function is selected to be positive and contain all three error states and is given by
-\begin{align}
-\label{eq:lyapunovfunction}
+The control Lyapunov function is selected to be positive, contain all three error states, separate the distance error from the angle errors and is given by
+\begin{align*}
+%\label{eq:lyapunovfunction}
 V = V_1 + V_2 = \frac{1}{2}\lambda e^2 + \frac{1}{2}\left(\alpha^2+h\theta^2\right)
-\end{align}
+\end{align*}
 where $\lambda$ and $h$ are positive constants that can be used to tune the controller output (see section \ref{sec:trajectoryCurvature}). Using the kinematics equations in (\ref{eq:lyapunovkinematics}) the derivative of each term of the candidate control Lyapunov function can be found as
 \begin{align}
 \label{eq:Vderivatives}
@@ -152,7 +152,7 @@ where $\lambda$ and $h$ are positive constants that can be used to tune the cont
 &= \alpha\left(-\omega + u\frac{\sin\alpha}{\alpha}\frac{(\alpha+h\theta)}{e}\right)
 \end{split}
 \end{align}
-and from there the total derivative is found as
+and from (\ref{eq:Vderivatives}) the total derivative is found as
 \begin{align}
 \label{eq:lyapunovfunctionderivative}
 \begin{split}
@@ -168,7 +168,7 @@ u = \gamma e\cos\alpha
 where $\gamma$ is a positive constant different from $\lambda$. Substituting this value of $u$ into (\ref{eq:Vderivatives}) results in
 \begin{align}
 \label{eq:V1dotfinal}
-\dot{V}_1 = -\lambda eu\cos\alpha = -\lambda\gamma e^2\cos^2\alpha.
+\dot{V}_1 = -\lambda eu\cos\alpha = -\lambda\gamma e^2\cos^2\alpha \leq 0.
 \end{align}
 Since $V_1>0$ and $\dot{V}_1<0$ except when $e=0$ we have that $V_1$ converges asymptotically to a positive defined limit.
 
@@ -199,22 +199,22 @@ where $k$ is a positive constant. Substituting this value of $\omega$ into (\ref
 \end{align}
 and $V_2$ converges asymptotically to a positive defined limit.
 
-Substituting $\dot{V}_1$ from (\ref{eq:V1dotfinal}) and $\dot{V}_2$ from (\ref{eq:V2dotfinal}) into the expression for $\dot{V}$ yields
-\begin{align}
-\label{eq:Vfinal}
+Substituting $\dot{V}_1$ from (\ref{eq:V1dotfinal}) and $\dot{V}_2$ from (\ref{eq:V2dotfinal}) into the expression for $\dot{V}$ (\ref{eq:lyapunovfunctionderivative}) yields
+\begin{align*}
+%\label{eq:Vfinal}
 \dot{V} = \dot{V}_1 + \dot{V}_2 = -\lambda\gamma e^2\cos^2\alpha - k\alpha^2 \leq 0.
-\end{align}
+\end{align*}
 This expression is equal to zero if and only if $\alpha=0$ \textit{and} $e=0$, which only occurs when the robot has reached its goal pose. Therefore, at any point along the robots trajectory other than the goal point this function is negative definite and is asymptotically stable.
 
 Using the expressions for $u$ in (\ref{eq:lyapunovu}) and $\omega$ in (\ref{eq:lyapunovomega}) and substituting those values back into the kinematic model from (\ref{eq:lyapunovkinematics}) gives
-\begin{align}
-\label{eq:lyapunovfinalkinematics}
+\begin{align*}
+%\label{eq:lyapunovfinalkinematics}
 \begin{split}
 \dot{e} &= -\gamma e\cos^2\alpha \\
 \dot{\alpha} &= -\left(k\alpha + \gamma h\frac{\cos\alpha\sin\alpha}{\alpha}\right) \\
 \dot{\theta} &= \gamma\cos\alpha\sin\alpha
 \end{split}
-\end{align}
+\end{align*}
 
 Combining (\ref{eq:lyapunovu}) and (\ref{eq:lyapunovomega}) gives the following control law to replace the PID controller from section \ref{sec:pid}:
 \begin{align}
