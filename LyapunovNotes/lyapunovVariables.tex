@@ -1,0 +1,116 @@
+\documentclass[12pt]{article}
+
+% Input and configure the required packages.
+\input{preamble}
+
+% Document starts here.
+\begin{document}
+\title{Notes on Lyapunov Controller}
+\author{Thomas Denewiler}
+\maketitle
+
+% Meat and potatoes.
+\section{Control Law}
+\begin{align*}
+u &= \gamma e\cos\alpha \\
+\omega &= k\alpha + \gamma\frac{\cos\alpha\sin\alpha}{\alpha}\left(\alpha+h\theta\right)
+\end{align*}
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.95\textwidth]{images/packbotlyapunov}
+	\caption{PackBot with coordinate system for the Lyapunov controller.}
+	\label{fig:pblyapunov}
+\end{figure}
+
+\section{Variables}
+\begin{table}[ht!]
+\caption{Variables needed for Lyapunov controller.}
+\small
+\centering
+\begin{tabular}{@{}llllr@{}} \toprule
+Description                   & Coordinate System & Name      & Figure         & Units \\ \midrule
+Distance error                & N/A               & e         & $e$            & meters \\
+Robot heading                 & Global            & heading   & $\beta$        & radians \\
+Goal heading                  & Global            & thetastar & $\theta^\star$ & radians \\
+Heading error                 & Global            & theta     & $\theta$       & radians \\
+Heading error - robot heading & Local             & alpha     & $\alpha$       & radians \\
+Goal heading - robot heading  & Global            & phi       & $\phi$         & radians \\ \bottomrule
+\end{tabular}
+\label{tab:LyapunovVariables}
+\end{table}
+
+The way to calculate the variables is:
+\begin{enumerate}
+\item $e$ is \texttt{goal\_distance} from \texttt{Path\_Executor()}.
+\item $\beta$ is the current heading of the robot in the world coordinate frame and ends up being \texttt{globalPose.yaw} from \texttt{PBGlobalWaypointDriver} which is available from the \texttt{Get\_Heading()} function.
+\item $\alpha$ is the angle between the current heading of the robot $\beta$ and the error vector $e$. It can be found as $\tan(\alpha) = \frac{dx}{e} \Rightarrow \alpha = \tan^{-1}\left(\frac{dx}{e}\right)$ where $dx$ is the horizontal component of the error vector $e$.
+\item $\theta^\star$ is the desired heading which is currently unknown but there are multiple ways that it \textit{could} be set.
+\begin{itemize}
+\item $\theta^\star=0$ would just make the desired heading be North.
+\item $\theta^\star=\beta$ would make the desired heading be the same as whatever the current heading happens to be.
+\item It could be sent in as part of a waypoint, say from MOCU via JAUS.
+\item Look at the current waypoint and next waypoint positions. If there is no next waypoint then just go straight to the current waypoint with $\theta^\star=\beta$. If there is a next waypoint then the $\theta^\star$ could be the angle from the current waypoint to the next waypoint or splitting the difference between heading to the current and next waypoints.
+\end{itemize}
+\item $\phi=\theta^\star-\beta$.
+\item $\theta=\alpha + \phi$.
+\end{enumerate}
+Don't forget that all of the angle variables need to be normalized so that they are in the range $(-\pi,\pi]$.
+
+\section{Effect of Gains on Angular Velocity}
+The most important item to note is that when driving a PackBot (and many other differential drive vehicles) $\omega>0\Rightarrow$ \textit{turn left} and $\omega<0\Rightarrow$ \textit{turn right}. This is a consequence of how the $x-$, $y-$ and $z-$axes are defined as in Figure \ref{fig:packbotaxes}. It can be seen that the positive $x-$axis is forward of the vehicle and the positive $y-$axis is left of the vehicle. Following the right-hand rule the $z-$axis is required to be positive in the up direction and that positive rotations about the $z-$axis (or changes in yaw due to the angular velocity command) move from the positive $x-$axis to the positive $y-$axis.
+
+It is also helpful to rewrite the angular velocity output from the control law as
+\begin{align*}
+\omega = k\alpha + \gamma\cos\alpha\sin\alpha + \frac{\gamma h\theta\cos\alpha\sin\alpha}{\alpha}
+\end{align*}
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.5\textwidth]{images/packbotaxes}
+	\caption{Body centered coordinate frame for PackBot.}
+	\label{fig:packbotaxes}
+\end{figure}
+
+There are three gains that affect the angular velocity output: $h$, $k$ and $\gamma$. The gains are all coupled in a nonlinear fashion so it can be difficult to intuitively understand how the angular velocity output will change as the gains are modified. In ACS angles are defined to be in the range $(-\pi,\pi]$ as well and Figure \ref{fig:plotSinCos} shows several useful trigonometric functions of $\alpha$ in the range of interest.
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.75\textwidth]{images/plotSinCos}
+	\caption{Plot of $\sin\alpha$, $\cos\alpha$ and $\sin\alpha*\cos\alpha$.}
+	\label{fig:plotSinCos}
+\end{figure}
+
+When looking at the angular velocity output and the gains there are thirteen combinations that can be used when setting the gain values relative to each other as shown in Table \ref{tab:gainsAngVelOutput}. Note that when two variables are larger than one variable that terms cancel out as the effects of the term with the smaller gain value diminish. The gains also have different effects depending on which quadrant $\alpha$ and $\theta$ are in as shown for $\alpha$ in Figure \ref{fig:robotAlpha}.
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.3\textwidth]{images/robotAlpha}
+	\caption{Different $\alpha$ values for varying target positions.}
+	\label{fig:robotAlpha}
+\end{figure}
+
+\begin{table}[ht!]
+\caption{Gains and angular velocity output.}
+\small
+\centering
+\begin{tabular}{@{}llr@{}} \toprule
+Scenario & Gains                     & Angular Velocity $\omega$ \\ \midrule
+1        & $h\approx k\approx\gamma$ & $\omega\approx k\alpha + \gamma\cos\alpha\sin\alpha + \gamma h\theta\cos\alpha\sin\alpha/\alpha$ \\
+2        & $k\gg h,\gamma$           & $\omega\approx k\alpha$ \\
+3        & $\gamma\gg h,k$           & $\omega\approx \gamma\cos\alpha\sin\alpha$ \\
+4        & $h,k \gg\gamma$           & $\omega\approx k\alpha\cancelto{0}{+\gamma h\theta\cos\alpha\sin\alpha/\alpha}$ \\
+5        & $h,\gamma\gg k$           & $\omega\approx \cancelto{0}{\gamma\cos\alpha\sin\alpha+} \gamma h\theta\cos\alpha\sin\alpha/\alpha$ \\
+6        & $k,\gamma\gg h$           & $\omega\approx k\alpha + \gamma\cos\alpha\sin\alpha \cancelto{0}{+\gamma h\theta\cos\alpha\sin\alpha/\alpha}$ \\
+7        & $h\gg k,\gamma$           & $\omega\approx \gamma h\theta\cos\alpha\sin\alpha/\alpha$ \\
+8        & $h\gg k\gg\gamma$         & $\omega\approx \gamma h\theta\cos\alpha\sin\alpha/\alpha$ \\
+9        & $h\gg\gamma\gg k$         & $\omega\approx \gamma h\theta\cos\alpha\sin\alpha/\alpha$ \\
+10       & $k\gg h\gg\gamma$         & $\omega\approx k\alpha$ \\
+11       & $k\gg\gamma\gg h$         & $\omega\approx k\alpha$ \\
+12       & $\gamma\gg h\gg k$        & $\omega\approx \gamma\cos\alpha\sin\alpha$ \\
+13       & $\gamma\gg k\gg h$        & $\omega\approx \gamma\cos\alpha\sin\alpha$ \\ \bottomrule
+\end{tabular}
+\label{tab:gainsAngVelOutput}
+\end{table}
+
+\end{document}
