@@ -42,8 +42,8 @@ Goal heading - robot heading  & $\phi$         & radians & $(-\pi,\pi]$ \\ \bott
 
 The way to calculate the variables is:
 \begin{enumerate}
-\item $dx$ is the vertical component of the error vector $e$ since the $x-$axis is forward of the vehicle as seen in Figure \ref{fig:packbotaxes}.
-\item $dy$ is the horizontal component of the error vector $e$ as seen in Figure \ref{fig:packbotaxes}.
+\item $dx$ is the vertical component of the error vector $e$ since the $x-$axis is forward of the vehicle as seen in Figure \ref{fig:pblyapunov}.
+\item $dy$ is the horizontal component of the error vector $e$ as seen in Figure \ref{fig:pblyapunov}.
 \item $e$ can be calculated in several different ways:
 \begin{itemize}
 \item Use \texttt{Path\_Executor()} to set a carrot out front of the robot on the path. The carrot moves out along the next path segment when the robot gets close enough to the end waypoint of the current path segment. This could cause $e$ to be much smaller than it actually is so $\alpha$ will be corrected before it should be and a problem could occur if the robot tries to correct $\theta$ too early.
@@ -51,7 +51,7 @@ The way to calculate the variables is:
 \item Combine the two methods and use the actual distance to the end waypoint of the current path segment until that value is less than the distance to the carrot and then use the carrot distance for $e$.
 \end{itemize}
 \item $\psi$ is the current heading of the robot in the world coordinate frame and ends up being \texttt{globalPose.yaw} from \texttt{PBGlobalWaypointDriver} which is available from the \texttt{Get\_Heading()} function.
-\item $\alpha$ is the angle between the current heading of the robot $\psi$ and the error vector $e$. It can be found as $\alpha = \tan^{-1}\left(\frac{dx}{dy}\right) - \psi$.
+\item $\alpha$ is the angle between the current heading of the robot $\psi$ and the error vector $e$ where the angle of the error vecotr $e$ is from the current position to the waypoint and found as $\tan^{-1}\left(\frac{dy}{dx}\right)$. The desired angle error is $\alpha = \tan^{-1}\left(\frac{dx}{dy}\right) - \psi$.
 \item $\theta^\star$ is the desired heading in the global coordinate system and there are multiple ways that it \textit{could} be set.
 \begin{itemize}
 \item $\theta^\star=0$ would just make the desired heading be North.

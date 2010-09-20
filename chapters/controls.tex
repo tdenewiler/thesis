@@ -92,7 +92,7 @@ Additional variables used to calculate the errors include
 \begin{itemize}
 \item $\theta^\star$, the target heading in the global coordinate system which is aligned with the $x$-axis,
 \item $\beta$, the current heading of the robot in the global coordinate system,
-\item $\phi = \theta^\star - \beta$, the difference between the target heading and the current heading in the global coordinate system.
+\item $\phi$, the difference between the target heading and the current heading in the global coordinate system.
 \end{itemize}
 
 Since unicycle-like robots exhibit non-holonomic constraints (they are only able to move forwards or backwards along the direction of their current heading and are not able to perform strafing maneuvers) it is necessary to use all three errors in the control system. The errors can all be calculated using the inputs to the robot of a goal position and goal heading and the state estimate output of the Kalman filter.
@@ -224,6 +224,32 @@ u &= \gamma e\cos\alpha \\
 \omega &= k\alpha + \gamma\frac{\cos\alpha\sin\alpha}{\alpha}\left(\alpha+h\theta\right)
 \end{split}
 \end{align}
+
+\subsection{Calculating Control Law Variables}
+\label{sec:lyapunovVariables}
+The method used to calculate the variables needed for the control law in (\ref{eq:lyapunovControlLaw}) based on Figure \ref{fig:pblyapunov} is:
+\begin{enumerate}
+\item $dx$ is the vertical component of the error vector $e$ since the $x-$axis is forward of the vehicle as seen in Figure \ref{fig:pblyapunov}.
+\item $dy$ is the horizontal component of the error vector $e$ as seen in Figure \ref{fig:pblyapunov}.
+\item $e$ can be calculated in several different ways:
+\begin{itemize}
+\item Use a path planner to set a carrot out in front of the robot on the path between the current position of the robot and the goal point. That carrot moves along to the next path segment when the robot gets close enough to the end waypoint of the current path segment if the current waypoint is not the final waypoint. This could cause $e$ to be much smaller than it actually is so $\alpha$ will be corrected sooner than it should be and an additional problem could occur if the robot tries to correct $\theta$ too early.
+\item Use $\sqrt{dx^2 + dy^2}$ to get the distance to the end waypoint on the current path segment. This will cause the robot to slow down as it reaches every waypoint, even intermediate ones. Conversely, if $e$ is very large then $u$ could grow to be too large as well and necessitate the use of a limiting value for $u$.
+\item Combine the two methods and use the actual distance to the end waypoint of the current path segment until that value is less than the distance to the carrot and then use the carrot distance for $e$.
+\end{itemize}
+\item $\psi$ is the current heading of the robot in the world coordinate frame and is calculated in the Kalman filter code based on the results from Chapter \ref{ch:estimation}.
+\item $\alpha$ is the angle between the current heading of the robot $\psi$ and the error vector $e$ where the angle of the error vector $e$ is from the current position to the waypoint and found as $\tan^{-1}\left(\frac{dy}{dx}\right)$. The desired angle error is $\alpha = \tan^{-1}\left(\frac{dy}{dx}\right) - \psi$.
+\item $\theta^\star$ is the desired heading in the global coordinate system and there are multiple ways that it \textit{could} be set.
+\begin{itemize}
+\item $\theta^\star=0$ sets the desired heading as North and $\theta^\star=\pi$ sets it as South.
+\item $\theta^\star=\psi$ would make the desired heading be the same as whatever the current heading happens to be.
+\item $\theta^\star$ can be sent in as an additional parameter of a waypoint, say from MOCU via JAUS.
+\item Look at the current waypoint and next waypoint positions. If there is no next waypoint then just go straight to the current waypoint with $\theta^\star=\psi$. If there is a next waypoint then $\theta^\star$ could be the angle from the current waypoint to the next waypoint or splitting the difference between heading to the current and next waypoints.
+\end{itemize}
+\item $\phi=\theta^\star-\psi$.
+\item $\theta=\alpha + \phi$.
+\end{enumerate}
+Note that all of the angle variables need to be normalized so that they are in the range $(-\pi,\pi]$.
 
 \subsection{Curvature of Resulting Trajectory}
 \label{sec:trajectoryCurvature}
