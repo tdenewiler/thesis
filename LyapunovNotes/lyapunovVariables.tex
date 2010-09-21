@@ -11,10 +11,13 @@
 
 % Meat and potatoes.
 \section{Control Law}
-\begin{align*}
+\begin{align}
+\label{eq:lyapunovControlLaw}
+\begin{split}
 u &= \gamma e\cos\alpha \\
 \omega &= k\alpha + \gamma\frac{\cos\alpha\sin\alpha}{\alpha}\left(\alpha+h\theta\right)
-\end{align*}
+\end{split}
+\end{align}
 
 \begin{figure}[ht!]
 	\centering
@@ -65,9 +68,9 @@ The way to calculate the variables is:
 Don't forget that all of the angle variables need to be normalized so that they are in the range $(-\pi,\pi]$.
 
 \section{Effect of Gains on Angular Velocity}
-The most important item to note is that when driving a PackBot (and many other differential drive vehicles) $\omega>0\Rightarrow$ \textit{turn left} and $\omega<0\Rightarrow$ \textit{turn right}. This is a consequence of how the $x-$, $y-$ and $z-$axes are defined as in Figure \ref{fig:packbotaxes}. It can be seen that the positive $x-$axis is forward of the vehicle and the positive $y-$axis is left of the vehicle. Following the right-hand rule the $z-$axis is required to be positive in the up direction and that positive rotations about the $z-$axis (or changes in yaw due to the angular velocity command) move from the positive $x-$axis to the positive $y-$axis.
+The most important item to note is that when driving a robot with a coordinate system such as that shown in Figure \ref{fig:packbotaxes} $\omega>0\Rightarrow$ \textit{turn left} and $\omega<0\Rightarrow$ \textit{turn right}. This is a consequence of how the $x$-, $y$- and $z$-axes are defined in Figure \ref{fig:packbotaxes} where the positive $x$-axis is forward of the vehicle and the positive $y$-axis is left of the vehicle. Following the right-hand rule the $z$-axis is required to be positive in the up direction and positive rotations about the $z$-axis (or changes in yaw due to the angular velocity command) move from the positive $x$-axis to the positive $y$-axis.
 
-It is also helpful to rewrite the angular velocity output from the control law as
+It is also helpful to rewrite the angular velocity output from the control law (\ref{eq:lyapunovControlLaw}) as
 \begin{align*}
 \omega = k\alpha + \gamma\cos\alpha\sin\alpha + \frac{\gamma h\theta\cos\alpha\sin\alpha}{\alpha}
 \end{align*}
@@ -101,23 +104,46 @@ When looking at the angular velocity output and the gains there are thirteen com
 \caption{Gains and angular velocity output.}
 \small
 \centering
-\begin{tabular}{@{}llr@{}} \toprule
-Scenario & Gains                     & Angular Velocity $\omega$ \\ \midrule
-1        & $h\approx k\approx\gamma$ & $\omega\approx k\alpha + \gamma\cos\alpha\sin\alpha + \gamma h\theta\cos\alpha\sin\alpha/\alpha$ \\
-2        & $k\gg h,\gamma$           & $\omega\approx k\alpha$ \\
-3        & $\gamma\gg h,k$           & $\omega\approx \gamma\cos\alpha\sin\alpha$ \\
-4        & $h,k \gg\gamma$           & $\omega\approx k\alpha\cancelto{0}{+\gamma h\theta\cos\alpha\sin\alpha/\alpha}$ \\
-5        & $h,\gamma\gg k$           & $\omega\approx \cancelto{0}{\gamma\cos\alpha\sin\alpha+} \gamma h\theta\cos\alpha\sin\alpha/\alpha$ \\
-6        & $k,\gamma\gg h$           & $\omega\approx k\alpha + \gamma\cos\alpha\sin\alpha \cancelto{0}{+\gamma h\theta\cos\alpha\sin\alpha/\alpha}$ \\
-7        & $h\gg k,\gamma$           & $\omega\approx \gamma h\theta\cos\alpha\sin\alpha/\alpha$ \\
-8        & $h\gg k\gg\gamma$         & $\omega\approx \gamma h\theta\cos\alpha\sin\alpha/\alpha$ \\
-9        & $h\gg\gamma\gg k$         & $\omega\approx \gamma h\theta\cos\alpha\sin\alpha/\alpha$ \\
-10       & $k\gg h\gg\gamma$         & $\omega\approx k\alpha$ \\
-11       & $k\gg\gamma\gg h$         & $\omega\approx k\alpha$ \\
-12       & $\gamma\gg h\gg k$        & $\omega\approx \gamma\cos\alpha\sin\alpha$ \\
-13       & $\gamma\gg k\gg h$        & $\omega\approx \gamma\cos\alpha\sin\alpha$ \\ \bottomrule
+\begin{tabular}{@{}lllr@{}} \toprule
+Scenario & Gains                     & Angular Velocity $\omega$                                                                                     \\ \midrule
+1        & $h\approx k\approx\gamma$ & $\omega\approx k\alpha + \gamma\cos\alpha\sin\alpha + \gamma h\theta\cos\alpha\sin\alpha/\alpha$              \\
+2        & $h\gg k,\gamma$           & $\omega\approx \gamma h\theta\cos\alpha\sin\alpha/\alpha$                                                     \\
+3        & $k\gg h,\gamma$           & $\omega\approx k\alpha$                                                                                       \\
+4        & $\gamma\gg h,k$           & $\omega\approx \gamma\cos\alpha\sin\alpha$                                                                    \\
+5        & $h,k \gg\gamma$           & $\omega\approx k\alpha\cancelto{0}{+\gamma h\theta\cos\alpha\sin\alpha/\alpha}$                               \\
+6        & $h,\gamma\gg k$           & $\omega\approx \cancelto{0}{\gamma\cos\alpha\sin\alpha+} \gamma h\theta\cos\alpha\sin\alpha/\alpha$           \\
+7        & $k,\gamma\gg h$           & $\omega\approx k\alpha + \gamma\cos\alpha\sin\alpha \cancelto{0}{+\gamma h\theta\cos\alpha\sin\alpha/\alpha}$ \\
+8        & $h\gg k\gg\gamma$         & $\omega\approx \gamma h\theta\cos\alpha\sin\alpha/\alpha$                                                     \\
+9        & $h\gg\gamma\gg k$         & $\omega\approx \gamma h\theta\cos\alpha\sin\alpha/\alpha$                                                     \\
+10       & $k\gg h\gg\gamma$         & $\omega\approx k\alpha$                                                                                       \\
+11       & $k\gg\gamma\gg h$         & $\omega\approx k\alpha$                                                                                       \\
+12       & $\gamma\gg h\gg k$        & $\omega\approx \gamma\cos\alpha\sin\alpha$                                                                    \\
+13       & $\gamma\gg k\gg h$        & $\omega\approx \gamma\cos\alpha\sin\alpha$                                                                    \\ \bottomrule
 \end{tabular}
 \label{tab:gainsAngVelOutput}
+\end{table}
+
+\begin{table}[ht!]
+\caption{Gains and ratio of linear/angular velocity output.}
+\small
+\centering
+\begin{tabular}{@{}llr@{}} \toprule
+Scenario & Gains                     & $u/\omega$                                                                                        \\ \midrule
+1        & $h\approx k\approx\gamma$ & $\cancelto{1}{\tfrac{\gamma}{k}}\tfrac{e}{\alpha}\cos\alpha + e\sin\alpha + \tfrac{e\alpha}{h\theta\sin\alpha}$ \\
+2        & $h\gg k,\gamma$           & $\cancelto{1}{\tfrac{\gamma}{k}}\tfrac{e}{\alpha}\cos\alpha + e\sin\alpha + \cancelto{0}{\tfrac{e\alpha}{h\theta\sin\alpha}}$ \\
+3        & $k\gg h,\gamma$           & $\cancelto{0}{\tfrac{\gamma}{k}\tfrac{e}{\alpha}\cos\alpha} + e\sin\alpha + \tfrac{e\alpha}{h\theta\sin\alpha}$ \\
+4        & $\gamma\gg h,k$           & $\tfrac{\gamma}{k}\tfrac{e}{\alpha}\cos\alpha + \cancelto{0}{e\sin\alpha} + \cancelto{0}{\tfrac{e\alpha}{h\theta\sin\alpha}}$ \\
+5        & $h,k \gg\gamma$           & $\cancelto{0}{\tfrac{\gamma}{k}\tfrac{e}{\alpha}\cos\alpha} + e\sin\alpha + \cancelto{0}{\tfrac{e\alpha}{h\theta\sin\alpha}}$ \\
+6        & $h,\gamma\gg k$           & $\tfrac{\gamma}{k}\tfrac{e}{\alpha}\cos\alpha + \cancelto{0}{e\sin\alpha} + \cancelto{0}{\tfrac{e\alpha}{h\theta\sin\alpha}}$ \\
+7        & $k,\gamma\gg h$           & $\cancelto{0}{\cancelto{1}{\tfrac{\gamma}{k}}\tfrac{e}{\alpha}\cos\alpha} + \cancelto{0}{e\sin\alpha} + \tfrac{e\alpha}{h\theta\sin\alpha}$ \\
+8        & $h\gg k\gg\gamma$         & $\cancelto{0}{\tfrac{\gamma}{k}\tfrac{e}{\alpha}\cos\alpha} + e\sin\alpha + \cancelto{0}{\tfrac{e\alpha}{h\theta\sin\alpha}}$ \\
+9        & $h\gg\gamma\gg k$         & $\tfrac{\gamma}{k}\tfrac{e}{\alpha}\cos\alpha + \cancelto{0}{e\sin\alpha} + \cancelto{0}{\tfrac{e\alpha}{h\theta\sin\alpha}}$ \\
+10       & $k\gg h\gg\gamma$         & $\cancelto{0}{\tfrac{\gamma}{k}\tfrac{e}{\alpha}\cos\alpha} + e\sin\alpha + \tfrac{e\alpha}{h\theta\sin\alpha}$ \\
+11       & $k\gg\gamma\gg h$         & $\cancelto{0}{\tfrac{\gamma}{k}\tfrac{e}{\alpha}\cos\alpha} + \cancelto{0}{e\sin\alpha} + \tfrac{e\alpha}{h\theta\sin\alpha}$ \\
+12       & $\gamma\gg h\gg k$        & $\tfrac{\gamma}{k}\tfrac{e}{\alpha}\cos\alpha + \cancelto{0}{e\sin\alpha} + \cancelto{0}{\tfrac{e\alpha}{h\theta\sin\alpha}}$ \\
+13       & $\gamma\gg k\gg h$        & $\tfrac{\gamma}{k}\tfrac{e}{\alpha}\cos\alpha + \cancelto{0}{e\sin\alpha} + \tfrac{e\alpha}{h\theta\sin\alpha}$ \\ \bottomrule
+\end{tabular}
+\label{tab:gainsLinAngVelRelation}
 \end{table}
 
 \end{document}
