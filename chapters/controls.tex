@@ -18,11 +18,11 @@ There are separate PID controllers used for each of $x$ position, $y$ position a
 %\label{eq:piderrors}
 \begin{split}
 E_P &= \psi_{\text{ref}_k} - \psi_k \\
-E_I &= \sum_{i=0}^{k}E_{P_i}*\Delta T \\
-E_D &= \frac{\psi_k - \psi_{k-1}}{\Delta T}
+E_I &= \sum_{i=0}^{k}E_{P_i}*\Delta_T \\
+E_D &= \frac{\psi_k - \psi_{k-1}}{\Delta_T}
 \end{split}
 \end{align*}
-where $\psi_{\text{ref}_k}$ is the desired heading at the current time, $\psi_k$ is the current heading estimate, $\psi_{k-1}$ is the previous heading estimate and $\Delta T$ is the time elapsed since the last PID control calculation was performed. The contribution of each error is then weighted by a gain to obtain the final output command, $u$, such that
+where $\psi_{\text{ref}_k}$ is the desired heading at the current time, $\psi_k$ is the current heading estimate, $\psi_{k-1}$ is the previous heading estimate and $\Delta_T$ is the time elapsed since the last PID control calculation was performed. The contribution of each error is then weighted by a gain to obtain the final output command, $u$, such that
 \begin{align*}
 %\label{eq:pidcommand}
 u = K_P*E_P + K_I*E_I + K_D*E_D
@@ -52,13 +52,13 @@ $K_d$        & Small Decrease & Decrease  & Decrease      & None \\ \bottomrule
 \label{sec:lyapunov}
 An alternative control method do using classical PID controllers is to use model based controllers based on control Lyapunov functions. An intuitive way to conceptualize Lyapunov controllers is by thinking of them as decreasing the overall energy of a system, even when the variables involved in the functions do not represent energy \cite{Khalil02}.
 
-The theorem for Lyapunov stability states that for an equilibrium point $x=0$ and a domain $D\subset\mathbb{R}^n$ that contains $x=0$ and there is a function $V:D\to\mathbb{R}$ that is continuously differentiable and has the following properties 
+The theorem for Lyapunov stability states that for an equilibrium point $x=0$ and a domain $D\subset\mathbb{R}^n$ that contains $x=0$ and for which there is a function $V:D\to\mathbb{R}$ that is continuously differentiable and has the following properties 
 \begin{align*}
 %\label{eq:lyapunovTheorem}
 \begin{split}
-V(0) = 0 \\
-V(x) > 0 \in D-\{0\} \\
-\dot{V}(x) \leq 0 \in D
+V(0) &= 0 \\
+V(x) &> 0 \in D-\{0\} \\
+\dot{V}(x) &\leq 0 \in D-\{0\}
 \end{split}
 \end{align*}
 then the equilibrium point $x=0$ is stable. Additionally, if
@@ -108,14 +108,14 @@ A kinematic model of the robot is used to predict how the robot moves without co
 \end{align}
 The expressions in (\ref{eq:lyapunovkinematics1}) are then converted to a polar coordinate representation via a coordinate transformation and give expressions for the errors that the control system is attempting to drive to zero such that
 \begin{align}
-\label{eq:lyapunovkinematics2}
+\label{eq:lyapunovPolar}
 \begin{split}
 e &= \sqrt{x^2+y^2} \\
 \theta &= \atanh(y,x) \\
 \alpha &= \theta - \phi.
 \end{split}
 \end{align}
-Combining (\ref{eq:lyapunovkinematics2}) with (\ref{eq:lyapunovkinematics1}) results in
+Combining (\ref{eq:lyapunovPolar}) with (\ref{eq:lyapunovkinematics1}) results in
 \begin{align*}
 %\label{eq:lyapunovkinematics3}
 \begin{split}
