@@ -367,7 +367,7 @@ x \\ y \\ z \\ V \\ \theta \\ \phi \\ \psi \\ \omega
 x_{k+1} &= F_kx_k + w_k \\
 y_k &= H_kx_k + v_k
 \end{align*}
-\item $H$ transforms the sensor data into state coordinates.
+\item $H$ transforms the state coordinates into sensor data coordinates.
 \item With 8 states, measuring all once and yaw twice:
 \begin{align*}
 H = \left[\begin{array}{c c c c c c c c}
@@ -459,7 +459,10 @@ K_k &= P_k^-H_k^T\left[H_kP_k^-H_k^T + R_k\right]^{-1}
 \begin{frame}{Example - Estimating Yaw - Measurement Model}
 \begin{itemize}
 \item Using 9 sensors total, 2 for yaw.
-\item Assume yaw sensor 1 measures in degrees, yaw sensor 2 measures in radians.
+\item Assume yaw sensor 1 measures in radians, yaw sensor 2 measures in degrees, yaw state in radians.
+\begin{itemize}
+\item $H$ transforms yaw state from radians to degrees so that error $y-H\hat{x}$ can be calculated.
+\end{itemize}
 \item One row per sensor, one column per state.
 \end{itemize}
 \begin{align*}
@@ -592,6 +595,7 @@ R^\star &= \left(y_k-\hat{y}_k^+\right)\left(y_k-\hat{y}_k^+\right)^T - H_kP_k^+
 \item Unscented Kalman filter.
 \item Central difference Kalman filter.
 \item Sigma-point particle filter.
+\item Adaptive Monte Carlo localization.
 \item $H_\infty$ filter.
 \end{itemize}
 \end{frame}
