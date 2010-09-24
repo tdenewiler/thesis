@@ -17,7 +17,7 @@ import sys
 
 pngres = 600
 showplots = 0
-saveimages = 0 # showplots must be turned on as well
+saveplots = 0 # showplots must be turned on as well
 makemovie = 1
 
 # Number of time steps.
@@ -146,7 +146,7 @@ if showplots:
     pylab.ylabel('Yaw (radians)')
     pylab.legend((lyaw, lpsi1, lpsi2, lxhat), ('Ground Truth', 'Sensor 1', 'Sensor 2', 'KF'))
     pylab.axis('equal')
-    if saveimages:
+    if saveplots:
         pylab.savefig("../images/kfSimYaw.png", dpi=pngres)
     
     # Plot the yaw estimate zoomed in.
@@ -160,7 +160,7 @@ if showplots:
     pylab.ylabel('Yaw (radians)')
     pylab.legend((lyaw, lpsi1, lpsi2, lxhat), ('Ground Truth', 'Sensor 1', 'Sensor 2', 'KF'))
     pylab.axis([55.5, 61, 0.5, 4])
-    if saveimages:
+    if saveplots:
         pylab.savefig("../images/kfSimYawZoom.png", dpi=pngres)
     
     # Plot the actual and estimated position.
@@ -173,7 +173,7 @@ if showplots:
     pylab.legend((lpos, lposhat), ('Ground Truth','KF'))
     pylab.axis('equal')
     pylab.show()
-    if saveimages:
+    if saveplots:
         pylab.savefig("../images/kfSimPosition.png", dpi=pngres)
 
 # Calculate the RMS errors.
@@ -191,6 +191,9 @@ print 'Yaw state estimate covariance = ', P[6,6]*180/pi, 'degrees'
 
 # Try to make a movie of the normal distribution of the estimate through time with xhat and Pmp.
 if makemovie:
+    ymax = max(max(ymovieP[:,6]),max(ymovieM[:,6]))
+    ymean = arange(0,ymax,0.01)
+    #print 'ymaxP =', max(ymovieP[:,6]), 'ymaxM =', max(ymovieM[:,6]), 'ymax =', ymax
     # Print the version information for the machine, OS,
     # Python interpreter, and matplotlib.  The version of
     # Mencoder is printed when it is called.
@@ -200,7 +203,7 @@ if makemovie:
     not_found_msg = """
     The mencoder command was not found;
     mencoder is used by this script to make an avi file from a set of pngs.
-    It is typically not installed by default on linux distros because of
+    It is typically not installed by default on Linux distros because of
     legal restrictions, but it is widely available.
     """
     
@@ -214,13 +217,13 @@ if makemovie:
     except OSError:
         print not_found_msg
         sys.exit("quitting\n")
-
-    for i in range(len(ymovieP)*2) :
+        
+    for i in range(N*2):
         if i % 2: # odd
-            pylab.plot(xmovie,ymovieP[i/2],'b.')
+            pylab.plot(xmovie,ymovieP[i/2])
         else: # even
-            pylab.plot(xmovie,ymovieM[i/2],'b.')
-        pylab.axis((xmovie[0],xmovie[-1],-0.25,6))
+            pylab.plot(xmovie,ymovieM[i/2],'r')
+        pylab.axis((xmovie[0],xmovie[-1],-0.25,5))
         pylab.xlabel('Yaw Angle (radians)')
         pylab.ylabel(r'Covariance (radians$.^2$)')
         pylab.title(r'Evolution of Yaw Estimate = $\cal{N}(\mu, \sigma^2)$', fontsize=20)
@@ -235,7 +238,7 @@ if makemovie:
     
         # Clear the figure to make way for the next image.
         pylab.clf()
-    
+
     # Now that we have graphed images of the dataset, we will stitch them
     # together using Mencoder to create a movie.  Each image will become
     # a single frame in the movie.
@@ -248,7 +251,7 @@ if makemovie:
     command = ('mencoder',
                'mf://pngtmp/*.png',
                '-mf',
-               'type=png:w=800:h=600:fps=5',
+               'type=png:w=800:h=600:fps=25',
                '-ovc',
                'lavc',
                '-lavcopts',
@@ -258,7 +261,7 @@ if makemovie:
                '-o',
                'kfdistribution.avi')
     
-    print "\n\nabout to execute:\n%s\n\n" % ' '.join(command)
+    print "\nabout to execute:\n%s\n" % ' '.join(command)
     subprocess.check_call(command)
     print "\n The movie was written to 'kfdistribution.avi'"
-    print "\n You may want to delete pngtmp/*.png now.\n"
+    print "You may want to delete pngtmp/*.png now.\n"
