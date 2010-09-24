@@ -39,7 +39,7 @@ def kinematicsODE(y, t, gamma, h, k):
 # Main.
 
 # Start pose.
-xstart = 5
+xstart = 7
 ystart = 10
 yawstart = 0
 xend = 0
@@ -53,9 +53,9 @@ tinc = 0.1
 t = arange(0, tend, tinc)
 
 # Gains.
-gamma = 0.23
-h = 0.23
-k = 1.38
+gamma = 0.3#0.23
+h = 1.2#0.23
+k = 1.2#1.38
 
 # Calculate the initial errors for position and heading.
 e = sqrt((xstart-xend)**2 + (ystart-yend)**2)

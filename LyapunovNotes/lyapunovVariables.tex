@@ -123,12 +123,18 @@ Scenario & Gains                     & Angular Velocity $\omega$                
 \label{tab:gainsAngVelOutput}
 \end{table}
 
+The curvature of the resulting trajectory is $c_s$ given by
+\begin{align*}
+c_s = \frac{\omega}{u}
+\end{align*}
+and is found in general terms for the gain combinations in Table \ref{tab:gainsLinAngVelRelation}.
+
 \begin{table}[ht!]
 \caption{Gains and ratio of linear/angular velocity output.}
 \small
 \centering
 \begin{tabular}{@{}llr@{}} \toprule
-Scenario & Gains                     & $u/\omega$                                                                                        \\ \midrule
+Scenario & Gains                     & $c_s = \omega/u$                                                                                        \\ \midrule
 1        & $h\approx k\approx\gamma$ & $\cancelto{1}{\tfrac{\gamma}{k}}\tfrac{e}{\alpha}\cos\alpha + e\sin\alpha + \tfrac{e\alpha}{h\theta\sin\alpha}$ \\
 2        & $h\gg k,\gamma$           & $\cancelto{1}{\tfrac{\gamma}{k}}\tfrac{e}{\alpha}\cos\alpha + e\sin\alpha + \cancelto{0}{\tfrac{e\alpha}{h\theta\sin\alpha}}$ \\
 3        & $k\gg h,\gamma$           & $\cancelto{0}{\tfrac{\gamma}{k}\tfrac{e}{\alpha}\cos\alpha} + e\sin\alpha + \tfrac{e\alpha}{h\theta\sin\alpha}$ \\

@@ -96,10 +96,23 @@ V(0) &= 0 \\
 V(x) &> 0 \in D-\{0\} \\
 \dot{V}(x) &< 0 \in D-\{0\}
 \end{align*}
-\item If $V(x)$ is found then system stability is guaranteed.
+\item If $V(x)$ is found then system stability is guaranteed for continuous systems and typically works for sampled systems.
 \item Treat errors as "energy" of system and minimize "energy".
 \item "Energy" is monotonically decreasing so errors are monotonically decreasing.
 \item Trick is to find $V(x)$ containing errors with those properties. Can be very difficult.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Valid Control Lyapunov Functions}
+\begin{itemize}
+\item Valid and invalid functions for $V>0$, $\dot{V}<0$:
+\begin{figure}[ht!]
+    \centering
+    \begin{tabular}{c c}
+    \includegraphics[width=.45\textwidth]{images/Vstable} &
+    \includegraphics[width=.45\textwidth]{images/Vunstable}
+    \end{tabular}
+\end{figure}
 \end{itemize}
 \end{frame}
 
@@ -165,7 +178,7 @@ V(x) &> 0 \in D-\{0\} \\
 \label{eq:lyapunovPolar}
 \begin{split}
 e &= \sqrt{x^2+y^2} \\
-\theta &= \text{atan2}(y,x) \\
+\theta &= \text{atanh}(\tfrac{y}{x}) \\
 \alpha &= \theta - \phi
 \end{split}
 \end{align}
@@ -177,7 +190,7 @@ e &= \sqrt{x^2+y^2} \\
 \dot{\phi} &= \omega
 \end{split}
 \end{align*}
-\item Substitute $\alpha=\theta-phi$:
+\item Substitute $\alpha=\theta-\phi$:
 \begin{align}
 \label{eq:lyapunovkinematics}
 \begin{split}
@@ -275,6 +288,17 @@ u &= \gamma e\cos\alpha \\
 \item Handles nonlinear models.
 \item Easier to use machine learning with a model compared to PID.
 \end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{References}
+\nocite{Khalil02}
+\nocite{Rusu05RobotuxLyapunov}
+\nocite{Aicardi_UnicycleLyapunov95}
+\nocite{Lapierre07}
+\nocite{Sights07}
+\nocite{ZeiglerNichols42}
+\bibliographystyle{plain}
+\bibliography{mybib}
 \end{frame}
 
 \end{document}
