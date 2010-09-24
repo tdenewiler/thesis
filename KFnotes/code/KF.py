@@ -5,12 +5,20 @@
 # Yaw has two sensors that have adjustable amounts of noise and drift.
 # Output is RMS errors for position and heading plus plots showing some of the state variables.
 
+# For linear algebra and plotting:
 from scipy import *
 import numpy
 import pylab
 
+# For movie:
+import subprocess
+import os
+import sys
+
 pngres = 600
-saveimages = 0
+showplots = 0
+saveimages = 0 # showplots must be turned on as well
+makemovie = 1
 
 # Number of time steps.
 N = 100
@@ -75,7 +83,7 @@ H[7,6] = 1
 H[8,7] = 1
 
 # State covariance matrix.
-Q = numpy.eye(8)
+Q = 0.01*numpy.eye(8)
 
 # Measurement covariance matrix.
 R = numpy.zeros((9,9))
@@ -85,13 +93,18 @@ R[7,7] = Yaw2Noise
 # Initialization of state estimate and filter covariance.
 xh = x[0,]
 P = Q
-P[6,6] = max(2000*Yaw1Noise,2000*Yaw2Noise)
 xhat = xh
+Pmp = diag(P)
 Pp = diag(P)
 Kk = numpy.zeros((8*(N-1),9))
 
+# Variables for making movie of yaw estimate distribution.
+xmovie = numpy.arange(-pi, pi, 0.001)
+ymovieP = numpy.zeros((N, len(xmovie)), float)
+ymovieM = numpy.zeros((N, len(xmovie)), float)
+
 # Run the KF equations.
-for i in range(0,N):
+for i in range(N):
     # State transition matrix based on dynamics.
     F = array([ [1,0,0,cos(xh[7])*cos(xh[5]),0,0,0,0],
                 [0,1,0,sin(xh[7])*cos(xh[5]),0,0,0,0],
@@ -103,59 +116,65 @@ for i in range(0,N):
                 [0,0,0,0,0,0,0,1] ])
 
     # Prediction update step.
-    xh = dot(F,xh)
-    Pm = dot(F,dot(P,F.T))+Q
+    xh = dot(F,xh) # estimate
+    Pm = dot(F,dot(P,F.T))+Q # estimate covariance
+    if makemovie:
+        ymovieP[i] = (1/numpy.sqrt(2*numpy.pi*Pm[6,6]))*numpy.exp(-((xmovie-xh[6])**2)/(2*Pm[6,6]))
 
     # Measurement update step.
-    K = dot(Pm,dot(H.T,numpy.linalg.inv(dot(H,dot(Pm,H.T))+R)))
-    P = dot((eye(8)-dot(K,H)),Pm)
-    xh = dot((eye(8)-dot(K,H)),xh) + dot(K,y[i+1,])
+    K = dot(Pm,dot(H.T,numpy.linalg.inv(dot(H,dot(Pm,H.T))+R))) # Kalman gain
+    xh = dot((eye(8)-dot(K,H)),xh) + dot(K,y[i+1,]) # estimate
+    P = dot((eye(8)-dot(K,H)),Pm) # estimate covariance
+    if makemovie:
+        ymovieM[i] = (1/numpy.sqrt(2*numpy.pi*P[6,6]))*numpy.exp(-((xmovie-xh[6])**2)/(2*P[6,6]))
 
     # Save state estimate, state covariance and gains.
     xhat = vstack((xhat,xh))
+    Pmp = vstack((Pmp,diag(Pm)))
     Pp = vstack((Pp,diag(P)))
     Kk = vstack((Kk,K))
 
-# Plot the yaw estimate.
-pylab.figure(1)
-lyaw =  pylab.plot(x[:,6])
-lpsi1 = pylab.plot(psi1)
-lpsi2 = pylab.plot(psi2)
-lxhat = pylab.plot(xhat[:,6], 'kx')
-pylab.title('Yaw')
-pylab.xlabel('Time (s)')
-pylab.ylabel('Yaw (radians)')
-pylab.legend((lyaw, lpsi1, lpsi2, lxhat), ('Ground Truth', 'Sensor 1', 'Sensor 2', 'KF'))
-pylab.axis('equal')
-if saveimages:
-    pylab.savefig("../images/kfSimYaw.png", dpi=pngres)
-
-# Plot the yaw estimate zoomed in.
-pylab.figure(2)
-lyaw = pylab.plot(x[:,6])
-lpsi1 = pylab.plot(psi1)
-lpsi2 = pylab.plot(psi2)
-lxhat = pylab.plot(xhat[:,6], 'kx')
-pylab.title('Yaw')
-pylab.xlabel('Time (s)')
-pylab.ylabel('Yaw (radians)')
-pylab.legend((lyaw, lpsi1, lpsi2, lxhat), ('Ground Truth', 'Sensor 1', 'Sensor 2', 'KF'))
-pylab.axis([55.5, 61, 0.5, 4])
-if saveimages:
-    pylab.savefig("../images/kfSimYawZoom.png", dpi=pngres)
-
-# Plot the actual and estimated position.
-pylab.figure(3)
-lpos = pylab.plot(x[:,0], x[:,1])
-lposhat = pylab.plot(xhat[:,0], xhat[:,1], 'kx')
-pylab.title('Position')
-pylab.xlabel('X (m)')
-pylab.ylabel('Y (m)')
-pylab.legend((lpos, lposhat), ('Ground Truth','KF'))
-pylab.axis('equal')
-pylab.show()
-if saveimages:
-    pylab.savefig("../images/kfSimPosition.png", dpi=pngres)
+if showplots:
+    # Plot the yaw estimate.
+    pylab.figure(1)
+    lyaw =  pylab.plot(x[:,6])
+    lpsi1 = pylab.plot(psi1)
+    lpsi2 = pylab.plot(psi2)
+    lxhat = pylab.plot(xhat[:,6], 'kx')
+    pylab.title('Yaw')
+    pylab.xlabel('Time (s)')
+    pylab.ylabel('Yaw (radians)')
+    pylab.legend((lyaw, lpsi1, lpsi2, lxhat), ('Ground Truth', 'Sensor 1', 'Sensor 2', 'KF'))
+    pylab.axis('equal')
+    if saveimages:
+        pylab.savefig("../images/kfSimYaw.png", dpi=pngres)
+    
+    # Plot the yaw estimate zoomed in.
+    pylab.figure(2)
+    lyaw = pylab.plot(x[:,6])
+    lpsi1 = pylab.plot(psi1)
+    lpsi2 = pylab.plot(psi2)
+    lxhat = pylab.plot(xhat[:,6], 'kx')
+    pylab.title('Yaw')
+    pylab.xlabel('Time (s)')
+    pylab.ylabel('Yaw (radians)')
+    pylab.legend((lyaw, lpsi1, lpsi2, lxhat), ('Ground Truth', 'Sensor 1', 'Sensor 2', 'KF'))
+    pylab.axis([55.5, 61, 0.5, 4])
+    if saveimages:
+        pylab.savefig("../images/kfSimYawZoom.png", dpi=pngres)
+    
+    # Plot the actual and estimated position.
+    pylab.figure(3)
+    lpos = pylab.plot(x[:,0], x[:,1])
+    lposhat = pylab.plot(xhat[:,0], xhat[:,1], 'kx')
+    pylab.title('Position')
+    pylab.xlabel('X (m)')
+    pylab.ylabel('Y (m)')
+    pylab.legend((lpos, lposhat), ('Ground Truth','KF'))
+    pylab.axis('equal')
+    pylab.show()
+    if saveimages:
+        pylab.savefig("../images/kfSimPosition.png", dpi=pngres)
 
 # Calculate the RMS errors.
 epos = 0
@@ -167,4 +186,79 @@ for i in range (1,N):
 epos = sqrt(epos/N)
 eyaw = sqrt(eyaw/N)
 print 'RMS position error = ', epos, 'meters'
-print 'RMS heading error = ', eyaw, 'radians = ', eyaw*180/pi, 'degrees'
+print 'RMS heading error = ', eyaw*180/pi, 'degrees'
+print 'Yaw state estimate covariance = ', P[6,6]*180/pi, 'degrees'
+
+# Try to make a movie of the normal distribution of the estimate through time with xhat and Pmp.
+if makemovie:
+    # Print the version information for the machine, OS,
+    # Python interpreter, and matplotlib.  The version of
+    # Mencoder is printed when it is called.
+    print 'Executing on', os.uname()
+    print 'Python version', sys.version
+    
+    not_found_msg = """
+    The mencoder command was not found;
+    mencoder is used by this script to make an avi file from a set of pngs.
+    It is typically not installed by default on linux distros because of
+    legal restrictions, but it is widely available.
+    """
+    
+    try:
+        subprocess.check_call(['mencoder'])
+    except subprocess.CalledProcessError:
+        print "mencoder command was found"
+        pass # mencoder is found, but returns non-zero exit as expected
+        # This is a quick and dirty check; it leaves some spurious output
+        # for the user to puzzle over.
+    except OSError:
+        print not_found_msg
+        sys.exit("quitting\n")
+
+    for i in range(len(ymovieP)*2) :
+        if i % 2: # odd
+            pylab.plot(xmovie,ymovieP[i/2],'b.')
+        else: # even
+            pylab.plot(xmovie,ymovieM[i/2],'b.')
+        pylab.axis((xmovie[0],xmovie[-1],-0.25,6))
+        pylab.xlabel('Yaw Angle (radians)')
+        pylab.ylabel(r'Covariance (radians$.^2$)')
+        pylab.title(r'Evolution of Yaw Estimate = $\cal{N}(\mu, \sigma^2)$', fontsize=20)
+        
+        # Save each image.
+        filename = str('pngtmp/%03d' % i) + '.png'
+        pylab.savefig(filename, dpi=100)
+    
+        # Let the user know what's happening.
+        if not (i+1) % 25:
+            print 'Wrote file', i+1, 'of', len(ymovieP)*2, ' =', filename
+    
+        # Clear the figure to make way for the next image.
+        pylab.clf()
+    
+    # Now that we have graphed images of the dataset, we will stitch them
+    # together using Mencoder to create a movie.  Each image will become
+    # a single frame in the movie.
+    #
+    # We want to use Python to make what would normally be a command line
+    # call to Mencoder.  Specifically, the command line call we want to
+    # emulate is (without the initial '#'):
+    # mencoder mf://*.png -mf type=png:w=800:h=600:fps=25 -ovc lavc -lavcopts vcodec=mpeg4 -oac copy -o output.avi
+    # See the MPlayer and Mencoder documentation for details.
+    command = ('mencoder',
+               'mf://pngtmp/*.png',
+               '-mf',
+               'type=png:w=800:h=600:fps=5',
+               '-ovc',
+               'lavc',
+               '-lavcopts',
+               'vcodec=mpeg4',
+               '-oac',
+               'copy',
+               '-o',
+               'kfdistribution.avi')
+    
+    print "\n\nabout to execute:\n%s\n\n" % ' '.join(command)
+    subprocess.check_call(command)
+    print "\n The movie was written to 'kfdistribution.avi'"
+    print "\n You may want to delete pngtmp/*.png now.\n"

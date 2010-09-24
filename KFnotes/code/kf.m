@@ -165,6 +165,8 @@ end
 epos = sqrt(epos/N);
 eyaw = sqrt(eyaw/N);
 stringpos = sprintf('RMS position error = %f meters\n', epos);
-stringyaw = sprintf('RMS heading error = %f radians = %f degrees\n', eyaw, eyaw*180/pi);
+stringyaw = sprintf('RMS heading error = %f degrees\n', eyaw*180/pi);
+stringcov = sprintf('Yaw state estimate covariance = %f degrees\n', P(7,7)*180/pi);
 disp(stringpos);
 disp(stringyaw);
+disp(stringcov);
