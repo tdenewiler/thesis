@@ -33,7 +33,7 @@ The only parameters available to tune PID controllers for performance are the ga
 
 When the characteristics of a robot are changed the PID gains must also be modified to reflect those changes. These characteristics include mass, center of mass, particular treads or motors and payloads, as these all affect the dynamics of the system. Gain scheduling is the process of tuning a system to use a different set of gains based on the operating environment or characteristics of the robot, however this is very time consuming. This motivates the search for a better control system for these small robots.
 
-Table \ref{tab:PIDGainEffects} shows how increasing the different gain values affects the performance of the controller output in terms of rise time, overshoot, settling time and steady state error. It can be seen that a large amount of coupling exists between the gains and attempting to fix one aspect of the controller output can have unintended consequences that cause other aspects of controller output to perform suboptimally. This is in contrast to the gains that arise for Lyapunov controllers as seen in section \ref{sec:trajectoryCurvature}.
+Table \ref{tab:PIDGainEffects} shows how increasing the different gain values affects the performance of the controller output in terms of rise time, overshoot, settling time and steady state error. It can be seen that a large amount of coupling exists between the gains and attempting to fix one aspect of the controller output can have unintended consequences that cause other aspects of controller output to perform suboptimally. This is in contrast to the gains that arise for Lyapunov controllers as seen in section \ref{sec:lyapunovTrajectoryConvergence}.
 
 \begin{table}[ht!]
 \caption{Effects on controller output of modifying PID gains.}
@@ -141,7 +141,7 @@ The control Lyapunov function is selected to be positive, contain all three erro
 %\label{eq:lyapunovfunction}
 V = V_1 + V_2 = \frac{1}{2}\lambda e^2 + \frac{1}{2}\left(\alpha^2+h\theta^2\right)
 \end{align*}
-where $\lambda$ and $h$ are positive constants that can be used to tune the controller output (see section \ref{sec:trajectoryCurvature}). Using the kinematics equations in (\ref{eq:lyapunovkinematics}) the derivative of each term of the candidate control Lyapunov function can be found as
+where $\lambda$ and $h$ are positive constants that can be used to tune the controller output (see section \ref{sec:lyapunovTrajectoryConvergence}). Using the kinematics equations in (\ref{eq:lyapunovkinematics}) the derivative of each term of the candidate control Lyapunov function can be found as
 \begin{align}
 \label{eq:Vderivatives}
 \begin{split}
@@ -207,14 +207,17 @@ Substituting $\dot{V}_1$ from (\ref{eq:V1dotfinal}) and $\dot{V}_2$ from (\ref{e
 This expression is equal to zero if and only if $\alpha=0$ \textit{and} $e=0$, which only occurs when the robot has reached its goal pose. Therefore, at any point along the robots trajectory other than the goal point this function is negative definite and is asymptotically stable.
 
 Using the expressions for $u$ in (\ref{eq:lyapunovu}) and $\omega$ in (\ref{eq:lyapunovomega}) and substituting those values back into the kinematic model from (\ref{eq:lyapunovkinematics}) gives
-\begin{align*}
-%\label{eq:lyapunovfinalkinematics}
+\begin{align}
+\label{eq:lyapunovfinalkinematics}
 \begin{split}
-\dot{e} &= -\gamma e\cos^2\alpha \\
-\dot{\alpha} &= -\left(k\alpha + \gamma h\frac{\cos\alpha\sin\alpha}{\alpha}\right) \\
-\dot{\theta} &= \gamma\cos\alpha\sin\alpha
+\dot{e} &= -u\cos\alpha = -\gamma e\cos^2\alpha \\
+\dot{\alpha} &= -\omega + u\frac{\sin\alpha}{e} \\
+&= -(k\alpha+\gamma\frac{\cos\alpha\sin\alpha}{\alpha}(\alpha+h\theta))+\gamma e\cos\alpha\frac{\sin\alpha}{e} \\
+&= -k\alpha-\gamma\cos\alpha\sin\alpha+\gamma\cos\alpha\sin\alpha-\gamma h\theta\frac{\cos\alpha\sin\alpha}{\alpha} \\
+&= -\left(k\alpha + \gamma h\theta\frac{\cos\alpha\sin\alpha}{\alpha}\right) \\
+\dot{\theta} &= u\frac{\sin\alpha}{e} = \gamma e\cos\alpha\frac{\sin\alpha}{e} = \gamma\cos\alpha\sin\alpha
 \end{split}
-\end{align*}
+\end{align}
 
 Combining (\ref{eq:lyapunovu}) and (\ref{eq:lyapunovomega}) gives the following control law to replace the PID controller from section \ref{sec:pid}:
 \begin{align}
@@ -251,6 +254,44 @@ The method used to calculate the variables needed for the control law in (\ref{e
 \end{enumerate}
 Note that all of the angle variables need to be normalized so that they are in the range $(-\pi,\pi]$.
 
-\subsection{Curvature of Resulting Trajectory}
-\label{sec:trajectoryCurvature}
-*** Say something about how the parameters $h$, $k$ and $\gamma$ in (\ref{eq:lyapunovControlLaw}) determine the curvature of the resulting trajectory. The important thing to recognize is that, even though there are three parameters to tune with the control Lyapunov function, a stable trajectory is guaranteed with control Lyapunov functions and the parameters affect only the curvature of the trajectory. With PID controllers there are more parameters to tune and they affect whether the resulting control law is stable as well as the response profile. The free parameters for Lyapunov are considered design variables and are beneficial. ***
+\subsection{Convergence of Resulting Trajectory}
+\label{sec:lyapunovTrajectoryConvergence}
+The gains used in the control law (\ref{eq:lyapunovControlLaw}) were selected to limit the maximum linear velocity of the robot while simultaneously establishing exponentially stable convergence towards the null value of the errors \cite{Aicardi94}. This was done using the kinematics equations from (\ref{eq:lyapunovfinalkinematics}) near the limiting value of $(0, 0)$ for $(\alpha, \theta)$ and writing the control law as an approximate linear system. It is helpful to note that $\alpha\to0\Rightarrow \alpha=\cos\alpha\sin\alpha=\sin\alpha$ as seen in Figure \ref{fig:plotSinCos}. When that is the case the following linear approximation holds:
+\begin{align}
+\label{eq:lyapunovLinearSystem}
+\begin{split}
+\left[\begin{array}{c} \dot{\alpha} \\ \dot{\theta} \end{array}\right]
+&= \underbrace{\left[\begin{array}{c c} -k & -h\gamma \\ \gamma & 0 \end{array}\right]}_{A}
+\left[\begin{array}{c} \alpha \\ \theta \end{array}\right] \\
+\dot{e} &= -\gamma e
+\end{split}
+\end{align}
+with linear output equations
+\begin{align}
+\label{eq:lyapunovLinearOutput}
+\begin{split}
+u &= \gamma e \\
+\omega &= (k+\gamma)\alpha + h\gamma\theta.
+\end{split}
+\end{align}
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.75\textwidth]{images/plotSinCos}
+	\caption{Plot of $\alpha$, $\sin\alpha$, $\cos\alpha$ and $\sin\alpha*\cos\alpha$.}
+	\label{fig:plotSinCos}
+\end{figure}
+
+This shows that $e$ converges at a rate of $e^{-\gamma t}$ while the angles converge at a rate of $e^{-\sigma t}$ where $-\sigma$ is the real part of the dominant pole of the system $A$ in (\ref{eq:lyapunovLinearSystem}). The local curvature of the robot trajectory is
+\begin{align*}
+c = \frac{\omega}{u}
+\end{align*}
+which leads to exponentially stable convergence if and only if $\sigma > \gamma$.
+
+By setting $\gamma=0.3$ and the maximum lookahead distance used for the carrot in the path planner to $10m$ (see section \ref{sec:lyapunovVariables}) the maximum linear velocity will be $u=\gamma e\cos(\alpha=0) = 3m/s$ which is a reasonable value for the PackBot. Using $h=k=1.2$ in (\ref{eq:lyapunovLinearSystem}) gives eigenvalues for $A$ of
+\begin{align*}
+A = \left[\begin{array}{c c} -k & -h\gamma \\ \gamma & 0 \end{array}\right]
+= \left[\begin{array}{c c} -1.2 & -0.36 \\ 0.3 & 0 \end{array}\right]
+\Rightarrow &\lambda(A) = \begin{cases} \lambda_1  = -1.10199602 \\ \lambda_2 = -0.09800398 \end{cases}
+\end{align*}
+showing that $\sigma=1.1>\gamma=0.3$ and leading to exponentially stable convergence of the angles $\alpha$ and $\theta$.

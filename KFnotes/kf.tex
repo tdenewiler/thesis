@@ -79,6 +79,16 @@ The Kalman filter algorithm consists of two main steps:
 \end{figure}
 \end{frame}
 
+\begin{frame}{Notation}
+\begin{itemize}
+\item Upper case variables are matrices, lower case variables are vectors.
+\item A "hat" over a variable means that it is an estimated value like $\hat{x}$.
+\item A "-" superscript means a value obtained during the prediction update step like $\hat{x}_k^-$.
+\item A "+" superscript means a value obtained during the measurement update step like $\hat{x}_k^+$.
+\item Subscripts denote time steps like $\hat{x}_{k+1}^-$ is one time step in the future from $\hat{x}_k^+$.
+\end{itemize}
+\end{frame}
+
 \begin{frame}{Algorithm - Focus on $\hat{x}$}
 \begin{itemize}
 \item A generic system is represented by the model
@@ -446,13 +456,14 @@ K_k &= P_k^-H_k^T\left[H_kP_k^-H_k^T + R_k\right]^{-1}
 \begin{itemize}
 \item Same system model developed above. Assume sensors measuring ground truth.
 \item Two yaw sensors with adjustable noise and drift.
-\item Kalman filter estimate is much closer to better sensor.
+\item Kalman filter estimate is better than both sensors.
 \item Yaw sensor 1 noise is $v_{\psi_1} = 1^\circ$, yaw sensor 2 noise is $v_{\psi_1} = 5^\circ$.
-\item Typical RMS error results for estimates with no drift.
+\item Typical RMS error results for estimates with no drift:
 \begin{itemize}
 \item Position = $0.0$ meters.
-\item Yaw = $0.023$ radians = $1.359^\circ$.
+\item Yaw = $0.816^\circ$.
 \end{itemize}
+\item Typical yaw state estimate covariance = $0.738^\circ$.
 \end{itemize}
 \end{frame}
 
@@ -502,18 +513,18 @@ x \\ y \\ z \\ V \\ \theta \\ \phi \\ \psi \\ \omega
 \begin{frame}{Example - Estimating Yaw - System Covariance}
 \begin{itemize}
 \item Where do we expect the system model to be inaccurate?
-\item For this example assume the model is correct.
+\item For this example assume the model is not completely accurate.
 \end{itemize}
 \begin{align*}
 Q = \left[\begin{array}{c c c c c c c c}
-1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
-0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
-0 & 0 & 0 & 0 & 0 & 0 & 0 & 1
+0.1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0.1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0.1 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0.1 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0.1 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0.1 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0.1 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0.1
 \end{array}\right]
 \end{align*}
 \end{frame}
