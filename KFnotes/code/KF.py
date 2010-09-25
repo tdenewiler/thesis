@@ -5,6 +5,9 @@
 # Yaw has two sensors that have adjustable amounts of noise and drift.
 # Output is RMS errors for position and heading plus plots showing some of the state variables.
 
+# The code to generate a movie with mencoder was borrowed from
+# Josh Lifton 2004; http://web.media.mit.edu/~lifton/snippets/graph_movie/
+
 # For linear algebra and plotting:
 from scipy import *
 import numpy
@@ -16,12 +19,12 @@ import os
 import sys
 
 pngres = 600
-showplots = 0
-saveplots = 0 # showplots must be turned on as well
-makemovie = 1
+showplots = 1
+saveplots = 1
+makemovie = 0
 
 # Number of time steps.
-N = 100
+N = 50
 
 # Sensor behavior variables. At least one Noise value must be > 0 else the inverse in the gain
 # calculation is ill-conditioned.
@@ -50,7 +53,7 @@ for i in range(0,N+1):
     x[i,3] = 1
     x[i,4] = 0
     x[i,5] = 0
-    x[i,6] = -1 * math.atan2(x[i,1],x[i,0])
+    x[i,6] = math.atan2(x[i,1],x[i,0])
     x[i,7] = 4*x[i,3]/R
     angle = angle + 2*pi/N
     
@@ -83,7 +86,7 @@ H[7,6] = 1
 H[8,7] = 1
 
 # State covariance matrix.
-Q = 0.01*numpy.eye(8)
+Q = 0.1*numpy.eye(8)
 
 # Measurement covariance matrix.
 R = numpy.zeros((9,9))
@@ -102,6 +105,8 @@ Kk = numpy.zeros((8*(N-1),9))
 xmovie = numpy.arange(-pi, pi, 0.001)
 ymovieP = numpy.zeros((N, len(xmovie)), float)
 ymovieM = numpy.zeros((N, len(xmovie)), float)
+ymoviePmean = numpy.zeros((N), float)
+ymovieMmean = numpy.zeros((N), float)
 
 # Run the KF equations.
 for i in range(N):
@@ -120,6 +125,7 @@ for i in range(N):
     Pm = dot(F,dot(P,F.T))+Q # estimate covariance
     if makemovie:
         ymovieP[i] = (1/numpy.sqrt(2*numpy.pi*Pm[6,6]))*numpy.exp(-((xmovie-xh[6])**2)/(2*Pm[6,6]))
+        ymoviePmean[i] = xh[6]
 
     # Measurement update step.
     K = dot(Pm,dot(H.T,numpy.linalg.inv(dot(H,dot(Pm,H.T))+R))) # Kalman gain
@@ -127,6 +133,7 @@ for i in range(N):
     P = dot((eye(8)-dot(K,H)),Pm) # estimate covariance
     if makemovie:
         ymovieM[i] = (1/numpy.sqrt(2*numpy.pi*P[6,6]))*numpy.exp(-((xmovie-xh[6])**2)/(2*P[6,6]))
+        ymovieMmean[i] = xh[6]
 
     # Save state estimate, state covariance and gains.
     xhat = vstack((xhat,xh))
@@ -134,7 +141,7 @@ for i in range(N):
     Pp = vstack((Pp,diag(P)))
     Kk = vstack((Kk,K))
 
-if showplots:
+if showplots or saveplots:
     # Plot the yaw estimate.
     pylab.figure(1)
     lyaw =  pylab.plot(x[:,6])
@@ -159,7 +166,7 @@ if showplots:
     pylab.xlabel('Time (s)')
     pylab.ylabel('Yaw (radians)')
     pylab.legend((lyaw, lpsi1, lpsi2, lxhat), ('Ground Truth', 'Sensor 1', 'Sensor 2', 'KF'))
-    pylab.axis([55.5, 61, 0.5, 4])
+    pylab.axis([10.5, 16, 0, 3])
     if saveplots:
         pylab.savefig("../images/kfSimYawZoom.png", dpi=pngres)
     
@@ -172,9 +179,10 @@ if showplots:
     pylab.ylabel('Y (m)')
     pylab.legend((lpos, lposhat), ('Ground Truth','KF'))
     pylab.axis('equal')
-    pylab.show()
     if saveplots:
         pylab.savefig("../images/kfSimPosition.png", dpi=pngres)
+    if showplots:
+        pylab.show()
 
 # Calculate the RMS errors.
 epos = 0
@@ -183,17 +191,17 @@ for i in range (1,N):
     epos = epos + (x[i,0]-xhat[i,0])**2 + (x[i,1]-xhat[i,1])**2
     eyaw = eyaw + (x[i,6]-xhat[i,6])**2
 
-epos = sqrt(epos/N)
-eyaw = sqrt(eyaw/N)
+epos = sqrt(epos)/N
+eyaw = sqrt(eyaw)/N
 print 'RMS position error = ', epos, 'meters'
+print 'Yaw sensor noise 1 =', Yaw1Noise*180/pi, 'degrees, 2 =', Yaw2Noise*180/pi, 'degrees'
+print 'Yaw state estimate variance = ', P[6,6]*180/pi, 'degrees'
 print 'RMS heading error = ', eyaw*180/pi, 'degrees'
-print 'Yaw state estimate covariance = ', P[6,6]*180/pi, 'degrees'
+print '2-sigma (95.4%) for sensor 1 =', 2*sqrt(Yaw1Noise*180/pi),', for estimate =', 2*sqrt(P[6,6]*180/pi)
+print '3-sigma (99.7%) for sensor 1 =', 3*sqrt(Yaw1Noise*180/pi),', for estimate =', 3*sqrt(P[6,6]*180/pi)
 
 # Try to make a movie of the normal distribution of the estimate through time with xhat and Pmp.
 if makemovie:
-    ymax = max(max(ymovieP[:,6]),max(ymovieM[:,6]))
-    ymean = arange(0,ymax,0.01)
-    #print 'ymaxP =', max(ymovieP[:,6]), 'ymaxM =', max(ymovieM[:,6]), 'ymax =', ymax
     # Print the version information for the machine, OS,
     # Python interpreter, and matplotlib.  The version of
     # Mencoder is printed when it is called.
@@ -211,28 +219,33 @@ if makemovie:
         subprocess.check_call(['mencoder'])
     except subprocess.CalledProcessError:
         print "mencoder command was found"
-        pass # mencoder is found, but returns non-zero exit as expected
-        # This is a quick and dirty check; it leaves some spurious output
-        # for the user to puzzle over.
+        pass # mencoder is found, but returns non-zero exit as expected.
+        # This is a quick and dirty check; it leaves some spurious output for the user to puzzle over.
     except OSError:
         print not_found_msg
-        sys.exit("quitting\n")
-        
+        sys.exit("This part of the script can be turned off by setting makemovie=0. Quitting.\n")
+    
+    yaxisheight = 6
     for i in range(N*2):
         if i % 2: # odd
-            pylab.plot(xmovie,ymovieP[i/2])
+            lP = pylab.plot(xmovie,ymovieP[i/2],'b')
+            lM = pylab.plot(0,pi,'r') # A single point to make lM show up in legend.
+            pylab.axvline(ymoviePmean[i/2], 0, yaxisheight, 'g')
         else: # even
-            pylab.plot(xmovie,ymovieM[i/2],'r')
-        pylab.axis((xmovie[0],xmovie[-1],-0.25,5))
+            lM = pylab.plot(xmovie,ymovieM[i/2],'r')
+            lP = pylab.plot(0,pi,'b') # A single point to make lP show up in legend.
+            pylab.axvline(ymovieMmean[i/2], 0, yaxisheight, 'g')
+        pylab.axis((xmovie[0],xmovie[-1],-0.25,yaxisheight))
         pylab.xlabel('Yaw Angle (radians)')
         pylab.ylabel(r'Covariance (radians$.^2$)')
         pylab.title(r'Evolution of Yaw Estimate = $\cal{N}(\mu, \sigma^2)$', fontsize=20)
+        pylab.legend((lP,lM),('Prediction Update','Measurement Update'))
         
         # Save each image.
         filename = str('pngtmp/%03d' % i) + '.png'
         pylab.savefig(filename, dpi=100)
     
-        # Let the user know what's happening.
+        # Let the user know what's happening occasionally.
         if not (i+1) % 25:
             print 'Wrote file', i+1, 'of', len(ymovieP)*2, ' =', filename
     
@@ -251,7 +264,7 @@ if makemovie:
     command = ('mencoder',
                'mf://pngtmp/*.png',
                '-mf',
-               'type=png:w=800:h=600:fps=25',
+               'type=png:w=800:h=600:fps=2',
                '-ovc',
                'lavc',
                '-lavcopts',
