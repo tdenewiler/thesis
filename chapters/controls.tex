@@ -1,6 +1,6 @@
 \chapter{Controls}
 \label{ch:controls}
-Control systems are responsible for computing the commands necessary for actuators to cause the trajectory of a system to go from its current state to a desired state. There are many different methods that can be used to determine the output commands. One of the more popular and widely implemented control systems is the PID (Proportional, Integral, Differential) controller. Lyapunov controllers utilize knowledge of the system dynamics to compute appropriate output commands. The robots in these experiments originally used PID controllers for position and heading control and were later tested with a Lyapunov contoller.
+Control systems are responsible for computing the commands necessary for actuators to cause the trajectory of a system to go from its current state to a desired state, or for answering the question "How do I get there?". There are many different methods that can be used to determine the output commands. One of the more popular and widely implemented control systems is the PID (Proportional, Integral, Differential) controller. Model based controllers utilize knowledge of the physics of the system to compute appropriate output commands. The robots in these experiments originally used PID controllers for position and heading control and were later tested with a model based contoller that takes advantage of Lyapunov stability theory.
 
 \section{PID}
 \label{sec:pid}
@@ -50,7 +50,7 @@ $K_d$        & Small Decrease & Decrease  & Decrease      & None \\ \bottomrule
 
 \section{Lyapunov Controller}
 \label{sec:lyapunov}
-An alternative control method do using classical PID controllers is to use model based controllers based on control Lyapunov functions. An intuitive way to conceptualize Lyapunov controllers is by thinking of them as decreasing the overall energy of a system, even when the variables involved in the functions do not represent energy \cite{Khalil02}.
+An alternative control method to using classical PID controllers is to use model based controllers based on Lyapunov stability theory. An intuitive way to conceptualize controllers based on this stabilty theory is by thinking of them as decreasing the overall energy of a system, even when the variables involved in the control Lyapunov functions do not represent energy \cite{Khalil02}.
 
 The theorem for Lyapunov stability states that for an equilibrium point $x=0$ and a domain $D\subset\mathbb{R}^n$ that contains $x=0$ and for which there is a function $V:D\to\mathbb{R}$ that is continuously differentiable and has the following properties 
 \begin{align*}
@@ -68,11 +68,11 @@ then the equilibrium point $x=0$ is stable. Additionally, if
 \end{align*}
 then $x=0$ is asymptotically stable.
 
-It is not always possible to find such a Lyapunov function $V$ but when one is found then this theorem holds and the "energy" of the system will always be positive and decreasing. The "energy" can consist of any variables that make $V(0) = 0$ and $V(x) > 0$ and often consist of a combination of the errors that are to be minimized in a system raised to an even power to make them positive. In that case the errors are always decreasing since $\dot{V}(x) < 0$ and the system will reach the desired state.
+It is not always possible to find such a control Lyapunov function $V$ but when one is found then this theorem holds and the "energy" of the system will always be positive and decreasing. The "energy" can consist of any variables that make $V(0) = 0$ and $V(x) > 0$ and often consist of a combination of the errors that are to be minimized in a system. In that case the errors are always decreasing since $\dot{V}(x) < 0$ and the system will reach the desired state.
 
 \subsection{Unicycle-like Robot Kinematics}
 \label{sec:unicycleKinematics}
-\cite{Rusu05RobotuxLyapunov,Aicardi_UnicycleLyapunov95} describe a method for using a Lyapunov controller for a differential drive robot, similar in nature to the small robots considered in these experiments and typically referred to as a unicycle-like robots in the literature. This section will mostly be a restatement of their work but with more intermediate steps and a slightly different formulation included to make the derivation easier to follow than in some of the referenced papers.
+\cite{Rusu05RobotuxLyapunov,Aicardi_UnicycleLyapunov95} describe a method for constructing a control Lyapunov function based on the kinematics of a differential drive robot, similar in nature to the small robots considered in these experiments and typically referred to as a unicycle-like robots in the literature. This section will mostly be a restatement of their work but with more intermediate steps and a slightly different formulation included to make the derivation easier to follow than in some of the referenced papers.
 
 \begin{figure}[ht!]
 	\centering
@@ -136,7 +136,7 @@ Finally, replacing $\alpha$ with $\theta-\phi$ results in a kinematic model of
 
 \subsection{Control Lyapunov Function}
 \label{sec:controllyapunov}
-The control Lyapunov function is selected to be positive, contain all three error states, separate the distance error from the angle errors and is given by
+The control Lyapunov function is selected to be positive, contain all three error states and separate the distance error from the angle errors and is given by
 \begin{align*}
 %\label{eq:lyapunovfunction}
 V = V_1 + V_2 = \frac{1}{2}\lambda e^2 + \frac{1}{2}\left(\alpha^2+h\theta^2\right)
@@ -170,7 +170,7 @@ where $\gamma$ is a positive constant different from $\lambda$. Substituting thi
 \label{eq:V1dotfinal}
 \dot{V}_1 = -\lambda eu\cos\alpha = -\lambda\gamma e^2\cos^2\alpha \leq 0.
 \end{align}
-Since $V_1>0$ and $\dot{V}_1<0$ except when $e=0$ we have that $V_1$ converges asymptotically to a positive defined limit.
+Since $V_1\geq0$ and $\dot{V}_1\leq0$ we have that $V_1$ converges asymptotically to a positive defined limit.
 
 Replacing $u$ in the expression for $\dot{V}_2$ in (\ref{eq:Vderivatives}) results in
 \begin{align}
@@ -182,7 +182,7 @@ Replacing $u$ in the expression for $\dot{V}_2$ in (\ref{eq:Vderivatives}) resul
 \end{split}
 \end{align}
 
-Similarly, $\dot{V}_2$ is negative if $\omega$ takes the form
+Similarly, $\dot{V}_2$ is negative semidefinite if $\omega$ takes the form
 \begin{align}
 \label{eq:lyapunovomega}
 \begin{split}
@@ -194,7 +194,7 @@ where $k$ is a positive constant. Substituting this value of $\omega$ into (\ref
 \label{eq:V2dotfinal}
 \begin{split}
 \dot{V}_2 &= \alpha\left(-k\alpha-\gamma\frac{\cos\alpha\sin\alpha}{\alpha}(\alpha+h\theta) + \gamma\frac{\cos\alpha\sin\alpha}{\alpha}(\alpha+h\theta)\right) \\
-&= -k\alpha^2 \leq 0.
+&= -k\alpha^2 \leq 0
 \end{split}
 \end{align}
 and $V_2$ converges asymptotically to a positive defined limit.
@@ -286,7 +286,7 @@ This shows that $e$ converges at a rate of $e^{-\gamma t}$ while the angles conv
 \begin{align*}
 c = \frac{\omega}{u}
 \end{align*}
-which leads to exponentially stable convergence if and only if $\sigma > \gamma$.
+which leads to exponentially stable convergence if and only if $\sigma > \gamma$ so that $u\neq0$ before $\omega\to0$.
 
 By setting $\gamma=0.3$ and the maximum lookahead distance used for the carrot in the path planner to $10m$ (see section \ref{sec:lyapunovVariables}) the maximum linear velocity will be $u=\gamma e\cos(\alpha=0) = 3m/s$ which is a reasonable value for the PackBot. Using $h=k=1.2$ in (\ref{eq:lyapunovLinearSystem}) gives eigenvalues for $A$ of
 \begin{align*}
@@ -294,4 +294,4 @@ A = \left[\begin{array}{c c} -k & -h\gamma \\ \gamma & 0 \end{array}\right]
 = \left[\begin{array}{c c} -1.2 & -0.36 \\ 0.3 & 0 \end{array}\right]
 \Rightarrow &\lambda(A) = \begin{cases} \lambda_1  = -1.10199602 \\ \lambda_2 = -0.09800398 \end{cases}
 \end{align*}
-showing that $\sigma=1.1>\gamma=0.3$ and leading to exponentially stable convergence of the angles $\alpha$ and $\theta$.
+showing that $\sigma=1.1>\gamma=0.3$ and leading to exponentially stable convergence of the angles $\alpha$ and $\theta$ followed by exponentially stable convergence of $e$. This is the new answer for "How do I get there?".
