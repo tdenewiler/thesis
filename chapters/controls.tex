@@ -256,6 +256,38 @@ Note that all of the angle variables need to be normalized so that they are in t
 
 \subsection{Convergence of Resulting Trajectory}
 \label{sec:lyapunovTrajectoryConvergence}
+**********
+
+Two parts to selecting gains:
+\begin{itemize}
+\item Find critically damped gains,
+\item have angle errors converge before distance error.
+\end{itemize}
+The first part is done when $\zeta=\frac{\lambda_1(A)}{\lambda_2(A)}=1$ and the second part is done when $\sigma>\gamma$. This is all looking at the gains $h$, $k$ and $\gamma$ as well as the eigenvalues of the matrix $A$ below. To establish the first item, $\zeta=1$, it is necessary to have $\lambda_1(A) = \lambda_2(A) = \lambda$. For this to happen we need
+\begin{align*}
+&\left[\begin{array}{c c} -k-\lambda & -h\gamma \\ \gamma & 0\end{array}\right] = 0 \\
+\Rightarrow &(-k-\lambda)(-\lambda)+h\gamma^2 = 0 \\
+\Rightarrow &\lambda^2 + k\lambda + h\gamma^2 = 0 \\
+\Rightarrow &\lambda = \frac{-k\pm\sqrt{k^2-4h\gamma^2}}{2} \\
+\Rightarrow &k^2 - 4h\gamma^2 = 0 \\
+\Rightarrow &k = \sqrt{4h\gamma^2} = 2\gamma\sqrt{h}
+\end{align*}
+
+To find $\sigma>\gamma$ constrained by $k=2\gamma\sqrt{h}$ it is necessary to have
+\begin{align*}
+\sigma &= -\lambda = \tfrac{k}{2} > \gamma \\
+\Rightarrow k &> 2\gamma
+\end{align*}
+The two equations can be combined to find $h$ such that
+\begin{align*}
+k &= 2\gamma\sqrt{h} > 2\gamma \\
+\Rightarrow h &> 1
+\end{align*}
+
+Using this a gain $\gamma$ can be selected first to limit the maximum linear velocity using the equation $u_{\text{max}}=\gamma e\cos(\alpha=0)=\gamma e$. For example, a distance error of $10m$ and $\gamma=0.2$ gives $u_{\text{max}}=2\tfrac{m}{s}$. Then $h$ can be selected to be small, for example $h=1.1$. Given those two variables a gain $k$ that satisfies the properties of a critically damped system for $A$ is found using $k=2\gamma\sqrt{h}=0.42$. Using these values the eigenvalues of $A$ are $\lambda_1(A) = \lambda_2(A) = -0.21$ meaning that the errors $\alpha$ and $\theta$ will decrease at the same rate. Also, since $\sigma = 0.21 > 0.2 = \gamma$ the angle errors will decrease at a faster rate than the distance error which will cause the robot to curve into the goal point with the goal heading already achieved and give a nice, smooth trajectory to the desired pose.
+
+**********
+
 The gains used in the control law (\ref{eq:lyapunovControlLaw}) were selected to limit the maximum linear velocity of the robot while simultaneously establishing exponentially stable convergence towards the null value of the errors \cite{Aicardi94}. This was done using the kinematics equations from (\ref{eq:lyapunovfinalkinematics}) near the limiting value of $(0, 0)$ for $(\alpha, \theta)$ and writing the control law as an approximate linear system. It is helpful to note that $\alpha\to0\Rightarrow \alpha=\cos\alpha\sin\alpha=\sin\alpha$ as seen in Figure \ref{fig:plotSinCos}. When that is the case the following linear approximation holds:
 \begin{align}
 \label{eq:lyapunovLinearSystem}
@@ -287,6 +319,12 @@ This shows that $e$ converges at a rate of $e^{-\gamma t}$ while the angles conv
 c = \frac{\omega}{u}
 \end{align*}
 which leads to exponentially stable convergence if and only if $\sigma > \gamma$ so that $u\neq0$ before $\omega\to0$.
+
+Another property of the eigenvalues of $A$ involves the damping of the angle errors, or how much each angle $\alpha$ and $\theta$ will be corrected for and if one is corrected for more than the other. The damping is determined by looking at the ratio of the eigenvalues
+\begin{align*}
+\zeta = \frac{\lambda_1(A)}{\lambda_2(A)}.
+\end{align*}
+If $\zeta=1$ then $A$ is critically damped, if $\zeta>1$ then both eigenvalues are real and $A$ is overdamped and if $\zeta<1$ then the eigenvalues are a pair of complex numbers and the $A$ is underdamped.
 
 By setting $\gamma=0.3$ and the maximum lookahead distance used for the carrot in the path planner to $10m$ (see section \ref{sec:lyapunovVariables}) the maximum linear velocity will be $u=\gamma e\cos(\alpha=0) = 3m/s$ which is a reasonable value for the PackBot. Using $h=k=1.2$ in (\ref{eq:lyapunovLinearSystem}) gives eigenvalues for $A$ of
 \begin{align*}
