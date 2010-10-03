@@ -19,7 +19,7 @@ Using logged data from the Kalman filter running with default $Q$ and $R$ parame
 	\label{fig:kfPlainDataFirstAttempt}
 \end{figure}
 
-\section{Lyapunov Controller Results}
+\section{Model Based Controller Results}
 \label{sec:lyapunovResults}
 The control law derived in (\ref{eq:lyapunovControlLaw}) was tested in the previously described area and the results are shown in Figures \ref{fig:resultsLyapunovMocu} - \ref{fig:resultsLyapunovVelocities}. Figure \ref{fig:resultsLyapunovMocu} shows the route consisting of five waypoints that the robot was instructed to navigate and Figure \ref{fig:resultsLyapunovGEKF} shows the actual position of the robot during navigation. Of the options considered in section \ref{sec:lyapunovVariables} for setting the desired goal heading for each waypoint the experiment generating this data used $\theta^\star=\alpha$.
 
@@ -46,6 +46,22 @@ The results in this section show that the control law in (\ref{eq:lyapunovContro
 	\includegraphics[width=.5\textwidth]{images/20100918_1717_velocities}
 	\caption{Linear and angular velocity outputs using model based controller.}
 	\label{fig:resultsLyapunovVelocities}
+\end{figure}
+
+The process of selecting gains in section \ref{sec:lyapunovTrajectoryConvergence} only applies as $(\alpha, \theta)\to(0,0)$ but says nothing about what happens when the angle errors are not small. Empirically it was determined that the gains $h=0.25$, $k=0.2$ and $\gamma=0.2$ worked well in creating smooth trajectories and later it was found that these gains cause $\zeta=1$ so that, when the angle errors are small, the system $A$ is critically damped although $\sigma>\gamma$ so the distance error converges faster than the angle errors. The best results occurred when the gains were set to $h=0.25$, $k=0.2$ and $\gamma=0.2$ \textit{until} the angle errors were $|\alpha|<0.5$ \textit{and} $|\theta|<0.5$ radians which leads to the linear approximation being valid and the gains were then changed to $h=1.1$, $k=0.42$ and $\gamma=0.2$. The results of this adaptive gain scheme can be seen in Figures \ref{fig:resultsLyapunovPositionAdaptive} and \ref{fig:resultsLyapunovVelocitiesAdaptive}.
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.5\textwidth]{images/20100929_1448_GE_KF}
+	\caption{Robot position using adaptive gain scheme.}
+	\label{fig:resultsLyapunovPositionAdaptive}
+\end{figure}
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.5\textwidth]{images/20100929_1448_pbtx}
+	\caption{Linear and angular velocities with adaptive gain scheme.}
+	\label{fig:resultsLyapunovVelocitiesAdaptive}
 \end{figure}
 
 \subsection{Controller Comparison}
