@@ -82,7 +82,7 @@ $K_d$        & Small Decrease & Decrease  & Decrease      & None \\ \bottomrule
 	\includegraphics[width=.7\textwidth]{images/pid}
 \end{figure}
 
-\item Separate set of gains have to be tuned for different desired velocities.
+\item Separate set of gains have to be tuned for different linear velocities.
 \item If robot characteristics change all new gains must be developed.
 \item Very time consuming.
 \end{itemize}
@@ -93,8 +93,8 @@ $K_d$        & Small Decrease & Decrease  & Decrease      & None \\ \bottomrule
 \item Need to find a function with the following properties:
 \begin{align*}
 V(0) &= 0 \\
-V(x) &> 0 \in D-\{0\} \\
-\dot{V}(x) &< 0 \in D-\{0\}
+V(x) &> 0 \in \mathcal{D}-\{0\} \\
+\dot{V}(x) &< 0 \in \mathcal{D}-\{0\}
 \end{align*}
 \item If $V(x)$ is found then system stability is guaranteed for continuous systems and typically works for sampled systems.
 \item Treat errors as "energy" of system and minimize "energy".
@@ -105,7 +105,7 @@ V(x) &> 0 \in D-\{0\} \\
 
 \begin{frame}{Valid Control Lyapunov Functions}
 \begin{itemize}
-\item Valid and invalid functions for $V>0$, $\dot{V}<0$:
+\item Valid and invalid functions for $V(0)=0$, $V>0$, $\dot{V}<0$:
 \begin{figure}[ht!]
     \centering
     \begin{tabular}{c c}
@@ -178,14 +178,14 @@ V(x) &> 0 \in D-\{0\} \\
 \label{eq:lyapunovPolar}
 \begin{split}
 e &= \sqrt{x^2+y^2} \\
-\theta &= \text{atanh}(\tfrac{y}{x}) \\
+\theta &= \text{atanh}\left(\tfrac{y}{x}\right) \\
 \alpha &= \theta - \phi
 \end{split}
 \end{align}
 \item Combine (\ref{eq:lyapunovkinematics1}) with (\ref{eq:lyapunovPolar}):
 \begin{align*}
 \begin{split}
-\dot{e} &= -u*\cos(\theta-\phi) \\
+\dot{e} &= -u\cos(\theta-\phi) \\
 \dot{\theta} &= u\frac{\sin\alpha}{e} \\
 \dot{\phi} &= \omega
 \end{split}
@@ -207,7 +207,7 @@ e &= \sqrt{x^2+y^2} \\
 \item Need $V>0$ and $\dot{V}<0$ with $V$ containing $e$, $\alpha$ and $\theta$.
 \item $\dot{e}$, $\dot{\alpha}$ and $\dot{\theta}$ from kinematics in (\ref{eq:lyapunovkinematics}).
 \begin{align*}
-V &= V_1 + V_2 = \frac{1}{2}\lambda e^2 + \frac{1}{2}\left(\alpha^2+h\theta^2\right), \qquad \lambda,h>0 \\
+V &= V_1 + V_2 = \frac{1}{2}\lambda e^2 + \frac{1}{2}\left(\alpha^2+h\theta^2\right) > 0, \qquad \lambda,h>0 \\
 \dot{V}_1 &= \lambda e\dot{e} = \lambda e (-u\cos\alpha) = -\lambda eu\cos\alpha \\
 \dot{V}_2 &= \alpha\dot{\alpha}+h\theta\dot{\theta} \\
 &= -\alpha\omega + \alpha u\frac{\sin\alpha}{e} + h\theta u\frac{\sin\alpha}{e} \\
@@ -237,7 +237,7 @@ u &= \gamma e\cos\alpha, \qquad \gamma>0 \\
 \omega &= k\alpha + \gamma\frac{\cos\alpha\sin\alpha}{\alpha}\left(\alpha+h\theta\right), \qquad k>0 \\
 \Rightarrow \dot{V}_2 &= \alpha\left(-k\alpha-\gamma\frac{\cos\alpha\sin\alpha}{\alpha}(\alpha+h\theta)\right. \\
 &\qquad + \left.\gamma\frac{\cos\alpha\sin\alpha}{\alpha}(\alpha+h\theta)\right) \\
-&= -k\alpha^2 \leq 0
+&= -k\alpha^2 < 0
 \end{align*}
 \end{itemize}
 \end{frame}
@@ -249,33 +249,149 @@ u &= \gamma e\cos\alpha, \qquad \gamma>0 \\
 \dot{V} = \dot{V}_1 + \dot{V}_2 = -\lambda\gamma e^2\cos^2\alpha - k\alpha^2 \leq 0
 \end{align*}
 \item $\dot{V}=0$ only when $e=0$ \textit{and} $\alpha=0$ so the system is asymptotically stable meaning that the errors will always be decreasing using this control law.
-\begin{align*}
+\begin{align}
+\label{eq:controllaw}
+\begin{split}
 u &= \gamma e\cos\alpha \\
 \omega &= k\alpha + \gamma\frac{\cos\alpha\sin\alpha}{\alpha}\left(\alpha+h\theta\right)
-\end{align*}
+\end{split}
+\end{align}
 \item $h$, $k$ and $\gamma$ are all positive gains that can be used to tune controller performance.
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Trajectory Curvature}
+\begin{frame}{Small Angle Errors}
 \begin{itemize}
-\item x
+\item The gains are used to modify the resulting trajectory, not to generate stability.
+\item When angle errors are small the kinematics can be linearized.
+\item As $\alpha\to0 \Rightarrow \alpha = \cos\alpha\sin\alpha = \sin\alpha$.
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.6\textwidth]{images/plotSinCos}
+\end{figure}
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Sample Results}
+\begin{frame}{Kinematics Using Control Law}
 \begin{itemize}
-\item Route drawn with MOCU and driven by robot:
+\item The kinematics from (\ref{eq:lyapunovkinematics}), using the control law (\ref{eq:controllaw}), are:
+\begin{align}
+\label{eq:lyapunovfinalkinematics}
+\begin{split}
+\dot{e} &= -u\cos\alpha = -\gamma e\cos^2\alpha \\
+\dot{\alpha} &= -\omega + u\frac{\sin\alpha}{e} \\
+&= -(k\alpha+\gamma\frac{\cos\alpha\sin\alpha}{\alpha}(\alpha+h\theta))+\gamma e\cos\alpha\frac{\sin\alpha}{e} \\
+&= -k\alpha-\gamma\cos\alpha\sin\alpha+\gamma\cos\alpha\sin\alpha-\gamma h\theta\frac{\cos\alpha\sin\alpha}{\alpha} \\
+&= -\left(k\alpha + \gamma h\theta\frac{\cos\alpha\sin\alpha}{\alpha}\right) \\
+\dot{\theta} &= u\frac{\sin\alpha}{e} = \gamma e\cos\alpha\frac{\sin\alpha}{e} = \gamma\cos\alpha\sin\alpha
+\end{split}
+\end{align}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Linearizing Kinematics}
+\begin{itemize}
+\item When $(\alpha,\theta)\to(0,0)$ the kinematics from (\ref{eq:lyapunovfinalkinematics}) can be linearized by the following:
+\begin{align}
+\label{eq:lyapunovLinearSystem}
+\begin{split}
+\left[\begin{array}{c} \dot{\alpha} \\ \dot{\theta} \end{array}\right]
+&= \underbrace{\left[\begin{array}{c c} -k & -h\gamma \\ \gamma & 0 \end{array}\right]}_{A}
+\left[\begin{array}{c} \alpha \\ \theta \end{array}\right] \\
+\dot{e} &= -\gamma e
+\end{split}
+\end{align}
+with linear output equations
+\begin{align*}
+\begin{split}
+u &= \gamma e \\
+\omega &= (k+\gamma)\alpha + h\gamma\theta.
+\end{split}
+\end{align*}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Error Convergence}
+\begin{itemize}
+\item If $e=e^{-\gamma t}$ then $\dot{e}=-\gamma e$ confirming (\ref{eq:lyapunovLinearSystem}) so the distance error converges at a rate of $e^{-\gamma t}$.
+\item The eigenvalues of $A$ determine the rate of convergence of the angle errors.
+\begin{align*}
+A &= S\Lambda S^{-1} \\
+e^{At} &= e^{S\Lambda S^{-1}t} \\
+&= Se^{\Lambda t} S^{-1} \\
+\left[\begin{array}{c} \dot{\alpha} \\ \dot{\theta} \end{array}\right]
+&= S\left[\begin{array}{c c} \lambda_1 & 0 \\ 0 & \lambda_2 \end{array}\right]S^{-1}
+\left[\begin{array}{c} \alpha \\ \theta \end{array}\right] \\
+\end{align*}
+\item $(\dot{\alpha}, \dot{\theta})$ converges at a rate of $(e^{-\lambda_1 t}, e^{-\lambda_2 t})$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Desired Properties}
+\begin{itemize}
+\item Maximum linear velocity is limited by $\gamma$.
+\item The angle errors are critically damped (converge at the same rate) and angular velocity output does not oscillate as much if
+\begin{align*}
+\zeta = \frac{\lambda_1}{\lambda_2} = 1
+\end{align*}
+\item Angle errors converge \textit{before} distance error if $\sigma=-\lambda>\gamma$.
+\item These three properties cause smooth turns that are finished before waypoint is reached.
+\item Easier for robots to turn while linear velocity is non-zero.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Critically Damped Gains}
+\begin{itemize}
+\item For $\zeta=1$ need $\lambda_1=\lambda_2$.
+\begin{align*}
+&(A-\lambda I) = \left[\begin{array}{c c} -k-\lambda & -h\gamma \\ \gamma & -\lambda\end{array}\right] = 0 \\
+\Rightarrow &(-k-\lambda)(-\lambda)+h\gamma^2 = 0 \\
+\Rightarrow &\lambda^2 + k\lambda + h\gamma^2 = 0 \\
+\Rightarrow &\lambda = \frac{-k\pm\sqrt{k^2-4h\gamma^2}}{2}
+\end{align*}
+\item For $\lambda_1(A)=\lambda_2(A)$ the term inside the square root must be equal to zero resulting in
+\begin{align*}
+&k^2 - 4h\gamma^2 = 0 \\
+\Rightarrow &k = \sqrt{4h\gamma^2} = 2\gamma\sqrt{h}
+\end{align*}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Finding Gains Deterministically}
+\begin{itemize}
+\item For $\sigma>\gamma$ constrained by $k=2\gamma\sqrt{h}$:
+\begin{align*}
+&\sigma = -\lambda = \tfrac{k}{2} > \gamma \\
+\Rightarrow &k > 2\gamma
+\end{align*}
+\item Requires that $h>1$.
+\item Set $\gamma$ to limit maximum linear velocity. If $e_\text{max}=10m$ then $\gamma=0.2$ means $u_\text{max}=10*0.2=2\tfrac{m}{s}$.
+\item Set $h>1$. Larger $h$ leads to larger angular velocity. To have desired properties $k$ can be found deterministically.
+\item If $\gamma = 0.2$ and $h=1.1$ then $k=2\gamma\sqrt{h}=0.42$ leads to critically damped gains where angle errors converge before distance error.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Sample Results}
+\begin{itemize}
+\item Route driven by robot:
 \begin{figure}[ht!]
 	\centering
-    \subfigure{\includegraphics[width=.3\textwidth]{images/20100918_1717_mocu}}
-    \quad
-	\subfigure{\includegraphics[width=.3\textwidth]{images/20100918_1717_GE_KF}}
+	\includegraphics[width=.3\textwidth]{images/20100918_1717_GE_KF_waypts}
 \end{figure}
 \item Velocities output by model based controller:
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=.5\textwidth]{images/20100918_1717_velocities}
+\end{figure}
+\item Route driven by robot:
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.3\textwidth]{images/20100929_1448_GE_KF_waypts}
+\end{figure}
+\item Velocities output by model based controller:
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.5\textwidth]{images/20100929_1448_pbtx}
 \end{figure}
 \end{itemize}
 \end{frame}
@@ -284,7 +400,7 @@ u &= \gamma e\cos\alpha \\
 \begin{itemize}
 \item Model based controller guarantees stability!
 \item Works at multiple linear and angular velocities.
-\item Gains modify trajectory curvature, not stability.
+\item Gains modify trajectory curvature, not stability, and can be found deterministically.
 \item Handles nonlinear models.
 \item Easier to use machine learning with a model compared to PID.
 \end{itemize}
