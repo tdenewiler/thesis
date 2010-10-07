@@ -417,67 +417,67 @@ where $\Omega$ is the same as in the above description.
 
 A program was written to implement these algorithms where logged data -- both from the output of the Kalman filter running on the robot and ground truth as recorded from the DGPS system -- is used to try all the possible combinations of $Q$ and $R$ matrices until the metrics identified in (\ref{eq:kftrainingres}) and (\ref{eq:kftrainingpred}) are minimized or maximized to within some convergence criterion. This method of searching is called \textit{coordinate descent}. The possible $Q$ and $R$ matrices start with a coarse grid and are reduced to a finer grid at each iteration where the grid is centered around the best estimate found from the previous grid.
 
-\subsection{Numerical Analysis of Training Program}
-\label{sec:trainingNumericalAnalysis}
-The training program used here is a brute-force coordinate descent approach to finding the optimal $Q$ and $R$ matrices for the Kalman filter. The number of matrices attempted can grow to a very large number when all elements of the matrices are varied so an optional algorithm was developed that trains using only diagonal $Q$ and $R$ matrices. This is not an unreasonable restriction as the original $Q$ and $R$ matrices found by hand-tuning or from the output of the adaptive Kalman filter from section \ref{sec:adaptiveekf} used only diagonal $Q$ and $R$ matrices. The number of possible matrices that are used during training is a function of the number of states used in the Kalman filter and the number of measurements where
-\begin{align*}
-%\label{eq:trainingFullMatrices}
-\begin{split}
-n_Q &= 3^{n_{states}^2} \\
-n_R &= 3^{n_{measurements}^2} \\
-% n_Q &= 2^{n_{states}^2} \\
-% n_R &= 2^{n_{measurements}^2} \\
-n_{full} &= n_Q \times n_R
-\end{split}
-\end{align*}
-for varying all elements of $Q$ and $R$ and
-\begin{align*}
-%\label{eq:trainingDiagonalMatrices}
-\begin{split}
-% n_Q &= 2^{n_{states}} \\
-% n_R &= 2^{n_{measurements}} \\
-n_Q &= 3^{n_{states}} \\
-n_R &= 3^{n_{measurements}} \\
-n_{diagonal} &= n_Q \times n_R
-\end{split}
-\end{align*}
-for varying only the diagonal elements of $Q$ and $R$. During the experiments conducted the number of states is $8$ and the number of measurements is $5$ which gives
-\begin{align*}
-\begin{split}
-% n_Q &= 2^{8^2} = 18446744073709551616 \\
-% n_R &= 2^{5^2} = 33554432 \\
-n_Q &= 3^{8^2} = 3433683820292512484657849089281 \\
-n_R &= 3^{5^2} = 847288609443 \\
-n_{full} &= n_Q \times n_R \\
-% &= 618970019642690137449562112
-&= 2909321189362570808630465826492242446680483
-\end{split}
-\end{align*}
-per grid level when varying all elements of $Q$ and $R$ and
-\begin{align*}
-\begin{split}
-% n_Q &= 2^8 = 256 \\
-% n_R &= 2^5 = 25 \\
-n_Q &= 3^8 = 6561 \\
-n_R &= 3^5 = 243 \\
-% n_{diagonal} &= n_Q \times n_R = 6400
-n_{diagonal} &= n_Q \times n_R = 1594323
-\end{split}
-\end{align*}
-per grid level when varying only the diagonal elements of $Q$ and $R$. The ratio is
-\begin{align*}
-%\label{eq:trainingRatio}
-\begin{split}
-r &= \frac{n_{full}}{n_{diagonal}} \\
-% &= \frac{2^{n_{states}^2} \times 2^{n_{measurements}^2}}{2^{n_{states}} \times 2^{n_{measurements}}} \\
-% &= 2^{n_{states}} \times 2^{n_{measurements}} \\
-% &= 2^8 \times 2^5 = 8192
-&= \frac{3^{n_{states}^2} \times 3^{n_{measurements}^2}}{3^{n_{states}} \times 3^{n_{measurements}}} \\
-&= 3^{n_{states}} \times 3^{n_{measurements}} \\
-&= 3^8 \times 3^5 = 1594323
-\end{split}
-\end{align*}
-which means that it will take $1,594,323$ times longer to run the training program varying all of the matrix elements compared to only varying the diagonal elements. This can make the difference between finding optimal $Q$ and $R$ matrices and not finding them with the amount of states and measurements used in these experiments.
+%\subsection{Numerical Analysis of Training Program}
+%\label{sec:trainingNumericalAnalysis}
+%The training program used here is a brute-force coordinate descent approach to finding the optimal $Q$ and $R$ matrices for the Kalman filter. The number of matrices attempted can grow to a very large number when all elements of the matrices are varied so an optional algorithm was developed that trains using only diagonal $Q$ and $R$ matrices. This is not an unreasonable restriction as the original $Q$ and $R$ matrices found by hand-tuning or from the output of the adaptive Kalman filter from section \ref{sec:adaptiveekf} used only diagonal $Q$ and $R$ matrices. The number of possible matrices that are used during training is a function of the number of states used in the Kalman filter and the number of measurements where
+%\begin{align*}
+%%\label{eq:trainingFullMatrices}
+%\begin{split}
+%n_Q &= 3^{n_{states}^2} \\
+%n_R &= 3^{n_{measurements}^2} \\
+%% n_Q &= 2^{n_{states}^2} \\
+%% n_R &= 2^{n_{measurements}^2} \\
+%n_{full} &= n_Q \times n_R
+%\end{split}
+%\end{align*}
+%for varying all elements of $Q$ and $R$ and
+%\begin{align*}
+%%\label{eq:trainingDiagonalMatrices}
+%\begin{split}
+%% n_Q &= 2^{n_{states}} \\
+%% n_R &= 2^{n_{measurements}} \\
+%n_Q &= 3^{n_{states}} \\
+%n_R &= 3^{n_{measurements}} \\
+%n_{diagonal} &= n_Q \times n_R
+%\end{split}
+%\end{align*}
+%for varying only the diagonal elements of $Q$ and $R$. During the experiments conducted the number of states is $8$ and the number of measurements is $5$ which gives
+%\begin{align*}
+%\begin{split}
+%% n_Q &= 2^{8^2} = 18446744073709551616 \\
+%% n_R &= 2^{5^2} = 33554432 \\
+%n_Q &= 3^{8^2} = 3433683820292512484657849089281 \\
+%n_R &= 3^{5^2} = 847288609443 \\
+%n_{full} &= n_Q \times n_R \\
+%% &= 618970019642690137449562112
+%&= 2909321189362570808630465826492242446680483
+%\end{split}
+%\end{align*}
+%per grid level when varying all elements of $Q$ and $R$ and
+%\begin{align*}
+%\begin{split}
+%% n_Q &= 2^8 = 256 \\
+%% n_R &= 2^5 = 25 \\
+%n_Q &= 3^8 = 6561 \\
+%n_R &= 3^5 = 243 \\
+%% n_{diagonal} &= n_Q \times n_R = 6400
+%n_{diagonal} &= n_Q \times n_R = 1594323
+%\end{split}
+%\end{align*}
+%per grid level when varying only the diagonal elements of $Q$ and $R$. The ratio is
+%\begin{align*}
+%%\label{eq:trainingRatio}
+%\begin{split}
+%r &= \frac{n_{full}}{n_{diagonal}} \\
+%% &= \frac{2^{n_{states}^2} \times 2^{n_{measurements}^2}}{2^{n_{states}} \times 2^{n_{measurements}}} \\
+%% &= 2^{n_{states}} \times 2^{n_{measurements}} \\
+%% &= 2^8 \times 2^5 = 8192
+%&= \frac{3^{n_{states}^2} \times 3^{n_{measurements}^2}}{3^{n_{states}} \times 3^{n_{measurements}}} \\
+%&= 3^{n_{states}} \times 3^{n_{measurements}} \\
+%&= 3^8 \times 3^5 = 1594323
+%\end{split}
+%\end{align*}
+%which means that it will take $1,594,323$ times longer to run the training program varying all of the matrix elements compared to only varying the diagonal elements. This can make the difference between finding optimal $Q$ and $R$ matrices and not finding them with the amount of states and measurements used in these experiments.
 
 \section{Identifty IMU Parameters}
 \label{sec:identifyimuparams}
