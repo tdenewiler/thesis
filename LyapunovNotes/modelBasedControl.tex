@@ -344,7 +344,7 @@ e^{At} &= e^{S\Lambda S^{-1}t} \\
 \begin{itemize}
 \item For $\zeta=1$ need $\lambda_1=\lambda_2$.
 \begin{align*}
-&(A-\lambda I) = \left[\begin{array}{c c} -k-\lambda & -h\gamma \\ \gamma & -\lambda\end{array}\right] = 0 \\
+&\left|A-\lambda I\right| = \left|\begin{array}{c c} -k-\lambda & -h\gamma \\ \gamma & -\lambda\end{array}\right| = 0 \\
 \Rightarrow &(-k-\lambda)(-\lambda)+h\gamma^2 = 0 \\
 \Rightarrow &\lambda^2 + k\lambda + h\gamma^2 = 0 \\
 \Rightarrow &\lambda = \frac{-k\pm\sqrt{k^2-4h\gamma^2}}{2}
@@ -359,7 +359,7 @@ e^{At} &= e^{S\Lambda S^{-1}t} \\
 
 \begin{frame}{Finding Gains Deterministically}
 \begin{itemize}
-\item For $\sigma>\gamma$ constrained by $k=2\gamma\sqrt{h}$:
+\item For $\sigma>\gamma$ constrained by $k=2\gamma\sqrt{h} \Rightarrow \lambda=-\tfrac{k}{2}$:
 \begin{align*}
 &\sigma = -\lambda = \tfrac{k}{2} > \gamma \\
 \Rightarrow &k > 2\gamma
