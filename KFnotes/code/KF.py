@@ -19,8 +19,8 @@ import os
 import sys
 
 pngres = 600
-showplots = 1
-saveplots = 1
+showplots = 0
+saveplots = 0
 makemovie = 0
 
 # Number of time steps.
@@ -140,7 +140,7 @@ for i in range(N):
     Pmp = vstack((Pmp,diag(Pm)))
     Pp = vstack((Pp,diag(P)))
     Kk = vstack((Kk,K))
-
+    
 if showplots or saveplots:
     # Plot the yaw estimate.
     pylab.figure(1)
