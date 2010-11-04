@@ -27,7 +27,7 @@ zeta = V[0]/V[1]
 print 'V =', V
 sigma = -V[0]
 
-if zeta == 1:
+if zeta.real == 1:
     print 'System is critically damped since zeta =', zeta
 
 if zeta.real > 1:
