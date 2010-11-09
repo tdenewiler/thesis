@@ -9,7 +9,7 @@
 # Josh Lifton 2004; http://web.media.mit.edu/~lifton/snippets/graph_movie/
 
 # For linear algebra and plotting:
-from scipy import *
+from pylab import *
 import numpy
 import pylab
 
@@ -19,7 +19,7 @@ import os
 import sys
 
 pngres = 600
-showplots = 0
+showplots = 1
 saveplots = 0
 makemovie = 0
 
@@ -143,46 +143,46 @@ for i in range(N):
     
 if showplots or saveplots:
     # Plot the yaw estimate.
-    pylab.figure(1)
-    lyaw =  pylab.plot(x[:,6])
-    lpsi1 = pylab.plot(psi1)
-    lpsi2 = pylab.plot(psi2)
-    lxhat = pylab.plot(xhat[:,6], 'kx')
-    pylab.title('Yaw')
-    pylab.xlabel('Time (s)')
-    pylab.ylabel('Yaw (radians)')
-    pylab.legend((lyaw, lpsi1, lpsi2, lxhat), ('Ground Truth', 'Sensor 1', 'Sensor 2', 'KF'))
-    pylab.axis('equal')
+    figure(1)
+    lyaw =  plot(x[:,6])
+    lpsi1 = plot(psi1)
+    lpsi2 = plot(psi2)
+    lxhat = plot(xhat[:,6], 'kx')
+    title('Yaw')
+    xlabel('Time (s)')
+    ylabel('Yaw (radians)')
+    legend((lyaw, lpsi1, lpsi2, lxhat), ('Ground Truth', 'Sensor 1', 'Sensor 2', 'KF'))
+    axis('equal')
     if saveplots:
-        pylab.savefig("../images/kfSimYaw.png", dpi=pngres)
+        savefig("../images/kfSimYaw.png", dpi=pngres)
     
     # Plot the yaw estimate zoomed in.
-    pylab.figure(2)
-    lyaw = pylab.plot(x[:,6])
-    lpsi1 = pylab.plot(psi1)
-    lpsi2 = pylab.plot(psi2)
-    lxhat = pylab.plot(xhat[:,6], 'kx')
-    pylab.title('Yaw')
-    pylab.xlabel('Time (s)')
-    pylab.ylabel('Yaw (radians)')
-    pylab.legend((lyaw, lpsi1, lpsi2, lxhat), ('Ground Truth', 'Sensor 1', 'Sensor 2', 'KF'))
-    pylab.axis([10.5, 16, 0, 3])
+    figure(2)
+    lyaw = plot(x[:,6])
+    lpsi1 = plot(psi1)
+    lpsi2 = plot(psi2)
+    lxhat = plot(xhat[:,6], 'kx')
+    title('Yaw')
+    xlabel('Time (s)')
+    ylabel('Yaw (radians)')
+    legend((lyaw, lpsi1, lpsi2, lxhat), ('Ground Truth', 'Sensor 1', 'Sensor 2', 'KF'))
+    axis([10.5, 16, 0, 3])
     if saveplots:
-        pylab.savefig("../images/kfSimYawZoom.png", dpi=pngres)
+        savefig("../images/kfSimYawZoom.png", dpi=pngres)
     
     # Plot the actual and estimated position.
-    pylab.figure(3)
-    lpos = pylab.plot(x[:,0], x[:,1])
-    lposhat = pylab.plot(xhat[:,0], xhat[:,1], 'kx')
-    pylab.title('Position')
-    pylab.xlabel('X (m)')
-    pylab.ylabel('Y (m)')
-    pylab.legend((lpos, lposhat), ('Ground Truth','KF'))
-    pylab.axis('equal')
+    figure(3)
+    lpos = plot(x[:,0], x[:,1])
+    lposhat = plot(xhat[:,0], xhat[:,1], 'kx')
+    title('Position')
+    xlabel('X (m)')
+    ylabel('Y (m)')
+    legend((lpos, lposhat), ('Ground Truth','KF'))
+    axis('equal')
     if saveplots:
-        pylab.savefig("../images/kfSimPosition.png", dpi=pngres)
+        savefig("../images/kfSimPosition.png", dpi=pngres)
     if showplots:
-        pylab.show()
+        show()
 
 # Calculate the RMS errors.
 epos = 0
@@ -228,29 +228,29 @@ if makemovie:
     yaxisheight = 6
     for i in range(N*2):
         if i % 2: # odd
-            lP = pylab.plot(xmovie,ymovieP[i/2],'b')
-            lM = pylab.plot(0,pi,'r') # A single point to make lM show up in legend.
-            pylab.axvline(ymoviePmean[i/2], 0, yaxisheight, 'g')
+            lP = plot(xmovie,ymovieP[i/2],'b')
+            lM = plot(0,pi,'r') # A single point to make lM show up in legend.
+            axvline(ymoviePmean[i/2], 0, yaxisheight, 'g')
         else: # even
-            lM = pylab.plot(xmovie,ymovieM[i/2],'r')
-            lP = pylab.plot(0,pi,'b') # A single point to make lP show up in legend.
-            pylab.axvline(ymovieMmean[i/2], 0, yaxisheight, 'g')
-        pylab.axis((xmovie[0],xmovie[-1],-0.25,yaxisheight))
-        pylab.xlabel('Yaw Angle (radians)')
-        pylab.ylabel(r'Covariance (radians$.^2$)')
-        pylab.title(r'Evolution of Yaw Estimate = $\cal{N}(\mu, \sigma^2)$', fontsize=20)
-        pylab.legend((lP,lM),('Prediction Update','Measurement Update'))
+            lM = plot(xmovie,ymovieM[i/2],'r')
+            lP = plot(0,pi,'b') # A single point to make lP show up in legend.
+            axvline(ymovieMmean[i/2], 0, yaxisheight, 'g')
+        axis((xmovie[0],xmovie[-1],-0.25,yaxisheight))
+        xlabel('Yaw Angle (radians)')
+        ylabel(r'Covariance (radians$.^2$)')
+        title(r'Evolution of Yaw Estimate = $\cal{N}(\mu, \sigma^2)$', fontsize=20)
+        legend((lP,lM),('Prediction Update','Measurement Update'))
         
         # Save each image.
         filename = str('pngtmp/%03d' % i) + '.png'
-        pylab.savefig(filename, dpi=100)
+        savefig(filename, dpi=100)
     
         # Let the user know what's happening occasionally.
         if not (i+1) % 25:
             print 'Wrote file', i+1, 'of', len(ymovieP)*2, ' =', filename
     
         # Clear the figure to make way for the next image.
-        pylab.clf()
+        clf()
 
     # Now that we have graphed images of the dataset, we will stitch them
     # together using Mencoder to create a movie.  Each image will become
