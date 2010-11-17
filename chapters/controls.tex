@@ -33,7 +33,7 @@ The only parameters available to tune PID controllers for performance are the ga
 
 When the characteristics of a robot are changed the PID gains must also be modified to reflect those changes. These characteristics include mass, center of mass, particular treads or motors and payloads, as these all affect the dynamics of the system. Gain scheduling is the process of tuning a system to use a different set of gains based on the operating environment or characteristics of the robot, however this is very time consuming. This motivates the search for a better control system for these small robots.
 
-Table \ref{tab:PIDGainEffects} shows how increasing the different gain values affects the performance of the controller output in terms of rise time, overshoot, settling time and steady state error. It can be seen that a large amount of coupling exists between the gains and attempting to fix one aspect of the controller output can have unintended consequences that cause other aspects of controller output to perform suboptimally. This is in contrast to the gains that arise for Lyapunov controllers as seen in section \ref{sec:lyapunovTrajectoryConvergence}.
+Table \ref{tab:PIDGainEffects} shows how increasing the different gain values affects the performance of the controller output in terms of rise time, overshoot, settling time and steady state error. It can be seen that a large amount of coupling exists between the gains and attempting to fix one aspect of the controller output can have unintended consequences that cause other aspects of controller output to perform suboptimally. This is in contrast to the gains that arise for model based controllers as seen in section \ref{sec:lyapunovTrajectoryConvergence}.
 
 \begin{table}[ht!]
 \caption{Effects on controller output of modifying PID gains.}
@@ -77,7 +77,7 @@ It is not always possible to find such a control Lyapunov function $V$ but when 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=.95\textwidth]{images/packbotlyapunov}
-	\caption{PackBot with coordinate system for the Lyapunov controller.}
+	\caption{PackBot with coordinate system for the model based controller.}
 	\label{fig:pblyapunov}
 \end{figure}
 
@@ -328,4 +328,4 @@ k &= 2\gamma\sqrt{h} > 2\gamma \\
 \Rightarrow h &> 1
 \end{align*}
 
-Using the method any two gains can be selected and the third gain can be found which satisfies the above properties. For example, setting $\gamma=0.2$ to limit the maximum linear velocity and $h=1.1$ to keep it small but greater than one leads to $k=2\gamma\sqrt{h}=0.42$. From this it can be seen that $\lambda_1(A) = \lambda_2(A) = 0.21 \Rightarrow \zeta = 1$ so the system $A$ is critically damped and $\sigma = 0.21>0.2=\gamma$ so that the angle errors will converge before the distance error. This is the new answer for the question "How do I get there?".
+Using this method any two gains can be selected and the third gain can be found which satisfies the above properties. For example, setting $\gamma=0.2$ to limit the maximum linear velocity and $h=1.1$ to keep it small but greater than one leads to $k=2\gamma\sqrt{h}=0.42$. From this it can be seen that $\lambda_1(A) = \lambda_2(A) = 0.21 \Rightarrow \zeta = 1$ so the system $A$ is critically damped and $\sigma = 0.21>0.2=\gamma$ so that the angle errors will converge before the distance error. This is the new answer for the question "How do I get there?".
