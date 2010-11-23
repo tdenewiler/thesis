@@ -1,12 +1,12 @@
 \chapter{Background}
 \label{ch:background}
-This chapter will give background information about the robots used for the experiments, the OCU used to communicate with the robots, the software running on the robots and the area used for testing.
+This chapter gives background information about the robots used for the experiments, the OCU used to communicate with the robots, the software running on the robots and the area used for testing.
 
 For the robots to drive around on their own all they require is an estimate of where they are, a path to follow, a controller to determine the actuator outputs and motor controllers to perform the controller outputs.
 
 \section{Small Unmanned Ground Vehicles}
 \label{sec:smallugvs}
-There are two commonly used robots in EOD applications, the PackBot and Talon, which are differential drive robots with two motors that drive tracks on either side of the robot. Those two robots plus a prototype tracked, differential drive robot called the Urbot that was developed at SPAWAR Systems Center, Pacific (SSCPAC) were used in the experiments that follow. The OCU and software developed for estimation, planning and controls work for all three robots although most of the testing was done using a PackBot. Note that differential drive, skid steer and unicycle-like robots are synonymous descriptions in the literature and used interchangeably in this thesis.
+There are two commonly used robots in EOD applications, the PackBot and Talon, which are differential drive robots with two motors that drive tracks on either side of the robot. These two robots plus a prototype tracked, differential drive robot called the Urbot that was developed at SPAWAR Systems Center, Pacific (SSCPAC) were used in the experiments that follow. The OCU and software developed for estimation, planning and controls work for all three robots although most of the testing was done using a PackBot. Note that differential drive, skid steer and unicycle-like robots are synonymous descriptions in the literature and used interchangeably in this thesis.
 
 Each of the three robots have a computer onboard that accepts teleoperation commands consisting of a linear and angular velocity and a payload bay to which a computer and sensors are added. The payload computer is used to read sensor data and calculate appropriate linear and angular velocity commands to send to the robot computer. The standard sensors available on each robot are wheel encoders, inertial measurement unit (IMU) and a global position system (GPS) receiver.
 
@@ -15,7 +15,7 @@ The \href{http://www.irobot.com/sp.cfm?pageid=171}{PackBot} is manufactured by i
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=.3\textwidth]{images/packbot}
-	\caption{iRobot Packbot.}
+	\caption{iRobot Packbot}
 	\label{fig:packbot}
 \end{figure}
 
@@ -24,7 +24,7 @@ The \href{http://www.foster-miller.com/lemming.htm}{Talon} is manufactured by Fo
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=.3\textwidth]{images/talon}
-	\caption{Foster Miller Talon.}
+	\caption{Foster Miller Talon}
 	\label{fig:talon}
 \end{figure}
 
@@ -33,13 +33,13 @@ The \href{http://www.spawar.navy.mil/robots/land/mprs/mprs.html}{Urbot} is an ex
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=.3\textwidth]{images/urbot}
-	\caption{SSCPAC Urbot.}
+	\caption{SSCPAC Urbot}
 	\label{fig:urbot}
 \end{figure}
 
 \section{MOCU \& JAUS}
 \label{sec:mocujaus}
-The Multi-Robot Operator Control Unit (MOCU) in Figure \ref{fig:mocu} is a highly configurable front-end for simultaneous command and control of multiple systems and was created at SSCPAC \cite{PowellMOCU08}. MOCU has the ability to use a variety of communications protocols for interfacing to different systems and uses the Joint Architecture for Unmanned Systems (JAUS) to send and receive data to all of the UGVs used in this research \cite{RoweJAUS08}. A combination of teleoperation using a joystick controller and autonomous navigation were used to collect data and test new ideas for estimation and controls. From within MOCU waypoints can be drawn on the overhead image and from those waypoints a route is generated and uploaded to the robot using the JAUS protocol. The robot will then attempt to drive that route autonomously and send back status information to MOCU using the controls and estimation code that is the focus of this research.
+The Multi-Robot Operator Control Unit (MOCU) in Figure \ref{fig:mocu} is a highly configurable front-end for simultaneous command and control of multiple systems and was created at SSCPAC \cite{PowellMOCU08}. MOCU has the ability to use a variety of communications protocols for interfacing to different systems and uses the Joint Architecture for Unmanned Systems (JAUS) protocol to send and receive data to all of the UGVs used in this research \cite{RoweJAUS08}. A combination of teleoperation using a joystick controller and autonomous navigation were used to collect data and test new ideas for estimation and controls. From within MOCU waypoints can be drawn on the overhead image and from those waypoints a route is generated and uploaded to the robot using the JAUS protocol. The robot will then attempt to drive that route autonomously and send back status information to MOCU using the controls and estimation code that is the focus of this research.
 
 \begin{figure}[ht!]
 	\centering
@@ -72,7 +72,7 @@ The GPS receiver in the PackBot payload by is a \href{http://www.novatel.com/pro
 
 \subsection{Compass}
 \label{sec:bgCompass}
-Originally this sensor was not used on the PackBot but after initial testing it was determined that the heading reported by the Microstrain 3DM-GX1 was not very reliable and a \href{http://www.oceanserver-store.com/os3axdico3.html}{Ocean Server } compass was added to the PackBot payload bay.
+Originally this sensor was not used on the PackBot but after initial testing it was determined that the heading reported by the Microstrain 3DM-GX1 was not very reliable and an \href{http://www.oceanserver-store.com/os3axdico3.html}{Ocean Server} compass was added to the PackBot payload bay.
 
 \subsection{Wheel Encoders}
 \label{sec:bgEncoders}
@@ -84,4 +84,4 @@ The SSCPAC robotics group has developed the Autonomous Capabilities Suite (ACS) 
 
 A JAUS library written by SSCPAC provides for communications between the robots and MOCU.
 
-The path planning and controls software was written by SSCPAC for the Man Portable Robotic Systems (MPRS) program and extended for use on unmanned surface vehicles.
+The original path planning and controls software was written by SSCPAC for the Man Portable Robotic Systems (MPRS) program \cite{Bruch02} and extended for use on unmanned surface vehicles \cite{Ebken05, Larson06, Larson07}.

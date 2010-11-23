@@ -4,16 +4,16 @@ Control systems are responsible for computing the commands necessary for actuato
 
 \section{PID}
 \label{sec:pid}
-PID controllers use the current state estimate to determine the errors between the desired state and the current state. The goal of the PID controller is to drive those errors to zero based on a number of criterion including rise time, settling time, steady state error and overshoot (see Figure \ref{fig:pid}).
+PID controllers use the current state estimate to determine the errors between the desired state and the current state. The goal of the PID controller is to drive those errors to zero based on a number of criteria including rise time, settling time, steady state error and overshoot as shown in Figure \ref{fig:pid} where the green line is the ideal output while the blue and purple lines are typical results. The orange line shows what happens when a system becomes unstable. Point $m$ represents the desired state, $m-n$ represents steady state error, point $a$ is the rise time for the blue line and point $b$ is the settling time for the blue line.
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=.85\textwidth]{images/pid}
-	\caption{PID controller output. The green line is the ideal output while the blue and purple lines are typical results. The orange line shows what happens when a system becomes unstable. Point $m$ represents the desired state, $m-n$ represents steady state error, point $a$ is the rise time for the blue line and point $b$ is the settling time for the blue line.}
+	\caption{PID Controller Responses} 
 	\label{fig:pid}
 \end{figure}
 
-There are separate PID controllers used for each of $x$ position, $y$ position and robot heading ($\psi$). The process used to compute an output using a PID controller uses three separate errors and a gain for each of those errors. Looking at the PID controller for heading the errors are
+There are separate PID controllers used for robot distance ($e$) and heading errors ($\psi$). The process used to compute an output command using a PID controller uses three separate errors and a gain for each of the distance and heading errors. Looking at the PID controller for heading the errors are
 \begin{align*}
 %\label{eq:piderrors}
 \begin{split}
@@ -29,14 +29,14 @@ u = K_P*E_P + K_I*E_I + K_D*E_D
 \end{align*}
 where $K_P$ is the proportional gain, $K_I$ is the integral gain and $K_D$ is the differential gain.
 
-The only parameters available to tune PID controllers for performance are the gains. There are some rules of thumb for tuning gains properly as described in \cite{ZeiglerNichols42} that can work as a good starting point, along with a basic knowledge of what the effects are of modifying the different gains as summarized in Table \ref{tab:PIDGainEffects}. The difficulty in using PID controllers for the small robots used in these experiments is that the gains must be tuned for specific operating scenarios so that a set of gains that work well at full speed on asphalt do not work at all when the robot is driving in soft sand at any velocity. PID controllers work best when they only have to reject a small range of disturbances and the small robots are required to be operated in environments with a large range of disturbances.
+The only parameters available to tune PID controllers for performance are the gains. There are some rules of thumb for tuning gains properly as described in \cite{ZeiglerNichols42} that can work as a good starting point, along with a basic knowledge of what the effects are of modifying the different gains as summarized in Table \ref{tab:PIDGainEffects}. The difficulty in using PID controllers for the small robots used in these experiments is that the gains must be tuned for specific operating scenarios so that a set of gains that work well at full speed on asphalt do not work at all when the robot is driving in soft sand at any velocity. PID controllers work best when they only have to reject a small range of disturbances, however the small robots are required to be operated in environments with a large range of disturbances.
 
-When the characteristics of a robot are changed the PID gains must also be modified to reflect those changes. These characteristics include mass, center of mass, particular treads or motors and payloads, as these all affect the dynamics of the system. Gain scheduling is the process of tuning a system to use a different set of gains based on the operating environment or characteristics of the robot, however this is very time consuming. This motivates the search for a better control system for these small robots.
+When the characteristics of a robot are changed the PID gains must also be modified to reflect those changes. These characteristics include mass, center of mass, particular treads or motors and payloads, as these all affect the dynamics of the system. Gain scheduling is the process of tuning a system to use a different set of gains based on the operating environment or characteristics of the robot and is very time consuming. This motivates the search for a better control system for these small robots.
 
 Table \ref{tab:PIDGainEffects} shows how increasing the different gain values affects the performance of the controller output in terms of rise time, overshoot, settling time and steady state error. It can be seen that a large amount of coupling exists between the gains and attempting to fix one aspect of the controller output can have unintended consequences that cause other aspects of controller output to perform suboptimally. This is in contrast to the gains that arise for model based controllers as seen in section \ref{sec:lyapunovTrajectoryConvergence}.
 
 \begin{table}[ht!]
-\caption{Effects on controller output of modifying PID gains.}
+\caption{Effects on Controller Output of Modifying PID Gains}
 \small
 \centering
 \begin{tabular}{@{}llllr@{}} \toprule
@@ -72,12 +72,12 @@ It is not always possible to find such a control Lyapunov function $V$ but when 
 
 \subsection{Unicycle-like Robot Kinematics}
 \label{sec:unicycleKinematics}
-\cite{Rusu05RobotuxLyapunov,Aicardi_UnicycleLyapunov95} describe a method for constructing a control Lyapunov function based on the kinematics of a differential drive robot, similar in nature to the small robots considered in these experiments and typically referred to as a unicycle-like robots in the literature. This section will mostly be a restatement of their work but with more intermediate steps and a slightly different formulation included to make the derivation easier to follow than in some of the referenced papers.
+Several groups have implemented model-based controllers rooted in Lyapunov stability theory in simulation including \cite{Aicardi_UnicycleLyapunov95, Gulati08, Rusu05RobotuxLyapunov, Aicardi94, MicaelliLyapunov93} but only recently have these results been applied to actual robots \cite{NuchterLyapunov07, KimLyapunov05, Lapierre06, Lapierre07}. All of these groups describe a method for constructing a control Lyapunov function based on the kinematics of a differential drive robot, similar in nature to the small robots considered in these experiments and typically referred to as a unicycle-like robots in the literature.
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=.95\textwidth]{images/packbotlyapunov}
-	\caption{PackBot with coordinate system for the model based controller.}
+	\caption{PackBot Coordinate System for Model Based Controller}
 	\label{fig:pblyapunov}
 \end{figure}
 
@@ -280,7 +280,7 @@ u &= \gamma e \\
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=.75\textwidth]{images/plotSinCos}
-	\caption{Plot of $\alpha$, $\sin\alpha$, $\cos\alpha$ and $\sin\alpha*\cos\alpha$.}
+	\caption{Plot of $\alpha$, $\sin\alpha$, $\cos\alpha$ and $\sin\alpha*\cos\alpha$}
 	\label{fig:plotSinCos}
 \end{figure}
 

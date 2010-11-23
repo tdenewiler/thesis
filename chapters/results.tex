@@ -15,7 +15,7 @@ Using logged data from the Kalman filter running with default $Q$ and $R$ parame
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=.95\textwidth]{images/kfPlainDataFirstAttempt}
-	\caption{Kalman filter output using the default parameters. The robot track is shown in yellow and a static GPS receiver with DGPS corrections is shown in red.}
+	\caption{Kalman Filter Output using the Original Parameters}
 	\label{fig:kfPlainDataFirstAttempt}
 \end{figure}
 
@@ -26,7 +26,7 @@ The control law derived in (\ref{eq:lyapunovControlLaw}) was tested in the previ
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=.5\textwidth]{images/20100918_1717_GE_KF_waypts}
-	\caption{Robot position during controller testing.}
+	\caption{Robot Position During Controller Testing}
 	\label{fig:resultsLyapunovGEKF}
 \end{figure}
 
@@ -35,7 +35,7 @@ Figure \ref{fig:resultsLyapunovVelocities} shows how the linear and angular velo
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=.5\textwidth]{images/20100918_1717_velocities}
-	\caption{Linear and angular velocity outputs using model based controller.}
+	\caption{Linear and Angular Velocity Outputs using Model Based Controller}
 	\label{fig:resultsLyapunovVelocities}
 \end{figure}
 
@@ -44,14 +44,14 @@ The process of selecting gains in section \ref{sec:lyapunovTrajectoryConvergence
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=.5\textwidth]{images/20100929_1448_GE_KF_waypts}
-	\caption{Robot position using adaptive gain scheme.}
+	\caption{Robot Position using Adaptive Gain Scheme}
 	\label{fig:resultsLyapunovPositionAdaptive}
 \end{figure}
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=.5\textwidth]{images/20100929_1448_pbtx}
-	\caption{Linear and angular velocities with adaptive gain scheme.}
+	\caption{Linear and Angular Velocities with Adaptive Gain Scheme}
 	\label{fig:resultsLyapunovVelocitiesAdaptive}
 \end{figure}
 

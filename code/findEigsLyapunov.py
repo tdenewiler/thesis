@@ -10,16 +10,24 @@ from scipy import * # For eig()
 from numpy import * # For array()
 import sys # For argv
 
-if len(sys.argv) != 3:
-    print 'Not the correct input parameters. Usage is ./lyapunovFindEigs.py <h> <gamma>'
+if len(sys.argv) < 2:
+    print 'Not the correct input parameters. Usage is ./lyapunovFindEigs.py <h> <gamma> or ./lyapunovFindEigs.py <h> <gamma> <k>'
+    sys.exit(1)
+
+if len(sys.argv) > 4:
+    print 'Not the correct input parameters. Usage is ./lyapunovFindEigs.py <h> <gamma> or ./lyapunovFindEigs.py <h> <gamma> <k>'
     sys.exit(1)
 
 h = float(sys.argv[1])
 gamma = float(sys.argv[2])
 
-k = 2*gamma*sqrt(h)
-print 'k =', k
+if len(sys.argv) == 3:
+    k = 2*gamma*sqrt(h)
 
+if len(sys.argv) == 4:
+    k = float(sys.argv[3])
+
+print 'k =', k
 A = array([[-1*k, -1*h*gamma],[gamma, 0]])
 print 'A =', A
 V,D = linalg.eig(A)
