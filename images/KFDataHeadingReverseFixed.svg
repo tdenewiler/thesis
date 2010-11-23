@@ -15,11 +15,11 @@
    viewBox="0 0 585 441"
    version="1.1"
    id="svg1"
-   inkscape:version="0.47pre4 r22446"
+   inkscape:version="0.47 r22583"
    sodipodi:docname="KFDataHeadingReverseFixed.svg"
    inkscape:export-filename="/home/thomas/docs/thesis/thomas/images/KFDataHeadingReverseFixed.png"
-   inkscape:export-xdpi="300"
-   inkscape:export-ydpi="300">
+   inkscape:export-xdpi="600"
+   inkscape:export-ydpi="600">
   <metadata
      id="metadata612">
     <rdf:RDF>
@@ -72,14 +72,14 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:window-width="1920"
-     inkscape:window-height="1151"
+     inkscape:window-height="1173"
      id="namedview608"
      showgrid="false"
      inkscape:zoom="1.7124717"
-     inkscape:cx="386.74238"
-     inkscape:cy="259.63211"
-     inkscape:window-x="0"
-     inkscape:window-y="25"
+     inkscape:cx="428.20292"
+     inkscape:cy="303.42845"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg1" />
   <g
@@ -1450,16 +1450,17 @@
   </g>
   <path
      style="fill:none;stroke:#000000;stroke-width:0.80000007px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart)"
-     d="m 239.20384,283.94061 -23.19895,52.50783"
+     d="m 246.67842,278.33468 16.97689,36.15719"
      id="path4243"
      inkscape:export-filename="/home/thomas/school/thesis/thomas/images/text5075.png"
      inkscape:export-xdpi="100"
-     inkscape:export-ydpi="100" />
+     inkscape:export-ydpi="100"
+     sodipodi:nodetypes="cc" />
   <text
      xml:space="preserve"
      style="font-size:14.40000057px;font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:FreeSerif;-inkscape-font-specification:FreeSerif Italic"
-     x="169.76807"
-     y="340.51355"
+     x="267.41833"
+     y="325.0994"
      id="text5075"
      transform="scale(0.99986062,1.0001394)"
      inkscape:export-xdpi="100"
@@ -1467,7 +1468,23 @@
      sodipodi:linespacing="125%"><tspan
        sodipodi:role="line"
        id="tspan5077"
-       x="169.76807"
-       y="340.51355"
+       x="267.41833"
+       y="325.0994"
        style="font-size:14.40000057px;font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;font-family:FreeSerif;-inkscape-font-specification:FreeSerif Italic">Reverse</tspan></text>
+  <path
+     sodipodi:nodetypes="cc"
+     inkscape:export-ydpi="100"
+     inkscape:export-xdpi="100"
+     inkscape:export-filename="/home/thomas/school/thesis/thomas/images/text5075.png"
+     id="path3189"
+     d="m 270.97079,243.2976 5.29786,66.98982"
+     style="fill:none;stroke:#000000;stroke-width:0.80000007px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart)" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:0.80000007px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart)"
+     d="m 364.87015,290.94803 -52.16294,26.34681"
+     id="path3191"
+     inkscape:export-filename="/home/thomas/school/thesis/thomas/images/text5075.png"
+     inkscape:export-xdpi="100"
+     inkscape:export-ydpi="100"
+     sodipodi:nodetypes="cc" />
 </svg>

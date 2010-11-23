@@ -15,9 +15,9 @@
    version="1.1"
    inkscape:version="0.47 r22583"
    sodipodi:docname="KFLinearizationFast.svg"
-   inkscape:export-filename="/home/thomas/school/thesis/thomas/images/KFLinearizationFast.png"
-   inkscape:export-xdpi="100.02304"
-   inkscape:export-ydpi="100.02304">
+   inkscape:export-filename="/home/thomas/docs/thesis/thomas/images/KFLinearizationFast.png"
+   inkscape:export-xdpi="600"
+   inkscape:export-ydpi="600">
   <defs
      id="defs3948">
     <inkscape:perspective
@@ -75,9 +75,9 @@
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1920"
-     inkscape:window-height="1148"
-     inkscape:window-x="0"
-     inkscape:window-y="25"
+     inkscape:window-height="1173"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata3951">
@@ -113,7 +113,7 @@
          sodipodi:role="line"
          id="tspan4725"
          x="150.3186"
-         y="37.03664">y</tspan></text>
+         y="37.03664">x</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:24px;font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:FreeSerif;-inkscape-font-specification:FreeSerif Italic"
@@ -124,7 +124,7 @@
          sodipodi:role="line"
          id="tspan4729"
          x="519.52942"
-         y="403.72202">x</tspan></text>
+         y="403.72202">t</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:3, 3;stroke-dashoffset:0"
        d="m 166.44755,386.70458 c 12.3198,-16.08745 20.9996,-175.65291 30.7201,-175.82387 11.7559,5.02778 17.4353,72.55587 28.1057,75.16634 4.9223,-0.67716 4.9645,-34.81485 10.4579,-34.64188 9.5538,2.77577 8.4347,86.60878 14.3797,86.9315 7.7424,-0.85882 3.9942,-116.18136 9.8043,-115.6908 3.27,-0.49423 -2.7482,110.14874 0.6536,110.46184 4.9012,-0.39303 20.9491,-109.94874 24.8376,-109.80822 4.2352,0.93112 3.202,103.92078 6.5362,104.57926 5.5982,-0.96581 32.6153,-92.35347 39.2172,-93.46771 4.4539,1.8482 4.9425,66.1942 13.0992,74.49481 7.8564,6.51731 15.2114,13.53602 23.5692,19.55192 12.5054,9.80431 35.5666,31.12613 46.995,32.64818 18.3967,-3.7804 33.0516,-19.91692 46.3413,-26.88925 10.6977,-12.78845 20.165,-36.65695 32.0931,-38.36535"

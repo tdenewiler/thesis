@@ -15,9 +15,9 @@
    version="1.1"
    inkscape:version="0.47 r22583"
    sodipodi:docname="KFLinearizationSlow.svg"
-   inkscape:export-filename="/home/thomas/school/thesis/thomas/images/KFLinearizationSlow.png"
-   inkscape:export-xdpi="100.02304"
-   inkscape:export-ydpi="100.02304">
+   inkscape:export-filename="/home/thomas/docs/thesis/thomas/images/KFLinearizationSlow.png"
+   inkscape:export-xdpi="600"
+   inkscape:export-ydpi="600">
   <defs
      id="defs3812">
     <inkscape:perspective
@@ -75,9 +75,9 @@
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1920"
-     inkscape:window-height="1148"
-     inkscape:window-x="0"
-     inkscape:window-y="25"
+     inkscape:window-height="1173"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata3815">
@@ -113,7 +113,7 @@
          y="45.608055"
          x="124.60432"
          id="tspan3709"
-         sodipodi:role="line">y</tspan></text>
+         sodipodi:role="line">x</tspan></text>
     <text
        sodipodi:linespacing="125%"
        id="text3711"
@@ -124,7 +124,7 @@
          y="412.29346"
          x="493.81512"
          id="tspan3713"
-         sodipodi:role="line">x</tspan></text>
+         sodipodi:role="line">t</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:3.00000001, 3.00000001;stroke-dashoffset:0"
        d="m 141.30623,395.19969 c 113.69631,-10.48993 216.24548,-49.56407 327.38844,-59.5071"
