@@ -33,7 +33,7 @@ The only parameters available to tune PID controllers for performance are the ga
 
 When the characteristics of a robot are changed the PID gains must also be modified to reflect those changes. These characteristics include mass, center of mass, particular treads or motors and payloads, as these all affect the dynamics of the system. Gain scheduling is the process of tuning a system to use a different set of gains based on the operating environment or characteristics of the robot and is very time consuming. This motivates the search for a better control system for these small robots.
 
-Table \ref{tab:PIDGainEffects} shows how increasing the different gain values affects the performance of the controller output in terms of rise time, overshoot, settling time and steady state error. It can be seen that a large amount of coupling exists between the gains and attempting to fix one aspect of the controller output can have unintended consequences that cause other aspects of controller output to perform suboptimally. This is in contrast to the gains that arise for model based controllers as seen in section \ref{sec:lyapunovTrajectoryConvergence}.
+Table \ref{tab:PIDGainEffects} shows how increasing the different gain values affects the performance of the controller output in terms of rise time, overshoot, settling time and steady state error. It can be seen that a large amount of coupling exists between the gains and attempting to fix one aspect of the controller output can have unintended consequences that cause other aspects of controller output to perform suboptimally. This is in contrast to the gains that arise for model based controllers as seen in Chapter \ref{sec:lyapunovTrajectoryConvergence}.
 
 \begin{table}[ht!]
 \caption{Effects on Controller Output of Modifying PID Gains}
@@ -81,7 +81,7 @@ Several groups have implemented model-based controllers rooted in Lyapunov stabi
 	\label{fig:pblyapunov}
 \end{figure}
 
-Figure \ref{fig:pblyapunov} will be used as the basis for the equations that follow and will be explained in further detail here. Given a robot at some arbitrary initial position we want it to move to a goal position with a specific heading where the goal position is the origin of the $<g>$ coordinate system and the desired heading is along the $x$-axis of the $<g>$ coordinate system labeled $\theta^\star$. The states that define the robot's current position, heading, and linear and angular velocities are calculated using the Kalman filter of section \ref{sec:extendedkf} whereas the goal position and heading are given as inputs to the robot. Note that the linear velocity is given by $u$ and the angular velocity by $\omega$. The control system attempts to force three separate errors to zero:
+Figure \ref{fig:pblyapunov} will be used as the basis for the equations that follow and will be explained in further detail here. Given a robot at some arbitrary initial position we want it to move to a goal position with a specific heading where the goal position is the origin of the $<g>$ coordinate system and the desired heading is along the $x$-axis of the $<g>$ coordinate system labeled $\theta^\star$. The states that define the robot's current position, heading, and linear and angular velocities are calculated using the Kalman filter of Chapter \ref{sec:extendedkf} whereas the goal position and heading are given as inputs to the robot. Note that the linear velocity is given by $u$ and the angular velocity by $\omega$. The control system attempts to force three separate errors to zero:
 \begin{itemize}
 \item $e$, the magnitude of the translation error vector as measured between the current position and goal position,
 \item $\theta$, the angle between the desired heading and the translational error vector $e$,
@@ -141,7 +141,7 @@ The control Lyapunov function is selected to be positive, contain all three erro
 %\label{eq:lyapunovfunction}
 V = V_1 + V_2 = \frac{1}{2}\lambda e^2 + \frac{1}{2}\left(\alpha^2+h\theta^2\right)
 \end{align*}
-where $\lambda$ and $h$ are positive constants that can be used to tune the controller output (see section \ref{sec:lyapunovTrajectoryConvergence}). Using the kinematics equations in (\ref{eq:lyapunovkinematics}) the derivative of each term of the candidate control Lyapunov function can be found as
+where $\lambda$ and $h$ are positive constants that can be used to tune the controller output (see Chapter \ref{sec:lyapunovTrajectoryConvergence}). Using the kinematics equations in (\ref{eq:lyapunovkinematics}) the derivative of each term of the candidate control Lyapunov function can be found as
 \begin{align}
 \label{eq:Vderivatives}
 \begin{split}
@@ -219,7 +219,7 @@ Using the expressions for $u$ in (\ref{eq:lyapunovu}) and $\omega$ in (\ref{eq:l
 \end{split}
 \end{align}
 
-Combining (\ref{eq:lyapunovu}) and (\ref{eq:lyapunovomega}) gives the following control law to replace the PID controller from section \ref{sec:pid}:
+Combining (\ref{eq:lyapunovu}) and (\ref{eq:lyapunovomega}) gives the following control law to replace the PID controller from Chapter \ref{sec:pid}:
 \begin{align}
 \label{eq:lyapunovControlLaw}
 \begin{split}
@@ -256,7 +256,7 @@ Note that all of the angle variables need to be normalized so that they are in t
 
 \subsection{Effect of Gains on Trajectory}
 \label{sec:lyapunovTrajectoryConvergence}
-The gains $h$, $k$ and $\gamma$ in the control law (\ref{eq:lyapunovControlLaw}) determine the resulting trajectory that the robot will use when driving from its current position to the goal point and heading. The first thing to notice is that the linear velocity is at a maximum when the angle error $\alpha=0$ since that leads to $\cos(\alpha)=1$ and $u_{\text{max}}=e\gamma$. As discussed in section \ref{sec:lyapunovVariables} a carrot can be set by the path planner to limit the maximum error distance $e$ so that $e$ is bounded. When that is the case the maximum linear velocity is proportional to the gain $\gamma$. For example, if the carrot has a maximum lookahead distance of $10m$ and $\gamma=0.2$ then $u_{\text{max}}=10*0.2=2\tfrac{m}{s}$ which is a reasonable limit for a PackBot.
+The gains $h$, $k$ and $\gamma$ in the control law (\ref{eq:lyapunovControlLaw}) determine the resulting trajectory that the robot will use when driving from its current position to the goal point and heading. The first thing to notice is that the linear velocity is at a maximum when the angle error $\alpha=0$ since that leads to $\cos(\alpha)=1$ and $u_{\text{max}}=e\gamma$. As discussed in Chapter \ref{sec:lyapunovVariables} a carrot can be set by the path planner to limit the maximum error distance $e$ so that $e$ is bounded. When that is the case the maximum linear velocity is proportional to the gain $\gamma$. For example, if the carrot has a maximum lookahead distance of $10m$ and $\gamma=0.2$ then $u_{\text{max}}=10*0.2=2\tfrac{m}{s}$ which is a reasonable limit for a PackBot.
 
 There are many ways to select what values the gains $h$ and $k$ should take, especially once $\gamma$ is set, and some of the properties of the kinematics equations (\ref{eq:lyapunovfinalkinematics}) as the angle errors $(\alpha, \theta)$ approach $(0, 0)$ are helpful in making those selections as the system involving the errors to be minimized is approximately linear. The key to this linearization is to notice that when $\alpha$ is near zero several terms in (\ref{eq:lyapunovfinalkinematics}) cancel out since $\alpha\to0\Rightarrow \alpha=\cos(\alpha)*\sin(\alpha)=\sin(\alpha)$ as seen in Figure \ref{fig:plotSinCos}. When that is the case the following linear approximation holds:
 \begin{align}
@@ -284,7 +284,15 @@ u &= \gamma e \\
 	\label{fig:plotSinCos}
 \end{figure}
 
-This shows that, in the neighborhood of $(\alpha, \theta)=(0, 0)$, the distance error $e$ converges at a rate of $e^{-\gamma t}$ while the angle errors converge at a rate of $e^{-\sigma t}$ where $-\sigma$ is the real part of the dominant pole of the linear system $A$ in (\ref{eq:lyapunovLinearSystem}) which can be found from the eigenvalues of $A$. The reason that the errors converge at those rates is that, for the distance error, $e=e^{-\gamma t}$ is a solution to the equation $\dot{e}=-\gamma e$ since $\tfrac{d}{dt}e=\tfrac{d}{dt}e^{-\gamma t} = -\gamma e^{-\gamma t}=-\gamma e$. Similarly the angle errors the behavior is related to $A$ and nonsingular matrices can be factored into the form $A=S\Lambda S^{-1}$ where $S$ contains the eigenvectors of $A$ and $\Lambda$ is a diagonal matrix containing the eigenvalues of $A$. The solution to the differential equation is $e^{At}=e^{S\Lambda S^{-1}t}=Se^{\Lambda t}S^{-1}$ and $\dot{\alpha}$ has the solution $\alpha=e^{-\lambda_1 t}$ and $\dot{\theta}$ has the solution $\theta=e^{-\lambda_2 t}$.
+This shows that, in the neighborhood of $(\alpha, \theta)=(0, 0)$, the distance error $e$ converges at a rate of $\text{exp}(-\gamma t)$ while the angle errors converge at a rate of $\text{exp}(-\sigma t)$ where $-\sigma$ is the real part of the dominant pole of the linear system $A$ in (\ref{eq:lyapunovLinearSystem}) which can be found from the eigenvalues of $A$. The reason that the errors converge at those rates is that, for the distance error, $e=\text{exp}(-\gamma t)$ is a solution to the equation $\dot{e}=-\gamma e$ since 
+\begin{align*}
+\tfrac{d}{dt}e=\tfrac{d}{dt}\text{exp}(-\gamma t) = -\gamma \text{exp}(-\gamma t)=-\gamma e.
+\end{align*}
+Similarly, the behavior of the angle errors is related to the matrix $A$ and nonsingular matrices can be factored into the form $A=S\Lambda S^{-1}$ where $S$ contains the eigenvectors of $A$ and $\Lambda$ is a diagonal matrix containing the eigenvalues of $A$. The solution to the differential equation is
+\begin{align*}
+\left[\begin{array}{c} \dot{\alpha} \\ \dot{\theta} \end{array}\right] = \text{exp}(At)=\text{exp}(S\Lambda S^{-1}t)=S\text{exp}(\Lambda t)S^{-1}
+\end{align*}
+and $\dot{\alpha}$ has the solution $\alpha=\text{exp}(-\lambda_1 t)$ and $\dot{\theta}$ has the solution $\theta=\text{exp}(-\lambda_2 t)$.
 
 Three reasonable design considerations in selecting the gains are:
 \begin{itemize}
@@ -296,9 +304,9 @@ Limiting the maximum linear velocity has been discussed already and involves the
 \begin{align*}
 \zeta = \frac{\lambda_1(A)}{\lambda_2(A)}
 \end{align*}
-and the gains are critically damped when $\zeta = 1 \Rightarrow \lambda_1(A)=\lambda_2(A)=\lambda$ so that both angle errors $\alpha$ and $\theta$ are converging to zero at the same rate. When the system is critically damped the angle errors will converge before the distance error if $\sigma>\gamma$ since that means the rate of convergence for the angle errors is greater than the rate of convergence for the distance error. In the case where $\zeta > 1 \Rightarrow \lambda_1(A) > \lambda_2(A)$ then $\alpha$ will converge to zero before $\theta$.
+and the gains are critically damped when $\zeta = 1 \Rightarrow \lambda_1(A)=\lambda_2(A)=\lambda$ so that both angle errors $\alpha$ and $\theta$ are converging to zero at the same rate. When the system is critically damped the angle errors will converge before the distance error if $\sigma>\gamma$ since that means the rate of convergence for the angle errors is greater than the rate of convergence for the distance error. In the case where the $A$ matrix is overdamped $\zeta > 1 \Rightarrow \lambda_1(A) > \lambda_2(A)$ then $\alpha$ will converge to zero before $\theta$ and conversely when $A$ is underdamped $\zeta < 1$ and $\theta$ converges before $\alpha$.
 
-By selecting the gains to satisfy the design considerations above the robot will align itself with the goal heading before arriving at the goal point and will smoothly decrease its linear velocity as it approaches the goal point. One alternative occurs when the distance error converges before the angle errors, $\gamma>\sigma$, and the robot will get to the goal point and then finish aligning with the goal heading which does not look as intelligent and rotating in place is typically a more difficult maneuver for tracked robots to perform. The other alternative is that one angle error will converge before the other and this can lead to oscillations in heading since the two angle errors are coupled.
+By selecting the gains to satisfy the design considerations above the robot will align itself with the goal heading before arriving at the goal point and will smoothly decrease its linear velocity as it approaches the goal point. One alternative occurs when the distance error converges before the angle errors, $\gamma>\sigma$, and the robot will get to the goal point and then finish aligning with the goal heading which has several problems: (i) the robot does not look as intelligent since the trajectory does not appear to be as "natural" as the way a human would drive and (ii) rotating in place is typically a much more difficult maneuver for tracked robots to perform and increases the fatigue on the treads compared to turning while driving forward. The other alternative is that one angle error will converge before the other and this can lead to oscillations in heading since the two angle errors are coupled.
 
 To deterministically discover gains that will satisfy the properties discussed two conditions must be met:
 \begin{itemize}
@@ -328,4 +336,6 @@ k &= 2\gamma\sqrt{h} > 2\gamma \\
 \Rightarrow h &> 1
 \end{align*}
 
-Using this method any two gains can be selected and the third gain can be found which satisfies the above properties. For example, setting $\gamma=0.2$ to limit the maximum linear velocity and $h=1.1$ to keep it small but greater than one leads to $k=2\gamma\sqrt{h}=0.42$. From this it can be seen that $\lambda_1(A) = \lambda_2(A) = 0.21 \Rightarrow \zeta = 1$ so the system $A$ is critically damped and $\sigma = 0.21>0.2=\gamma$ so that the angle errors will converge before the distance error. This is the new answer for the question "How do I get there?".
+Using this method any two gains can be selected and the third gain can be found which satisfies the above properties. For example, setting $\gamma=0.2$ to limit the maximum linear velocity and $h=1.1$ to keep it small but greater than one leads to $k=2\gamma\sqrt{h}=0.42$. From this it can be seen that $\lambda_1(A) = \lambda_2(A) = 0.21 \Rightarrow \zeta = 1$ so the system $A$ is critically damped and $\sigma = 0.21>0.2=\gamma$ so that the angle errors will converge before the distance error.
+
+The model based controller developed in this Chapter along with the analysis of selecting appropriate gains replaces the original PID controller when answering the question "How do I get there?".
