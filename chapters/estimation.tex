@@ -132,7 +132,7 @@ A first order Taylor series approximation is generally considered good enough wh
 \label{sec:dynamics}
 A model of the system dynamics is necessary in order to propagate the state of the system forward in time in the absence of measurements. It is impossible to create a perfect model of the system and even a nearly perfect model of the system will likely be too complex to compute fast enough for it to be useful. The best result that is typically available is a model with a large amount of assumptions where the most important aspects of the dynamics are captured in the model.
 
-A nonlinear, continuous time model based on robot kinematics is developed in the body frame coordinate system using the states from section \ref{sec:statespacemodels} is given by
+A nonlinear, continuous time model based on robot kinematics is developed in the body frame coordinate system using the states from Chapter \ref{sec:statespacemodels} is given by
 \begin{align}
 \label{eq:kfnonlineardynamics}
 \begin{split}
@@ -239,6 +239,22 @@ x \\ y \\ z \\ V \\ \theta \\ \phi \\ \psi \\ \omega
 \end{array}\right]_k
 \end{align*}
 as the system model that is used in the prediction update step of the Kalman filter equations to calculate the state of the robot in between measurements.
+%
+%The matrix $\Gamma$ is
+%{\footnotesize
+%\begin{align*}
+%\Gamma = \left[\begin{array}{c c c c c c c c}
+%s\psi c\phi-c\psi s\theta s\phi & c\psi c\theta & s\psi s\phi+c\psi s\theta c\phi & 0 & 0 & 0 & 0 & 0 \\
+%-c\psi c\phi-s\psi s\theta s\phi & s\psi c\theta & -c\psi s\phi-s\psi s\theta c\phi & 0 & 0 & 0 & 0 & 0 \\
+%-c\theta s\phi & -s\theta & c\theta c\phi & 0 & 0 & 0 & 0 & 0 \\
+%0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+%0 & 0 & 0 & 0 & c\phi & 0 & s\phi & 0 \\
+%0 & 0 & 0 & 0 & -t\theta s\phi & 1 & t\theta c\phi & 0 \\
+%0 & 0 & 0 & 0 & -s\phi/c\theta & 0 & c\phi/c\theta & 0 \\
+%0 & 0 & 0 & 0 & 0 & 0 & 0 & 0
+%\end{array}\right]
+%\end{align*}
+%}
 
 \subsection{Measurement Model}
 \label{sec:kfMeasurementModel}
@@ -289,13 +305,13 @@ From these equations it can be seen that all four models used in the Kalman filt
 
 If the sensor data matches the system model prediction then the innovations term $y_k-H_k\hat{x}_k^-=0$ and the Kalman gain is ignored but that rarely, if ever, happens in practice. The interesting question then becomes whether to trust the noisy sensors or the imperfect system model to determine the state estimate. A large gain value will adjust the previous estimate from the prediction update step by a larger amount which means that the sensor data is weighted more heavily than the system model. Conversely a small gain value will cause the estimate from the measurement update step to trust the system model more than the sensor data. It is important to note that the Kalman gain matrix $K$ can have large values for some states (and sensors) and small values for other states (and sensors).
 
-As discussed in section \ref{sec:kfMeasurementModel} the measurement model is fairly simple so the Kalman gain is really a function of the system model and the noise models. If the system model is a very good approximation to the real system then the system noise model should reflect that by having small values in $Q$ and if the sensors are very good then the measurement noise model will have small values in $R$. Thus the Kalman gain matrix tends to take on values relative to the ratio of the elements of the $Q$ and $R$ noise models. From this it can be seen that developing accurate noise models is very important to the performance of the Kalman filter.
+As discussed in Chapter \ref{sec:kfMeasurementModel} the measurement model is fairly simple so the Kalman gain is really a function of the system model and the noise models. If the system model is a very good approximation to the real system then the system noise model should reflect that by having small values in $Q$ and if the sensors are very good then the measurement noise model will have small values in $R$. Thus the Kalman gain matrix tends to take on values relative to the ratio of the elements of the $Q$ and $R$ noise models. From this it can be seen that developing accurate noise models is very important to the performance of the Kalman filter.
 
 When the models are not set up correctly then the measurements will likely not match the predicted state estimates and the Kalman gains will grow larger during each measurement update step to force the state estimate to trust the measurements more than the system model.
 
 \section{Determining Heading}
 \label{sec:determineHeading}
-An immediate problem that arose during testing which had to be addressed before new techniques such as those in section \ref{sec:kftrainingparams} and \ref{sec:controllyapunov} could be attempted is that the robots did not always know which direction they were heading due to a lack of sensors. The original sensors used to determine heading on the robots were GPS and a gyro in the IMU. GPS worked fine when the robot was driving forward but when the robot began to drive in reverse the heading would rotate $180^\circ$. The angular velocity measurement from the gyro was integrated over time using the system model from (\ref{eq:kfjacobianresult}) and included as a second heading measurement although this measurement tends to drift over longer periods \cite{ChungOjeda01}. An Ocean Server OS5000 digital compass was added to get a better estimate of heading in a global coordinate system since the magnetometer performance was better with that sensor than with the Microstrain 3DM-GX1 and wheel encoder measurements of linear and angular velocity were also added. The velocities from the encoders were directly incorporated into the measurement update step and the sign of the linear velocity was used to determine the appropriate to use for GPS heading.
+An immediate problem that arose during testing which had to be addressed before new techniques such as those in Chapter \ref{sec:kftrainingparams} and \ref{sec:controllyapunov} could be attempted is that the robots did not always know which direction they were heading due to a lack of sensors. The original sensors used to determine heading on the robots were GPS and a gyro in the IMU. GPS worked fine when the robot was driving forward but when the robot began to drive in reverse the heading would rotate $180^\circ$. The angular velocity measurement from the gyro was integrated over time using the system model from (\ref{eq:kfjacobianresult}) and included as a second heading measurement although this measurement tends to drift over longer periods \cite{ChungOjeda01}. An Ocean Server OS5000 digital compass was added to get a better estimate of heading in a global coordinate system since the magnetometer performance was better with that sensor than with the Microstrain 3DM-GX1 and wheel encoder measurements of linear and angular velocity were also added. The velocities from the encoders were directly incorporated into the measurement update step and the sign of the linear velocity was used to determine the appropriate to use for GPS heading.
 
 Figure \ref{fig:GEHeadingReverse} shows the routes driven by the robot when testing heading where the heading was reversed on the blue route and the heading was fixed on the red route. Figure \ref{fig:pbDataReverseHeadingBroken} shows sensor data before adding the encoder data to the Kalman filter (but using logged encoder data for comparison purposes to show where the velocity was negative) and the heading can be seen to flip $\pi ~ rads$ where the velocity was negative but the GPS velocity is positive. Figure \ref{fig:pbDataReverseHeadingFixed} is the sensor data after incorporating the encoder velocities into the Kalman filter and using the encoder data to reverse the sign of the GPS velocity whenever the encoder velocity is negative which results in a heading estimate that does not flip.
 
@@ -353,7 +369,7 @@ With a highly accurate estimate of ground truth established it becomes possible 
 
 \section{Identifying Noise Models}
 \label{sec:kfIdentifyNoiseModels}
-Attempting to determine the proper values for the noise models $Q$ in (\ref{eq:kfpredictionupdate}) and $R$ in (\ref{eq:kfmeasurementupdate}) can be a laborious process and is often considered more of an art than a science with engineer experience being a critical factor. In section \ref{sec:kfNoiseModels} it was shown that the Kalman filter performance is heavily dependent upon the accuracy of the noise models even though they are difficult to determine. Several complementary methods exist to assist engineers in determining proper relative weighting of the elements in $Q$ and $R$ to improve Kalman filter performance after initial values are selected by the engineer.
+Attempting to determine the proper values for the noise models $Q$ in (\ref{eq:kfpredictionupdate}) and $R$ in (\ref{eq:kfmeasurementupdate}) can be a laborious process and is often considered more of an art than a science with engineer experience being a critical factor. In Chapter \ref{sec:kfNoiseModels} it was shown that the Kalman filter performance is heavily dependent upon the accuracy of the noise models even though they are difficult to determine. Several complementary methods exist to assist engineers in determining proper relative weighting of the elements in $Q$ and $R$ to improve Kalman filter performance after initial values are selected by the engineer.
 
 %\subsection{Adaptive Extended Kalman Filter}
 %\label{sec:adaptiveekf}
@@ -386,7 +402,7 @@ Attempting to determine the proper values for the noise models $Q$ in (\ref{eq:k
 
 \subsection{Discriminative Training of Kalman Filter Parameters}
 \label{sec:kftrainingparams}
-\cite{Abbeel-RSS-05} describes a method to automatically learn what the covariance matrices $Q$ and $R$ should be by using a discriminative training algorithm. \cite{SakaiKuroda10} recently used a variation of the algorithm described in \cite{Abbeel-RSS-05} to learn parameter values for the noise filters used in their unscented Kalman filter. This method takes advantage of ground truth measurements obtained using a DGPS system like that described in section \ref{sec:groundtruth}. Note that in the following expressions the term $h(\mu_t)$ is the position output by the Kalman filter and $y$ is the DGPS position output so the goal is to find values of $Q$ and $R$ that minimizes the difference between the output of the Kalman filter and DGPS ground truth.
+\cite{Abbeel-RSS-05} describes a method to automatically learn what the covariance matrices $Q$ and $R$ should be by using a discriminative training algorithm. \cite{SakaiKuroda10} recently used a variation of the algorithm described in \cite{Abbeel-RSS-05} to learn parameter values for the noise filters used in their unscented Kalman filter. This method takes advantage of ground truth measurements obtained using a DGPS system like that described in Chapter \ref{sec:groundtruth}. Note that in the following expressions the term $h(\mu_t)$ is the position output by the Kalman filter and $y$ is the DGPS position output so the goal is to find values of $Q$ and $R$ that minimizes the difference between the output of the Kalman filter and DGPS ground truth.
 
 There are several metrics that can be applied to the data with the two most relevant metrics being the residual error metric and the prediction likelihood error metric. The residual prediction error is used to estimate $Q$ and $R$ using
 \begin{align*}
@@ -417,7 +433,7 @@ A program was written to implement these algorithms where logged data -- both fr
 
 %\subsection{Numerical Analysis of Training Program}
 %\label{sec:trainingNumericalAnalysis}
-%The training program used here is a brute-force coordinate descent approach to finding the optimal $Q$ and $R$ matrices for the Kalman filter. The number of matrices attempted can grow to a very large number when all elements of the matrices are varied so an optional algorithm was developed that trains using only diagonal $Q$ and $R$ matrices. This is not an unreasonable restriction as the original $Q$ and $R$ matrices found by hand-tuning or from the output of the adaptive Kalman filter from section \ref{sec:adaptiveekf} used only diagonal $Q$ and $R$ matrices. The number of possible matrices that are used during training is a function of the number of states used in the Kalman filter and the number of measurements where
+%The training program used here is a brute-force coordinate descent approach to finding the optimal $Q$ and $R$ matrices for the Kalman filter. The number of matrices attempted can grow to a very large number when all elements of the matrices are varied so an optional algorithm was developed that trains using only diagonal $Q$ and $R$ matrices. This is not an unreasonable restriction as the original $Q$ and $R$ matrices found by hand-tuning or from the output of the adaptive Kalman filter from Chapter \ref{sec:adaptiveekf} used only diagonal $Q$ and $R$ matrices. The number of possible matrices that are used during training is a function of the number of states used in the Kalman filter and the number of measurements where
 %\begin{align*}
 %%\label{eq:trainingFullMatrices}
 %\begin{split}
