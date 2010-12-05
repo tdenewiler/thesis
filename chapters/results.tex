@@ -1,6 +1,6 @@
 \chapter{Results}
 \label{ch:results}
-The Kalman filter and controls algorithms discussed in this thesis were implemented in software on a PackBot and run in an open field with an uneven surface consisting of dirt and gravel. This testing area is difficult for the robots to navigate because pitch, roll and elevation change and the loose dirt and gravel cause the tracks to slip leading to erroneous encoder data.
+The Kalman filter and controls algorithms discussed in this thesis were implemented in software on a PackBot and run in an open field with an uneven surface consisting of dirt, gravel and asphalt. This testing area is difficult for the robots to navigate because pitch, roll and elevation change and the loose dirt and gravel cause the tracks to slip leading to erroneous encoder data.
 
 *** I want to show plots with the position estimate using GPS only, KF with learned Q/R but no adapting, KF with no adapting or training, KF with adapting, KF with learned and adaptive, KF with different encoder equations. Would be cool to plot these on an overhead image of the test area. ***
 
@@ -10,33 +10,106 @@ The Kalman filter and controls algorithms discussed in this thesis were implemen
 
 \section{Kalman Filter Results}
 \label{sec:kfResults}
-Using logged data from the Kalman filter running with default $Q$ and $R$ parameters the robot track is shown in Figure \ref{fig:kfPlainDataFirstAttempt}.
+Model based with original noise models.
 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=.95\textwidth]{images/kfPlainDataFirstAttempt}
-	\caption{Kalman Filter Output using the Original Parameters}
-	\label{fig:kfPlainDataFirstAttempt}
+	\includegraphics[width=.5\textwidth]{images/GE/20101203_1551_kf_lyapOrigQR}
+	\caption{Model Based Controller with Original Noise Models}
+	\label{fig:kfResults1}
+\end{figure}
+
+Model based with learned noise models.
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.5\textwidth]{images/GE/20101203_1545_kf_lyapNewQR}
+	\caption{Model Based Controller with Learned Noise Models}
+	\label{fig:kfResults2}
+\end{figure}
+
+Model based with DGPS as input to Kalman filter and learned noise models.
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.5\textwidth]{images/GE/20101203_1606_kf_lyapUsingDgpsNewQR}
+	\caption{Model Based Controller with DGPS and Learned Noise Models}
+	\label{fig:kfResults3}
+\end{figure}
+
+PID with original noise models.
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.5\textwidth]{images/GE/20101203_1755_kf_pidOrigQR}
+	\caption{PID Controller with Original Noise Models}
+	\label{fig:kfResults4}
+\end{figure}
+
+PID with learned noise models.
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.5\textwidth]{images/GE/20101203_1751_kf_pidNewQR}
+	\caption{PID Controller with Learned Noise Models}
+	\label{fig:kfResults5}
+\end{figure}
+
+PID with DGPS as input to Kalman filter and learned noise models.
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.5\textwidth]{images/GE/20101203_1803_kf_pidUsingDgpsNewQR}
+	\caption{PID Controller with DGPS and Learned Noise Models}
+	\label{fig:kfResults6}
 \end{figure}
 
 \section{Model Based Controller Results}
 \label{sec:lyapunovResults}
-The control law derived in (\ref{eq:lyapunovControlLaw}) was tested in the previously described area in two different ways. The first set of results used a single set of gains and had the goal heading set to use the current heading of the robot so that $\theta^\star=\alpha$ as discussed in Chapter \ref{sec:lyapunovVariables}. Figure \ref{fig:resultsLyapunovGEKF} shows the actual position of the robot during navigation as well as the waypoints that defined the desired route.
+The control law derived in (\ref{eq:lyapunovControlLaw}) was tested in the previously described area in two different ways. The first set of results used a single set of gains and had the goal heading set to use the current heading of the robot so that $\theta^\star=\alpha$ as discussed in Chapter \ref{sec:lyapunovVariables}. Figure *** shows the actual position of the robot during navigation as well as the waypoints that defined the desired route.
+
+Figures \ref{fig:resultsLyapunov1} - \ref{fig:resultsLyapunov6} shows how the linear and angular velocities changed over time as measured by the Kalman filter output. The gains used were $h=0.1$, $k=0.25$ and $\gamma=0.23$. A clear deceleration can be seen as the robot approaches each waypoint although the linear velocity does not go to zero until the final waypoint due to the use of the carrot in the path planner as discussed in Chapter \ref{sec:lyapunovVariables} for determing the error distance $e$. One of the consequences of using a model based controller is that a negative linear velocity was used after reaching the second waypoint and having the error angle $\alpha$ move towards the third waypoint which is rarely, if ever, encountered when using the original PID controller.
 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=.5\textwidth]{images/20100918_1717_GE_KF_waypts}
-	\caption{Robot Position During Controller Testing}
-	\label{fig:resultsLyapunovGEKF}
+	\includegraphics[width=.5\textwidth]{images/pbtx/20101203_1551_pbtxLyapOrigQR}
+	\caption{Model Based Controller with Original Noise Models}
+	\label{fig:resultsLyapunov1}
 \end{figure}
 
-Figure \ref{fig:resultsLyapunovVelocities} shows how the linear and angular velocities changed over time as measured by the Kalman filter output. The gains used were $h=0.1$, $k=0.25$ and $\gamma=0.23$. A clear deceleration can be seen as the robot approaches each waypoint although the linear velocity does not go to zero until the final waypoint due to the use of the carrot in the path planner as discussed in Chapter \ref{sec:lyapunovVariables} for determing the error distance $e$. One of the consequences of using a model based controller is that a negative linear velocity was used after reaching the second waypoint and having the error angle $\alpha$ move towards the third waypoint which is rarely, if ever, encountered when using the original PID controller.
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.5\textwidth]{images/pbtx/20101203_1545_pbtxLyapNewQR}
+	\caption{Model Based Controller with Learned Noise Models}
+	\label{fig:resultsLyapunov2}
+\end{figure}
 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=.5\textwidth]{images/20100918_1717_velocities}
-	\caption{Linear and Angular Velocity Outputs using Model Based Controller}
-	\label{fig:resultsLyapunovVelocities}
+	\includegraphics[width=.5\textwidth]{images/pbtx/20101203_1606_pbtxLyapUsingDgpsNewQR}
+	\caption{Model Based Controller Using DGPS with Learned Noise Models}
+	\label{fig:resultsLyapunov3}
+\end{figure}
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.5\textwidth]{images/pbtx/20101203_1755_pbtxPidOrigQR}
+	\caption{PID Controller with Original Noise Models}
+	\label{fig:resultsLyapunov4}
+\end{figure}
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.5\textwidth]{images/pbtx/20101203_1751_pbtxPidNewQR}
+	\caption{PID Controller with Learned Noise Models}
+	\label{fig:resultsLyapunov5}
+\end{figure}
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.5\textwidth]{images/pbtx/20101203_1803_pbtxPidUsingDgpsNewQR}
+	\caption{PID Controller Using DGPS with Learned Noise Models}
+	\label{fig:resultsLyapunov6}
 \end{figure}
 
 The process of selecting gains in Chapter \ref{sec:lyapunovTrajectoryConvergence} only applies as $(\alpha, \theta)\to(0,0)$ but says nothing about what happens when the angle errors are not small. Empirically it was determined that the gains $h=0.25$, $k=0.2$ and $\gamma=0.2$ worked well in creating smooth trajectories and later it was found that these gains cause $\zeta=1$ so that, when the angle errors are small, the system $A$ is critically damped although $\sigma>\gamma$ so the distance error converges faster than the angle errors. The best results occurred when the gains were set to $h=0.25$, $k=0.2$ and $\gamma=0.2$ \textit{until} the angle errors were $|\alpha|<0.5$ \textit{and} $|\theta|<0.5$ radians which leads to the linear approximation being valid and the gains were then changed to $h=1.1$, $k=0.42$ and $\gamma=0.2$. This second set of gains, used when the angle errors were small, are critically damped for the system $A$ since $\zeta=1$ and the angle errors converge faster than the distance error since $\sigma>\gamma$. The results of this adaptive gain scheme can be seen in Figures \ref{fig:resultsLyapunovPositionAdaptive} and \ref{fig:resultsLyapunovVelocitiesAdaptive}. Note that the goal heading, $\theta^\star$, was set to be the angle from the current waypoint to the next waypoint so that the robot would be pointing in the direction of the next waypoint when it reached the current waypoint. For the last waypoint in the route the goal heading used was $\theta^\star=\alpha$.

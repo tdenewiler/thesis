@@ -369,7 +369,7 @@ With a highly accurate estimate of ground truth established it becomes possible 
 
 \section{Identifying Noise Models}
 \label{sec:kfIdentifyNoiseModels}
-Attempting to determine the proper values for the noise models $Q$ in (\ref{eq:kfpredictionupdate}) and $R$ in (\ref{eq:kfmeasurementupdate}) can be a laborious process and is often considered more of an art than a science with engineer experience being a critical factor. In Chapter \ref{sec:kfNoiseModels} it was shown that the Kalman filter performance is heavily dependent upon the accuracy of the noise models even though they are difficult to determine. Several complementary methods exist to assist engineers in determining proper relative weighting of the elements in $Q$ and $R$ to improve Kalman filter performance after initial values are selected by the engineer.
+Attempting to determine the proper values for the noise models $Q$ in (\ref{eq:kfpredictionupdate}) and $R$ in (\ref{eq:kfmeasurementupdate}) can be a laborious process and is often considered more of an art than a science with engineer experience being a critical factor. In Chapter \ref{sec:kfNoiseModels} it was shown that the Kalman filter performance is heavily dependent upon the accuracy of the noise models even though they are difficult to determine. Several methods exist to assist engineers in determining proper relative weighting of the elements in $Q$ and $R$ to improve Kalman filter performance after initial values are selected by the engineer.
 
 %\subsection{Adaptive Extended Kalman Filter}
 %\label{sec:adaptiveekf}
@@ -402,7 +402,7 @@ Attempting to determine the proper values for the noise models $Q$ in (\ref{eq:k
 
 \subsection{Discriminative Training of Kalman Filter Parameters}
 \label{sec:kftrainingparams}
-\cite{Abbeel-RSS-05} describes a method to automatically learn what the covariance matrices $Q$ and $R$ should be by using a discriminative training algorithm. \cite{SakaiKuroda10} recently used a variation of the algorithm described in \cite{Abbeel-RSS-05} to learn parameter values for the noise filters used in their unscented Kalman filter. This method takes advantage of ground truth measurements obtained using a DGPS system like that described in Chapter \ref{sec:groundtruth}. Note that in the following expressions the term $h(\mu_t)$ is the position output by the Kalman filter and $y$ is the DGPS position output so the goal is to find values of $Q$ and $R$ that minimizes the difference between the output of the Kalman filter and DGPS ground truth.
+\cite{Abbeel-RSS-05} describes a method to automatically learn what the covariance matrices $Q$ and $R$ that make up the noise models in the Kalman filter should be by using a discriminative training algorithm. \cite{SakaiKuroda10} recently used a variation of the algorithm described in \cite{Abbeel-RSS-05} to learn parameter values for the noise filters used in their unscented Kalman filter. This method takes advantage of ground truth measurements obtained using a DGPS system like that described in Chapter \ref{sec:groundtruth}. Note that in the following expressions the term $h(\mu_t)$ is the position output by the Kalman filter and $y$ is the DGPS position output so the goal is to find values of $Q$ and $R$ that minimizes the difference between the output of the Kalman filter and DGPS ground truth.
 
 There are several metrics that can be applied to the data with the two most relevant metrics being the residual error metric and the prediction likelihood error metric. The residual prediction error is used to estimate $Q$ and $R$ using
 \begin{align*}
@@ -429,69 +429,36 @@ e = -\frac{1}{T}\sum_{t=1}^T \left(\log|2\pi\Omega_t| - (y_t-h(\mu_t))^T\Omega_t
 \end{align}
 where $\Omega$ is the same as in the above description.
 
-A program was written to implement these algorithms where logged data -- both from the output of the Kalman filter running on the robot and ground truth as recorded from the DGPS system -- is used to try all the possible combinations of $Q$ and $R$ matrices until the metrics identified in (\ref{eq:kftrainingres}) and (\ref{eq:kftrainingpred}) are minimized or maximized to within some convergence criterion. This method of searching is called \textit{coordinate descent}. The possible $Q$ and $R$ matrices start with a coarse grid and are reduced to a finer grid at each iteration where the grid is centered around the best estimate found from the previous grid.
+\subsection{Simulating Robot Runs}
+\label{sec:kfSimulation}
+For the training algorithm to work the sensor data collected from a robot running has to be replayed a large number of times and a simulation of the robot run helps to reduce the amount of time taken to replay the data when using the candidate noise models so that the results can be evaluated. As shown in Table \ref{tab:kfSimulationErrors} the position errors as calculated using (\ref{eq:kftrainingres}) were very close to the position errors from the actual robot run. The average error was $0.0556~m$ over nine different runs which gives a baseline for the convergence criterion. If the training algorithm is able to converge with errors on the scale of twice the average error due to simulation of the robot runs then that represents a significant improvement in Kalman filter performance and the simulations can be considered valid.
 
-%\subsection{Numerical Analysis of Training Program}
-%\label{sec:trainingNumericalAnalysis}
-%The training program used here is a brute-force coordinate descent approach to finding the optimal $Q$ and $R$ matrices for the Kalman filter. The number of matrices attempted can grow to a very large number when all elements of the matrices are varied so an optional algorithm was developed that trains using only diagonal $Q$ and $R$ matrices. This is not an unreasonable restriction as the original $Q$ and $R$ matrices found by hand-tuning or from the output of the adaptive Kalman filter from Chapter \ref{sec:adaptiveekf} used only diagonal $Q$ and $R$ matrices. The number of possible matrices that are used during training is a function of the number of states used in the Kalman filter and the number of measurements where
-%\begin{align*}
-%%\label{eq:trainingFullMatrices}
-%\begin{split}
-%n_Q &= 3^{n_{states}^2} \\
-%n_R &= 3^{n_{measurements}^2} \\
-%% n_Q &= 2^{n_{states}^2} \\
-%% n_R &= 2^{n_{measurements}^2} \\
-%n_{full} &= n_Q \times n_R
-%\end{split}
-%\end{align*}
-%for varying all elements of $Q$ and $R$ and
-%\begin{align*}
-%%\label{eq:trainingDiagonalMatrices}
-%\begin{split}
-%% n_Q &= 2^{n_{states}} \\
-%% n_R &= 2^{n_{measurements}} \\
-%n_Q &= 3^{n_{states}} \\
-%n_R &= 3^{n_{measurements}} \\
-%n_{diagonal} &= n_Q \times n_R
-%\end{split}
-%\end{align*}
-%for varying only the diagonal elements of $Q$ and $R$. During the experiments conducted the number of states is $8$ and the number of measurements is $5$ which gives
-%\begin{align*}
-%\begin{split}
-%% n_Q &= 2^{8^2} = 18446744073709551616 \\
-%% n_R &= 2^{5^2} = 33554432 \\
-%n_Q &= 3^{8^2} = 3433683820292512484657849089281 \\
-%n_R &= 3^{5^2} = 847288609443 \\
-%n_{full} &= n_Q \times n_R \\
-%% &= 618970019642690137449562112
-%&= 2909321189362570808630465826492242446680483
-%\end{split}
-%\end{align*}
-%per grid level when varying all elements of $Q$ and $R$ and
-%\begin{align*}
-%\begin{split}
-%% n_Q &= 2^8 = 256 \\
-%% n_R &= 2^5 = 25 \\
-%n_Q &= 3^8 = 6561 \\
-%n_R &= 3^5 = 243 \\
-%% n_{diagonal} &= n_Q \times n_R = 6400
-%n_{diagonal} &= n_Q \times n_R = 1594323
-%\end{split}
-%\end{align*}
-%per grid level when varying only the diagonal elements of $Q$ and $R$. The ratio is
-%\begin{align*}
-%%\label{eq:trainingRatio}
-%\begin{split}
-%r &= \frac{n_{full}}{n_{diagonal}} \\
-%% &= \frac{2^{n_{states}^2} \times 2^{n_{measurements}^2}}{2^{n_{states}} \times 2^{n_{measurements}}} \\
-%% &= 2^{n_{states}} \times 2^{n_{measurements}} \\
-%% &= 2^8 \times 2^5 = 8192
-%&= \frac{3^{n_{states}^2} \times 3^{n_{measurements}^2}}{3^{n_{states}} \times 3^{n_{measurements}}} \\
-%&= 3^{n_{states}} \times 3^{n_{measurements}} \\
-%&= 3^8 \times 3^5 = 1594323
-%\end{split}
-%\end{align*}
-%which means that it will take $1,594,323$ times longer to run the training program varying all of the matrix elements compared to only varying the diagonal elements. This can make the difference between finding optimal $Q$ and $R$ matrices and not finding them with the amount of states and measurements used in these experiments.
+\begin{table}[ht!]
+\caption{Kalman Filter Simulation Errors}
+\small
+\centering
+\begin{tabular}{@{}lllr@{}} \toprule
+Run & Initial Error (m) & Simulation Error (m) & Error Difference (m) \\ \midrule
+1   & 0.452886          & 0.423056             & 0.029830             \\
+2   & 0.177620          & 0.210472             & 0.032852             \\
+3   & 0.109484          & 0.080400             & 0.029084             \\
+4   & 0.494375          & 0.491243             & 0.003132             \\
+5   & 0.068306          & 0.035943             & 0.032363             \\
+6   & 0.000028          & 0.105102             & 0.105074             \\
+7   & 0.017564          & 0.033453             & 0.015889             \\
+8   & 2.599853          & 2.427348             & 0.172505             \\
+9   & 0.020686          & 0.100696             & 0.080010             \\ \bottomrule
+\end{tabular}
+\label{tab:kfSimulationErrors}
+\end{table}
+
+\subsection{Coordinate Ascent Algorithm}
+\label{sec:coordinateAscent}
+In order to evaluate the error metrics in (\ref{eq:kftrainingres}) and (\ref{eq:kftrainingpred}) it is necessary to search through the space of parameters to find the optimal parameters to use in the $Q$ and $R$ matrices. Initially, a program was written to attempt a naive, brute force approach of trying every possible combination of parameters. The brute force algorithm turned out to be difficult to implement, took several days to run and returned unimpressive results that did not really improve the Kalman filter estimates. Following the description in \cite{Abbeel-RSS-05} a coordinate ascent algorithm was then written with much better results and faster convergence times.
+
+The coordinate ascent algorithm was initialized by a set of hand-tuned noise model parameters and then the robot run was simulated. For each parameter in the noise models the value of the parameter is then increased by $\alpha_i \%$ and the error metric is evaluated. If the resulting error is less than the previous best result the parameter is kept at the increased value, otherwise the parameter is decreased by $\alpha_d \%$. The values $\alpha_i$ and $\alpha_d$ are known as the learning rates. One iteration of the algorithm consists of running the simulation and evaluating the error metric for each of the noise parameters and the algorithm continues until the error is less than some convergence value $\epsilon$ or until two consecutive iterations are run without producing a new minimum error.
+
+Essentially the training algorithm trades tuning the actual noise parameters in the $Q$ and $R$ matrices for tuning the learning rate parameters $\alpha_i$ and $\alpha_d$.
 
 \section{Identifty IMU Parameters}
 \label{sec:identifyimuparams}
