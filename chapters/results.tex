@@ -2,12 +2,6 @@
 \label{ch:results}
 The Kalman filter and controls algorithms discussed in this thesis were implemented in software on a PackBot and run in an open field with an uneven surface consisting of dirt, gravel and asphalt. This testing area is difficult for the robots to navigate because pitch, roll and elevation change and the loose dirt and gravel cause the tracks to slip leading to erroneous encoder data.
 
-*** I want to show plots with the position estimate using GPS only, KF with learned Q/R but no adapting, KF with no adapting or training, KF with adapting, KF with learned and adaptive, KF with different encoder equations. Would be cool to plot these on an overhead image of the test area. ***
-
-*** I want to show plots of the variance of the KF position estimate and the derivative of the control outputs of linear and angular velocity. The real goal is to have smooth velocities which will show up as constant accelerations and I want to see if there is any correlation between the variance of the position estimate and the accelerations, especially when the variance of the position esimate has a large amplitude. This would indicate that the controller is not necessarily doing a poor job and I could relate this to the example of the robot controller causing the robot to spin in circles when the IMU is giving faulty outputs. Note that this would not be a sufficient condition to show that the controller is performing properly but would only be an indication that the KF output needs improvement. There are likely ways of assessing controller performance if the KF output variance is large though. ***
-
-*** Another good set of results would be to plot the variance values returned by the GPS receiver and saved in the ACS KF log files vs the estimated variance of the KF output vs the actual error between the KF output and ground truth. ***
-
 \section{Kalman Filter Results}
 \label{sec:kfResults}
 Model based with original noise models.
