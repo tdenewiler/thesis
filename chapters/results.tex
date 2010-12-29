@@ -9,6 +9,8 @@ The Kalman filter and controls algorithms discussed in this thesis were implemen
 	\label{fig:resultsTestArea}
 \end{figure}
 
+\section{Kalman Filter Results}
+\label{sec:kfResults}
 *** Run the robot again while varying the stages of improvements and put the results in Table \ref{tab:resultsKF}. ***
 \begin{table}[ht!]
 \caption{Kalman Filter Performance}
@@ -23,8 +25,6 @@ Training    & 0              & 0                 \\ \bottomrule
 \label{tab:resultsKF}
 \end{table}
 
-\section{Kalman Filter Results}
-\label{sec:kfResults}
 Model based with original noise models.
 
 \begin{figure}[ht!]
@@ -153,29 +153,32 @@ Many different controller configurations are possible based on varying the gains
 \item Fuzzy logic with best available rules,
 \item Model based with $\theta^\star$ set as angle from current waypoint to next waypoint with gains set to minimize distance error before angle errors ($\gamma = $, $h = $, $k = $),
 \item Model based with $\theta^\star$ set as angle from previous waypoint to current waypoint with gains set to minimize distance error before angle errors ($\gamma = $, $h = $, $k = $),
-\item Model based with $\theta^\star$ set as average of angles from previous waypoint to current waypoint and from current waypoint to next waypoint with gains set to minimize distance error before angle errors ($\gamma = $, $h = $, $k = $),
 \item Model based with $\theta^\star$ set as angle from current waypoint to next waypoint with gains set to minimize angle errors before distance error ($\gamma = $, $h = $, $k = $),
 \item Model based with $\theta^\star$ set as angle from previous waypoint to current waypoint with gains set to minimize angle errors before distance error ($\gamma = $, $h = $, $k = $),
-\item Model based with $\theta^\star$ set as average of angles from previous waypoint to current waypoint and from current waypoint to next waypoint with gains set to minimize angle errors before distance error ($\gamma = $, $h = $, $k = $),
 \item Model based with $\theta^\star$ set as angle from current waypoint to next waypoint with gains set to minimize distance error before $\alpha$ before $\theta$ ($\gamma = $, $h = $, $k = $),
 \item Model based with $\theta^\star$ set as angle from previous waypoint to current waypoint with gains set to minimize distance error before $\alpha$ before $\theta$ ($\gamma = $, $h = $, $k = $),
-\item Model based with $\theta^\star$ set as average of angles from previous waypoint to current waypoint and from current waypoint to next waypoint with gains set to minimize distance error before $\alpha$ before $\theta$ ($\gamma = $, $h = $, $k = $),
-\item Model based with parking behavior turned on and gains ($\gamma = $, $h = $, $k = $).
+\item Model based with parking behavior turned on and gains set to have angle errors converge at the same rate and faster than the distance error converges ($\gamma = 0.25$, $h = 1.1$, $k = 2\gamma\sqrt{h}$).
 \end{enumerate}
 Note that in all cases for the model based controller the desired goal heading $\theta^\star$ for the final waypoint was set to be the angle from the previous waypoint to the last waypoint.
 
-Each controller configuration was run on several courses that test specific behaviors such as allowing for maximum velocities to be sustained with large amounts of open space on the route by having long path segments, short path segments between waypoints to simulate obstacles along the route and a mixture of long and short path segments.
+Each controller configuration was run on several courses that test specific behaviors such as
+\begin{itemize}
+\item allowing for maximum velocities to be sustained with large amounts of open space on the route by having long path segments shown in Figure ***,
+\item short path segments between waypoints to simulate obstacles along the route shown in Figure ***,
+\item a mixture of long and short path segments shown in Figure ***.
+\end{itemize}
 
-The results using the different setups described are shown in Table \ref{tab:resultsControllers} where the metrics used to compare the controller performance are
+The results using the different setups described are shown for the different routes in Tables \ref{tab:resultsControllersOpenSpace} - \ref{tab:resultsControllersMixed} where the metrics used to compare the controller performance are
 \begin{itemize}
 \item the time required to complete the course,
-\item the average cross track error during the course to show whether the robot followed a straight line between waypoints which is important when obstacles are in the area and not important when large amounts of open space are available for navigation (although some operators become nervous when the robot trajectory has large curvature even if open space is available),
+\item the average cross track error during the course to show whether the robot followed a straight line between waypoints which is important when obstacles are in the area and not important when large amounts of open space are available for navigation (although some operators become nervous when the robot trajectory has large curvature and deviates from a straight line path even if open space is available),
 \item the maximum velocity achieved by the robot during the course,
 \item the number of times that the robot stops where a stop is defined as the robot having a velocity that drops below a small velocity.
 \end{itemize}
+Note that for the model based controller in driving mode values of $(\lambda, \epsilon)$ to control the extension of the distance error were $(???,???)$ for the open space route, $(???,???)$ for the obstacle route and $(???,???)$ for the mixed route and were determined empirically.
 
 \begin{table}[ht!]
-\caption{Controller Comparison}
+\caption{Controller Comparison on Open Space Route}
 \small
 \centering
 \begin{tabular}{@{}llllr@{}} \toprule
@@ -188,10 +191,45 @@ Setup & Time (s) & Cross Track Error (m) & Max Velocity (m/s) & \# Stops \\ \mid
 6     & 0        & 0                     & 0                  & 0        \\
 7     & 0        & 0                     & 0                  & 0        \\
 8     & 0        & 0                     & 0                  & 0        \\
-9     & 0        & 0                     & 0                  & 0        \\
-10    & 0        & 0                     & 0                  & 0        \\
-11    & 0        & 0                     & 0                  & 0        \\
-12    & 0        & 0                     & 0                  & 0        \\ \bottomrule
+9     & 0        & 0                     & 0                  & 0        \\ \bottomrule
 \end{tabular}
-\label{tab:resultsControllers}
+\label{tab:resultsControllersOpenSpace}
+\end{table}
+
+\begin{table}[ht!]
+\caption{Controller Comparison on Simulated Obstacle Route}
+\small
+\centering
+\begin{tabular}{@{}llllr@{}} \toprule
+Setup & Time (s) & Cross Track Error (m) & Max Velocity (m/s) & \# Stops \\ \midrule
+1     & 0        & 0                     & 0                  & 0        \\
+2     & 0        & 0                     & 0                  & 0        \\
+3     & 0        & 0                     & 0                  & 0        \\
+4     & 0        & 0                     & 0                  & 0        \\
+5     & 0        & 0                     & 0                  & 0        \\
+6     & 0        & 0                     & 0                  & 0        \\
+7     & 0        & 0                     & 0                  & 0        \\
+8     & 0        & 0                     & 0                  & 0        \\
+9     & 0        & 0                     & 0                  & 0        \\ \bottomrule
+\end{tabular}
+\label{tab:resultsControllersObstacles}
+\end{table}
+
+\begin{table}[ht!]
+\caption{Controller Comparison on Mixed Route}
+\small
+\centering
+\begin{tabular}{@{}llllr@{}} \toprule
+Setup & Time (s) & Cross Track Error (m) & Max Velocity (m/s) & \# Stops \\ \midrule
+1     & 0        & 0                     & 0                  & 0        \\
+2     & 0        & 0                     & 0                  & 0        \\
+3     & 0        & 0                     & 0                  & 0        \\
+4     & 0        & 0                     & 0                  & 0        \\
+5     & 0        & 0                     & 0                  & 0        \\
+6     & 0        & 0                     & 0                  & 0        \\
+7     & 0        & 0                     & 0                  & 0        \\
+8     & 0        & 0                     & 0                  & 0        \\
+9     & 0        & 0                     & 0                  & 0        \\ \bottomrule
+\end{tabular}
+\label{tab:resultsControllersMixed}
 \end{table}

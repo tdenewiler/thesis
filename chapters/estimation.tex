@@ -8,7 +8,7 @@ One of the ACS libraries is the extended Kalman filter which is used on the EOD 
 \item imperfect models of the robot dynamics.
 \end{itemize}
 
-The Kalman filter is a method to merge physical models and sensor data to come up with an estimate of where the robot is located, what its orientation is and how fast it is moving that is better than any of the individual sensor measurements \cite{Simon06OptimalEstimation, Grewal08, Orderud05}. There are four models used in the Kalman filter:
+The Kalman filter is a method to merge physical models and sensor data to come up with an estimate of where the robot is located, what its orientation is and how fast it is moving that is better than any of the individual sensor measurements \cite{Simon06OptimalEstimation}, \cite{Grewal08}, \cite{Orderud05}. There are four models used in the Kalman filter:
 \begin{itemize}
 \item system model based on physics,
 \item measurement model to transform sensor output to state coordinate system,
@@ -29,7 +29,7 @@ Kalman filters and modern control systems (see Chapter \ref{ch:controls}) use th
 
 The state variables are given in vector form by $x$ and the sensor measurements are contained in the vector $y$. The state space equations are a means of representing with compact notations how the state of a system changes through time based on the initial state of the system and the inputs to the system, $u$, which allows the trajectory (or motion through time) to be calculated. The inputs are assumed to include any external forces applied to the system as well as actuation provided by the system itself. The function $h(x,t)$ transforms the sensor measurements into state variables.
 
-For the robots used in these experiments the state vector used follows that found in \cite{Kelly_1994_338, Kelly_1994_333} where the state variables are
+For the robots used in these experiments the state vector used follows that found in \cite{Kelly_1994_338}, \cite{Kelly_1994_333} where the state variables are
 \begin{align*}
 x_k = \left[\begin{array}{c c c c c c c c} x & y & z & V & \theta & \phi & \psi & \omega \end{array}\right]^T.
 \end{align*}
@@ -53,7 +53,7 @@ The ACS Kalman filter is typical of all Kalman filters in that it consists of a 
 	\label{fig:kf}
 \end{figure}
 
-The Kalman filters that run on the small UGVs used in these experiments run on digital computers and are necessarily used in discrete time rather than continuous time because of the nature of computers. Additionally, the standard Kalman filter equations make the assumption that the system and measurement models are linear. From \cite{Kelly_1994_338, Simon06OptimalEstimation} the discretized and linearized versions of (\ref{eq:statespace}) mean that the state space equations are represented as
+The Kalman filters that run on the small UGVs used in these experiments run on digital computers and are necessarily used in discrete time rather than continuous time because of the nature of computers. Additionally, the standard Kalman filter equations make the assumption that the system and measurement models are linear. From \cite{Kelly_1994_338}, \cite{Simon06OptimalEstimation} the discretized and linearized versions of (\ref{eq:statespace}) mean that the state space equations are represented as
 \begin{align*}
 %\label{eq:kfstatemodel}
 \begin{split}
@@ -364,7 +364,7 @@ With a highly accurate estimate of ground truth established it becomes possible 
 
 \section{Identifying Noise Models}
 \label{sec:kfIdentifyNoiseModels}
-Attempting to determine the proper values for the noise models $Q$ in (\ref{eq:kfpredictionupdate}) and $R$ in (\ref{eq:kfmeasurementupdate}) can be a laborious process and is often considered more of an art than a science with engineer experience being a critical factor. In Chapter \ref{sec:kfNoiseModels} it was shown that the Kalman filter performance is heavily dependent upon the accuracy of the noise models even though they are difficult to determine. Several methods exist to assist engineers in determining proper relative weighting of the elements in $Q$ and $R$ to improve Kalman filter performance after initial values are selected by the engineer.
+Attempting to determine the proper values for the noise models $Q_k$ in (\ref{eq:kfpredictionupdate}) and $R_k$ in (\ref{eq:kfmeasurementupdate}) can be a laborious process and is often considered more of an art than a science with engineer experience being a critical factor. In Chapter \ref{sec:kfNoiseModels} it was shown that the Kalman filter performance is heavily dependent upon the accuracy of the noise models even though they are difficult to determine. Several methods exist to assist engineers in determining proper relative weighting of the elements in $Q_k$ and $R_k$ to improve Kalman filter performance after initial values are selected by the engineer.
 
 %\subsection{Adaptive Extended Kalman Filter}
 %\label{sec:adaptiveekf}
@@ -397,7 +397,7 @@ Attempting to determine the proper values for the noise models $Q$ in (\ref{eq:k
 
 \subsection{Discriminative Training of Kalman Filter Parameters}
 \label{sec:kftrainingparams}
-\cite{Abbeel-RSS-05} describes a method to automatically learn what the covariance matrices $Q$ and $R$ that make up the noise models in the Kalman filter should be by using a discriminative training algorithm. \cite{SakaiKuroda10} recently used a variation of the algorithm described in \cite{Abbeel-RSS-05} to learn parameter values for the noise filters used in their unscented Kalman filter. This method takes advantage of ground truth measurements obtained using a DGPS system like that described in Chapter \ref{sec:groundtruth}. Note that in the following expressions the term $h(\mu_t)$ is the position output by the Kalman filter and $y$ is the DGPS position output so the goal is to find values of $Q$ and $R$ that minimizes the difference between the output of the Kalman filter and DGPS ground truth.
+\cite{Abbeel-RSS-05} describes a method to automatically learn what the covariance matrices $Q_k$ and $R_k$ that make up the noise models in the Kalman filter should be by using a discriminative training algorithm. \cite{SakaiKuroda10} recently used a variation of the algorithm described in \cite{Abbeel-RSS-05} to learn parameter values for the noise filters used in their unscented Kalman filter. This method takes advantage of ground truth measurements obtained using a DGPS system like that described in Chapter \ref{sec:groundtruth}. Note that in the following expressions the term $h(\mu_t)$ is the position output by the Kalman filter and $y$ is the DGPS position output so the goal is to find values of $Q_k$ and $R_k$ that minimizes the difference between the output of the Kalman filter and DGPS ground truth.
 
 There are several metrics that can be applied to the data with the two most relevant metrics being the residual error metric and the prediction likelihood error metric. The residual prediction error is used to estimate $Q_k$ and $R_k$ using
 \begin{align*}
@@ -449,12 +449,8 @@ Run & Initial Error (m) & Simulation Error (m) & Error Difference (m) \\ \midrul
 
 \subsection{Coordinate Ascent Algorithm}
 \label{sec:coordinateAscent}
-In order to evaluate the error metrics in (\ref{eq:kftrainingres}) and (\ref{eq:kftrainingpred}) it is necessary to search through the space of parameters to find the optimal parameters to use in the $Q$ and $R$ matrices. Initially, a program was written to attempt a naive, brute force approach of trying every possible combination of parameters. The brute force algorithm turned out to be difficult to implement, took several days to run and returned unimpressive results that did not really improve the Kalman filter estimates. Following the description in \cite{Abbeel-RSS-05} a coordinate ascent algorithm was then written with much better results and faster convergence times.
+In order to evaluate the error metrics in (\ref{eq:kftrainingres}) and (\ref{eq:kftrainingpred}) it is necessary to search through the space of parameters to find the optimal parameters to use in the $Q_k$ and $R_k$ matrices. Initially, a program was written to attempt a naive, brute force approach of trying every possible combination of parameters. The brute force algorithm turned out to be difficult to implement, took several days to run and returned unimpressive results that did not really improve the Kalman filter estimates. Following the description in \cite{Abbeel-RSS-05} a coordinate ascent algorithm was then written with much better results and faster convergence times.
 
 The coordinate ascent algorithm was initialized by a set of hand-tuned noise model parameters and then the robot run was simulated. For each parameter in the noise models the value of the parameter is then increased by $\alpha_i \%$ and the error metric is evaluated. If the resulting error is less than the previous best result the parameter is kept at the increased value, otherwise the parameter is decreased by $\alpha_d \%$. The values $\alpha_i$ and $\alpha_d$ are known as the learning rates. One iteration of the algorithm consists of running the simulation and evaluating the error metric for each of the noise parameters and the algorithm continues until the error is less than some convergence value $\epsilon$ or until two consecutive iterations are run without producing a new minimum error.
 
-Essentially the training algorithm trades tuning the actual noise parameters in the $Q$ and $R$ matrices for tuning the learning rate parameters $\alpha_i$ and $\alpha_d$.
-
-\section{Identifty IMU Parameters}
-\label{sec:identifyimuparams}
-*** Looking at \cite{ChungOjeda01}. Would need access to a rotary table to perform tests. Also look at \cite{ParkinsonHeadingEstimation01} for better estimation of heading where it is shown that there are four sources of magnetometer errors -- hard iron errors, soft iron errors, scale factor errors and misalignment errors. ***
+Essentially the training algorithm trades tuning the actual noise parameters in the $Q_k$ and $R_k$ matrices for tuning the learning rate parameters $\alpha_i$ and $\alpha_d$.
