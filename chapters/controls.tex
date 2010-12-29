@@ -53,26 +53,28 @@ $K_d$        & Small Decrease & Decrease  & Decrease      & None \\ \bottomrule
 An alternative control method to using classical PID controllers is to use model based controllers based on Lyapunov stability theory. An intuitive way to conceptualize controllers based on this stabilty theory is by thinking of them as decreasing the overall energy of a system, even when the variables involved in the control Lyapunov functions do not represent energy \cite{Khalil02}.
 
 The theorem for Lyapunov stability states that for an equilibrium point $x=0$ and a domain $D\subset\mathbb{R}^n$ that contains $x=0$ and for which there is a function $V:D\to\mathbb{R}$ that is continuously differentiable and has the following properties 
-\begin{align*}
-%\label{eq:lyapunovTheorem}
+\begin{align}
+\label{eq:lyapunovTheorem}
 \begin{split}
 V(0) &= 0 \\
 V(x) &> 0 \in D-\{0\} \\
 \dot{V}(x) &\leq 0 \in D-\{0\}
 \end{split}
-\end{align*}
+\end{align}
 then the equilibrium point $x=0$ is stable. Additionally, if
-\begin{align*}
-%\label{eq:lyapunovAsymptoticStability}
+\begin{align}
+\label{eq:lyapunovAsymptoticStability}
 \dot{V}(x) < 0 \in D - \{0\}
-\end{align*}
+\end{align}
 then $x=0$ is asymptotically stable.
 
-It is not always possible to find such a control Lyapunov function $V$ but when one is found then this theorem holds and the "energy" of the system will always be positive and decreasing. The "energy" can consist of any variables that make $V(0) = 0$ and $V(x) > 0$ and often consist of a combination of the errors that are to be minimized in a system. In that case the errors are always decreasing since $\dot{V}(x) < 0$ and the system will reach the desired state.
+It is not always possible to find such a control Lyapunov function $V$ but when one is found then this theorem holds and the "energy" of the system will always be positive and decreasing. The "energy" can consist of any variables that make $V(0) = 0$ and $V(x) > 0$ and consist of a combination of the errors that are to be minimized in a system. In that case the errors are always decreasing since $\dot{V}(x) < 0$ and the system will reach the desired state.
+
+Two different modes of the model based controller were developed and tested for this Thesis. The difference between the two modes is the behavior of the robot as it approaches intermediate waypoints while navigating to its final destination. The first mode is considered to be useful for a parking behavior where the robot stops at each waypoint including the intermediate waypoints. The second mode is a slightly modified version of the parking behavior where the distance error is extended beyond each intermediate waypoint so that the robot will drive through the waypoints without stopping (although the robot often does slow down some) until it reaches its final destination. This second mode will be referred to as the driving mode. During the following development of the control law the parking mode will be described fully and then extensions will build directly on top of the parking mode to describe the driving mode in Chapter \ref{sec:drivingMode}.
 
 \subsection{Unicycle-like Robot Kinematics}
 \label{sec:unicycleKinematics}
-Several groups have implemented model-based controllers rooted in Lyapunov stability theory in simulation including \cite{Aicardi_UnicycleLyapunov95, Gulati08, Rusu05RobotuxLyapunov, Aicardi94, MicaelliLyapunov93} but only recently have these results been applied to actual robots \cite{NuchterLyapunov07, KimLyapunov05, Lapierre06, Lapierre07}. All of these groups describe a method for constructing a control Lyapunov function based on the kinematics of a differential drive robot, similar in nature to the small robots considered in these experiments and typically referred to as a unicycle-like robots in the literature.
+Several groups have implemented model based controllers rooted in Lyapunov stability theory in simulation including \cite{MicaelliLyapunov93}, \cite{Aicardi94}, \cite{Aicardi_UnicycleLyapunov95}, \cite{Rusu05RobotuxLyapunov}, \cite{Gulati08} but only recently have these results been applied to actual robots \cite{KimLyapunov05}, \cite{Lapierre06}, \cite{Lapierre07}, \cite{NuchterLyapunov07}. All of these groups describe a method for constructing a control Lyapunov function based on the kinematics of a differential drive robot, similar in nature to the small robots considered in these experiments and typically referred to as unicycle-like robots in the literature.
 
 \begin{figure}[ht!]
 	\centering
@@ -91,7 +93,7 @@ Figure \ref{fig:pblyapunov} will be used as the basis for the equations that fol
 Additional variables used to calculate the errors include
 \begin{itemize}
 \item $\theta^\star$, the target heading in the global coordinate system which is aligned with the $x$-axis,
-\item $\beta$, the current heading of the robot in the global coordinate system,
+\item $\psi$, the current heading of the robot in the global coordinate system,
 \item $\phi$, the difference between the target heading and the current heading in the global coordinate system.
 \end{itemize}
 
@@ -137,10 +139,10 @@ Finally, replacing $\alpha$ with $\theta-\phi$ results in a kinematic model of
 \subsection{Control Lyapunov Function}
 \label{sec:controllyapunov}
 The control Lyapunov function is selected to be positive, contain all three error states and separate the distance error from the angle errors and is given by
-\begin{align*}
-%\label{eq:lyapunovfunction}
+\begin{align}
+\label{eq:lyapunovfunction}
 V = V_1 + V_2 = \frac{1}{2}\lambda e^2 + \frac{1}{2}\left(\alpha^2+h\theta^2\right)
-\end{align*}
+\end{align}
 where $\lambda$ and $h$ are positive constants that can be used to tune the controller output (see Chapter \ref{sec:lyapunovTrajectoryConvergence}). Using the kinematics equations in (\ref{eq:lyapunovkinematics}) the derivative of each term of the candidate control Lyapunov function can be found as
 \begin{align}
 \label{eq:Vderivatives}
@@ -201,10 +203,10 @@ and $V_2$ converges asymptotically to a positive defined limit.
 
 Substituting $\dot{V}_1$ from (\ref{eq:V1dotfinal}) and $\dot{V}_2$ from (\ref{eq:V2dotfinal}) into the expression for $\dot{V}$ (\ref{eq:lyapunovfunctionderivative}) yields
 \begin{align*}
-%\label{eq:Vfinal}
+%\label{eq:Vdotfinal}
 \dot{V} = \dot{V}_1 + \dot{V}_2 = -\lambda\gamma e^2\cos^2\alpha - k\alpha^2 \leq 0.
 \end{align*}
-This expression is equal to zero if and only if $\alpha=0$ \textit{and} $e=0$, which only occurs when the robot has reached its goal pose. Therefore, at any point along the robots trajectory other than the goal point this function is negative definite and is asymptotically stable.
+This expression is equal to zero if and only if $\alpha=0$ \textit{and} $e=0$, which only occurs when the robot has reached its goal pose. Therefore, at any point along the robots trajectory other than the goal point this function is negative definite and satisfies the properties for asymptotic stability given by (\ref{eq:lyapunovTheorem}) and (\ref{eq:lyapunovAsymptoticStability}).
 
 Using the expressions for $u$ in (\ref{eq:lyapunovu}) and $\omega$ in (\ref{eq:lyapunovomega}) and substituting those values back into the kinematic model from (\ref{eq:lyapunovkinematics}) gives
 \begin{align}
@@ -234,25 +236,22 @@ The method used to calculate the variables needed for the control law in (\ref{e
 \begin{enumerate}
 \item $dx$ is the vertical component of the error vector $e$ since the $x-$axis is forward of the vehicle as seen in Figure \ref{fig:pblyapunov}.
 \item $dy$ is the horizontal component of the error vector $e$ as seen in Figure \ref{fig:pblyapunov}.
-\item $e$ can be calculated in several different ways:
-\begin{itemize}
-\item Use a path planner to set a carrot out in front of the robot on the path between the current position of the robot and the goal point. That carrot moves along to the next path segment when the robot gets close enough to the end waypoint of the current path segment if the current waypoint is not the final waypoint. This could cause $e$ to be much smaller than it actually is so $\alpha$ will be corrected sooner than it should be and an additional problem could occur if the robot tries to correct $\theta$ too early.
-\item Use $\sqrt{dx^2 + dy^2}$ to get the distance to the end waypoint on the current path segment. This will cause the robot to slow down as it reaches every waypoint, even intermediate ones. Conversely, if $e$ is very large then $u$ could grow to be too large as well and necessitate the use of a limiting value for $u$.
-\item Combine the two methods and use the actual distance to the end waypoint of the current path segment until that value is less than the distance to the carrot and then use the carrot distance for $e$.
-\end{itemize}
-\item $\psi$ is the current heading of the robot in the world coordinate frame and is calculated in the Kalman filter code based on the results from Chapter \ref{ch:estimation}.
-\item $\alpha$ is the angle between the current heading of the robot $\psi$ and the error vector $e$ where the angle of the error vector $e$ is from the current position to the waypoint and found as $\tan^{-1}\left(\frac{dy}{dx}\right)$. The desired angle error is $\alpha = \tan^{-1}\left(\frac{dy}{dx}\right) - \psi$.
+\item Use $e = \sqrt{dx^2 + dy^2}$ to get the distance to the end waypoint on the current path segment. This will cause the robot to slow down as it reaches every waypoint, even intermediate ones. Conversely, if $e$ is very large then $u$ could grow to be too large as well and necessitate the use of a limiting value for $u$.
+\item $\psi$ is the current heading of the robot in the world coordinate frame and is calculated in the Kalman filter based on the results from Chapter \ref{ch:estimation}.
+\item The angle of the error vector $e$ is from the current position to the waypoint and found as $\theta_e = \tan^{-1}\left(\frac{dy}{dx}\right)$.
+\item $\alpha$ is the angle from the error vector $\theta_e$ to the current heading of the robot $\psi$ and is calculated by $\alpha = \theta_e - \psi$.
 \item $\theta^\star$ is the desired heading in the global coordinate system and there are multiple ways that it \textit{could} be set.
 \begin{itemize}
 \item $\theta^\star=0$ sets the desired heading as North and $\theta^\star=\pi$ sets it as South.
 \item $\theta^\star=\psi$ would make the desired heading be the same as whatever the current heading happens to be.
 \item $\theta^\star$ can be sent in as an additional parameter of a waypoint, say from MOCU via JAUS.
-\item Look at the current waypoint and next waypoint positions. If there is no next waypoint then just go straight to the current waypoint with $\theta^\star=\psi$. If there is a next waypoint then $\theta^\star$ could be the angle from the current waypoint to the next waypoint or splitting the difference between heading to the current and next waypoints.
+\item $\theta^\star$ can be the angle from the previous waypoint to the current waypoint.
+\item $\theta^\star$ can be the angle from the current waypoint to the next waypoint.
 \end{itemize}
 \item $\phi=\theta^\star-\psi$.
 \item $\theta=\alpha + \phi$.
 \end{enumerate}
-Note that all of the angle variables need to be normalized so that they are in the range $(-\pi,\pi]$.
+Note that all of the angle variables need to be normalized so that they are in the range $(-\pi,\pi]$ and it is very important to calculate the angle errors in the correct direction as this is where many subtle errors can occur during implementation.
 
 \subsection{Effect of Gains on Trajectory}
 \label{sec:lyapunovTrajectoryConvergence}
@@ -292,7 +291,7 @@ Similarly, the behavior of the angle errors is related to the matrix $A$ and non
 \begin{align*}
 \left[\begin{array}{c} \dot{\alpha} \\ \dot{\theta} \end{array}\right] = \text{exp}(At)=\text{exp}(S\Lambda S^{-1}t)=S\text{exp}(\Lambda t)S^{-1}
 \end{align*}
-and $\dot{\alpha}$ has the solution $\alpha=\text{exp}(\lambda_1 t)$ and $\dot{\theta}$ has the solution $\theta=\text{exp}(\lambda_2 t)$.
+and $\dot{\alpha}$ has the solution $\alpha=\text{exp}(\lambda_\alpha t)$ and $\dot{\theta}$ has the solution $\theta=\text{exp}(\lambda_\theta t)$.
 
 Three reasonable design considerations in selecting the gains are:
 \begin{itemize}
@@ -302,9 +301,9 @@ Three reasonable design considerations in selecting the gains are:
 \end{itemize}
 Limiting the maximum linear velocity has been discussed already and involves the selection of $\gamma$. The damping of the system $A$ is determined by
 \begin{align*}
-\zeta = \frac{\lambda_1(A)}{\lambda_2(A)}
+\zeta = \frac{\lambda_\alpha(A)}{\lambda_\theta(A)}
 \end{align*}
-and the gains are critically damped when $\zeta = 1 \Rightarrow \lambda_1(A)=\lambda_2(A)=\lambda$ so that both angle errors $\alpha$ and $\theta$ are converging to zero at the same rate. When the system is critically damped the angle errors will converge before the distance error if $\sigma>\gamma$ since that means the rate of convergence for the angle errors is greater than the rate of convergence for the distance error. In the case where the $A$ matrix is overdamped $\zeta > 1 \Rightarrow \lambda_1(A) > \lambda_2(A)$ then $\alpha$ will converge to zero before $\theta$ and conversely when $A$ is underdamped $\zeta < 1$ and $\theta$ converges before $\alpha$.
+and the gains are critically damped when $\zeta = 1 \Rightarrow \lambda_\alpha(A)=\lambda_\theta(A)=\lambda$ so that both angle errors $\alpha$ and $\theta$ are converging to zero at the same rate. When the system is critically damped the angle errors will converge before the distance error if $\sigma>\gamma$ since that means the rate of convergence for the angle errors is greater than the rate of convergence for the distance error. In the case where the $A$ matrix is overdamped $\zeta > 1 \Rightarrow \lambda_\alpha(A) > \lambda_\theta(A)$ then $\alpha$ will converge to zero before $\theta$ and conversely when $A$ is underdamped $\zeta < 1$ and $\theta$ converges before $\alpha$.
 
 By selecting the gains to satisfy the design considerations above the robot will align itself with the goal heading before arriving at the goal point and will smoothly decrease its linear velocity as it approaches the goal point. One alternative occurs when the distance error converges before the angle errors, $\gamma>\sigma$, and the robot will get to the goal point and then finish aligning with the goal heading which has several problems: (i) the robot does not look as intelligent since the trajectory does not appear to be as "natural" as the way a human would drive and (ii) rotating in place is typically a much more difficult maneuver for tracked robots to perform and increases the fatigue on the treads compared to turning while driving forward. The other alternative is that one angle error will converge before the other and this can lead to oscillations in heading since the two angle errors are coupled.
 
@@ -320,7 +319,7 @@ For $\zeta=1$ it is necessary to first determine the eigenvalues of $A$.
 \Rightarrow &\lambda^2 + k\lambda + h\gamma^2 = 0 \\
 \Rightarrow &\lambda = \frac{-k\pm\sqrt{k^2-4h\gamma^2}}{2}
 \end{align*}
-For $\lambda_1(A)=\lambda_2(A)$ the term inside the square root must be equal to zero resulting in
+For $\lambda_\alpha(A)=\lambda_\theta(A)$ the term inside the square root must be equal to zero resulting in
 \begin{align*}
 &k^2 - 4h\gamma^2 = 0 \\
 \Rightarrow &k = \sqrt{4h\gamma^2} = 2\gamma\sqrt{h}
@@ -336,6 +335,14 @@ k &= 2\gamma\sqrt{h} > 2\gamma \\
 \Rightarrow h &> 1
 \end{align*}
 
-Using this method any two gains can be selected and the third gain can be found which satisfies the above properties. For example, setting $\gamma=0.2$ to limit the maximum linear velocity and $h=1.1$ to keep it small but greater than one leads to $k=2\gamma\sqrt{h}=0.42$. From this it can be seen that $\lambda_1(A) = \lambda_2(A) = 0.21 \Rightarrow \zeta = 1$ so the system $A$ is critically damped and $\sigma = 0.21>0.2=\gamma$ so that the angle errors will converge before the distance error.
+Using this method any two gains can be selected and the third gain can be found which satisfies the above properties. For example, setting $\gamma=0.2$ to limit the maximum linear velocity and $h=1.1$ to keep it small but greater than one leads to $k=2\gamma\sqrt{h}=0.42$. From this it can be seen that $\lambda_\alpha(A) = \lambda_\theta(A) = 0.21 \Rightarrow \zeta = 1$ so the system $A$ is critically damped and $\sigma = 0.21>0.2=\gamma$ so that the angle errors will converge before the distance error.
+
+\subsection{Model Based Driving Mode}
+\label{sec:drivingMode}
+The parking mode described above can be extended such that the control law will cause the robot to drive through intermediate waypoints on a route rather than stop at each waypoint.
+
+*** In driving mode the determination of whether the robot is within a capture radius of the current waypoint so that the next waypoint becomes the current target has to be modified. One way to do this is to artificially move the current waypoint position by $W_x += \cos(\psi)$ and $W_y += \sin(\psi)$. If this is not done then the robot will overshoot the waypoint because the error distance has been increased and the angle errors will increase causing the robot to slow down and go back to the original waypoint position. It looks stupid. ***
+
+*** Talk about how gains with $e$ converging before $\alpha$ before $\theta$ could be better in driving mode. ***
 
 The model based controller developed in this Chapter along with the analysis of selecting appropriate gains replaces the original PID controller when answering the question "How do I get there?".
