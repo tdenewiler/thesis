@@ -1,6 +1,27 @@
 \chapter{Results}
 \label{ch:results}
-The Kalman filter and controls algorithms discussed in this thesis were implemented in software on a PackBot and run in an open field with an uneven surface consisting of dirt, gravel and asphalt. This testing area is difficult for the robots to navigate because pitch, roll and elevation change and the loose dirt and gravel cause the tracks to slip leading to erroneous encoder data.
+The Kalman filter and controls algorithms discussed in this thesis were implemented in software on a PackBot and run in an open field with an uneven surface consisting of dirt, gravel and asphalt as seen in Figure \ref{fig:resultsTestArea}. This testing area is difficult for the robots to navigate because pitch, roll and elevation have significant changes and the loose dirt and gravel can cause the tracks to slip leading to erroneous encoder data.
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.75\textwidth]{images/flightFieldTestArea}
+	\caption{Robot Test Area}
+	\label{fig:resultsTestArea}
+\end{figure}
+
+*** Run the robot again while varying the stages of improvements and put the results in Table \ref{tab:resultsKF}. ***
+\begin{table}[ht!]
+\caption{Kalman Filter Performance}
+\small
+\centering
+\begin{tabular}{@{}llr@{}} \toprule
+Stage       & RMS Error (m)  & Return Error (\%) \\ \midrule
+Baseline    & 0              & 0                 \\
+Fix KF Bugs & 0              & 0                 \\
+Training    & 0              & 0                 \\ \bottomrule
+\end{tabular}
+\label{tab:resultsKF}
+\end{table}
 
 \section{Kalman Filter Results}
 \label{sec:kfResults}
@@ -110,14 +131,14 @@ The process of selecting gains in Chapter \ref{sec:lyapunovTrajectoryConvergence
 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=.5\textwidth]{images/20100929_1448_GE_KF_waypts}
+	\includegraphics[width=.5\textwidth]{images/GE/20100929_1448_GE_KF_waypts}
 	\caption{Robot Position using Adaptive Gain Scheme}
 	\label{fig:resultsLyapunovPositionAdaptive}
 \end{figure}
 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=.5\textwidth]{images/20100929_1448_pbtx}
+	\includegraphics[width=.5\textwidth]{images/pbtx/20100929_1448_pbtx}
 	\caption{Linear and Angular Velocities with Adaptive Gain Scheme}
 	\label{fig:resultsLyapunovVelocitiesAdaptive}
 \end{figure}
@@ -125,3 +146,52 @@ The process of selecting gains in Chapter \ref{sec:lyapunovTrajectoryConvergence
 \subsection{Controller Comparison}
 \label{sec:controllerComparison}
 For both PID (Chapter \ref{sec:pid}, Table \ref{tab:PIDGainEffects}) and the model based controller (Chapter \ref{sec:lyapunovTrajectoryConvergence}) gains have to be selected, the difference being that stability is the goal when selecting PID gains whereas stability is guaranteed with the model based controller. More advanced behaviors such as three point turns are a consequence of the control law in (\ref{eq:lyapunovControlLaw}) derived using a kinematic model of the robot. The other very large difference between the controllers is that a table of gains must be tuned for the PID controller to work at varying linear velocities but the model based controller works very well at different linear and angular velocities. Also, when properties of the robot such as mass are changed by using different payloads for the system the entire table of PID gains must be retuned while, at most, one set of gains must be retuned for the model based controller. This last benefit of the model based controller makes it very appealing to use in fielded systems since it reduces the amount of maintenance and effort required to keep the robot in working condition. The model based controller will also allow for improved navigation performance near obstacles which leads directly to improved autonomy for the robot.
+
+Many different controller configurations are possible based on varying the gains used and the calculation of the desired heading at waypoints. The tested configurations included:
+\begin{enumerate}
+\item PID with best available gains,
+\item Fuzzy logic with best available rules,
+\item Model based with $\theta^\star$ set as angle from current waypoint to next waypoint with gains set to minimize distance error before angle errors ($\gamma = $, $h = $, $k = $),
+\item Model based with $\theta^\star$ set as angle from previous waypoint to current waypoint with gains set to minimize distance error before angle errors ($\gamma = $, $h = $, $k = $),
+\item Model based with $\theta^\star$ set as average of angles from previous waypoint to current waypoint and from current waypoint to next waypoint with gains set to minimize distance error before angle errors ($\gamma = $, $h = $, $k = $),
+\item Model based with $\theta^\star$ set as angle from current waypoint to next waypoint with gains set to minimize angle errors before distance error ($\gamma = $, $h = $, $k = $),
+\item Model based with $\theta^\star$ set as angle from previous waypoint to current waypoint with gains set to minimize angle errors before distance error ($\gamma = $, $h = $, $k = $),
+\item Model based with $\theta^\star$ set as average of angles from previous waypoint to current waypoint and from current waypoint to next waypoint with gains set to minimize angle errors before distance error ($\gamma = $, $h = $, $k = $),
+\item Model based with $\theta^\star$ set as angle from current waypoint to next waypoint with gains set to minimize distance error before $\alpha$ before $\theta$ ($\gamma = $, $h = $, $k = $),
+\item Model based with $\theta^\star$ set as angle from previous waypoint to current waypoint with gains set to minimize distance error before $\alpha$ before $\theta$ ($\gamma = $, $h = $, $k = $),
+\item Model based with $\theta^\star$ set as average of angles from previous waypoint to current waypoint and from current waypoint to next waypoint with gains set to minimize distance error before $\alpha$ before $\theta$ ($\gamma = $, $h = $, $k = $),
+\item Model based with parking behavior turned on and gains ($\gamma = $, $h = $, $k = $).
+\end{enumerate}
+Note that in all cases for the model based controller the desired goal heading $\theta^\star$ for the final waypoint was set to be the angle from the previous waypoint to the last waypoint.
+
+Each controller configuration was run on several courses that test specific behaviors such as allowing for maximum velocities to be sustained with large amounts of open space on the route by having long path segments, short path segments between waypoints to simulate obstacles along the route and a mixture of long and short path segments.
+
+The results using the different setups described are shown in Table \ref{tab:resultsControllers} where the metrics used to compare the controller performance are
+\begin{itemize}
+\item the time required to complete the course,
+\item the average cross track error during the course to show whether the robot followed a straight line between waypoints which is important when obstacles are in the area and not important when large amounts of open space are available for navigation (although some operators become nervous when the robot trajectory has large curvature even if open space is available),
+\item the maximum velocity achieved by the robot during the course,
+\item the number of times that the robot stops where a stop is defined as the robot having a velocity that drops below a small velocity.
+\end{itemize}
+
+\begin{table}[ht!]
+\caption{Controller Comparison}
+\small
+\centering
+\begin{tabular}{@{}llllr@{}} \toprule
+Setup & Time (s) & Cross Track Error (m) & Max Velocity (m/s) & \# Stops \\ \midrule
+1     & 0        & 0                     & 0                  & 0        \\
+2     & 0        & 0                     & 0                  & 0        \\
+3     & 0        & 0                     & 0                  & 0        \\
+4     & 0        & 0                     & 0                  & 0        \\
+5     & 0        & 0                     & 0                  & 0        \\
+6     & 0        & 0                     & 0                  & 0        \\
+7     & 0        & 0                     & 0                  & 0        \\
+8     & 0        & 0                     & 0                  & 0        \\
+9     & 0        & 0                     & 0                  & 0        \\
+10    & 0        & 0                     & 0                  & 0        \\
+11    & 0        & 0                     & 0                  & 0        \\
+12    & 0        & 0                     & 0                  & 0        \\ \bottomrule
+\end{tabular}
+\label{tab:resultsControllers}
+\end{table}

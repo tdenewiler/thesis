@@ -18,9 +18,9 @@
    version="1.0"
    sodipodi:docname="packbotaxes.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
-   inkscape:export-filename="/home/thomas/school/thesis/thomas/images/packbotaxes.png"
-   inkscape:export-xdpi="100"
-   inkscape:export-ydpi="100">
+   inkscape:export-filename="/home/thomas/docs/thesis/thomas/images/packbotaxes.png"
+   inkscape:export-xdpi="300"
+   inkscape:export-ydpi="300">
   <metadata
      id="metadata3384">
     <rdf:RDF>
@@ -98,9 +98,9 @@
      pagecolor="#ffffff"
      id="base"
      showgrid="false"
-     inkscape:zoom="1"
-     inkscape:cx="1825.3771"
-     inkscape:cy="865.07493"
+     inkscape:zoom="0.35355339"
+     inkscape:cx="1748.6001"
+     inkscape:cy="964.36937"
      inkscape:window-x="0"
      inkscape:window-y="25"
      inkscape:current-layer="svg3379"
@@ -131,16 +131,16 @@
      d="M 912.0802,1649.916 L 912.1539,1399.7233 L 1001.9148,1320.6911 C 1051.3239,1277.2942 1138.0069,1201.1431 1194.5439,1151.4664 L 1296.964,1061.6821 L 1297.2978,1311.7732 L 1297.1194,1562.4287 L 1108.1754,1728.5176 C 1004.1803,1819.8816 917.6195,1895.9469 915.6909,1897.4879 L 912.2104,1900.55 L 912.0802,1649.916 z"
      style="opacity:0.2;fill:#0000ff;fill-opacity:1;stroke:#0000ff;stroke-width:2.52116609;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
   <image
-     sodipodi:absref="/home/thomas/school/thesis/thomas/images/packbot.jpg"
+     sodipodi:absref="/home/thomas/docs/thesis/thomas/images/packbot.jpg"
      xlink:href="packbot.jpg"
-     style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-     transform="matrix(0.706382,-1.4050793e-2,1.4050793e-2,0.706382,2564.6374,579.85672)"
-     clip-path="url(#clipPath2540)"
-     y="-538.16949"
-     x="-3272.9492"
-     id="image3388"
+     width="2592"
      height="1944"
-     width="2592" />
+     id="image3388"
+     x="-3272.9492"
+     y="-538.16949"
+     clip-path="url(#clipPath2540)"
+     transform="matrix(0.706382,-1.4050793e-2,1.4050793e-2,0.706382,2564.6374,579.85672)"
+     style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
   <path
      style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#Arrow1Lstart);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      d="M 1297.6814,144.31511 L 1297.6814,1805.4233"
@@ -283,7 +283,7 @@
   </g>
   <path
      style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#Arrow1Lstart);marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     d="m 2028.4916,1326.1117 c -33.5114,27.7678 -98.1147,74.6296 -123.7201,67.4395 -136.2993,-38.2736 126.4463,-328.6429 142.7797,-95.7458"
+     d="m 2020.0063,1331.7686 c -33.5114,34.8388 -89.9043,107.9899 -123.7201,67.4395 -104.7192,-125.5748 134.9316,-334.2998 151.265,-101.4027"
      id="path2549"
      sodipodi:nodetypes="csc" />
   <text
@@ -313,8 +313,8 @@
   <path
      sodipodi:nodetypes="csc"
      id="path4932"
-     d="m 1275.2789,425.75444 c -25.7751,-16.2656 -81.9871,-39.95987 -85.159,-75.61016 -7.7968,-87.63196 314.7055,-71.11146 157.4807,76.12116"
-     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#Arrow1Lstart);marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+     d="m 1278.8819,425.75444 c -26.8639,-16.2656 -85.4503,-39.95987 -88.7562,-75.61016 -8.1261,-87.63196 327.9989,-71.11146 164.1328,76.12116"
+     style="fill:none;stroke:#000000;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:url(#Arrow1Lstart);marker-end:none" />
   <path
      style="opacity:0.2;fill:#0000ff;fill-opacity:1;stroke:#0000ff;stroke-width:2.52116609;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      d="M 1298.3382,807.51332 L 1298.4119,557.32062 L 1388.173,478.28842 C 1437.582,434.89152 1524.2651,358.74042 1580.802,309.06372 L 1683.2222,219.27942 L 1683.556,469.37052 L 1683.3775,720.02602 L 1494.4335,886.11492 C 1390.4385,977.4789 1303.8775,1053.5442 1301.9489,1055.0852 L 1298.4684,1058.1473 L 1298.3382,807.51332 z"
@@ -349,34 +349,6 @@
        id="tspan4942"
        x="817.86652"
        y="1672.4209">ϕ</tspan></text>
-  <text
-     xml:space="preserve"
-     style="font-size:72px;font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Serif;-inkscape-font-specification:Bitstream Vera Serif Italic"
-     x="2002.9497"
-     y="209.25563"
-     id="text5430"
-     sodipodi:linespacing="125%"
-     transform="matrix(0.9453654,0.3260127,-0.3260127,0.9453654,0,0)"
-     inkscape:transform-center-y="-161.47909"
-     inkscape:transform-center-x="-110.27936"><tspan
-       sodipodi:role="line"
-       id="tspan5432"
-       x="2002.9497"
-       y="209.25563">Lateral</tspan></text>
-  <text
-     xml:space="preserve"
-     style="font-size:72px;font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Serif;-inkscape-font-specification:Bitstream Vera Serif Italic"
-     x="578.25421"
-     y="1367.7223"
-     id="text5434"
-     sodipodi:linespacing="125%"
-     transform="matrix(0.7495344,-0.6619654,0.6619654,0.7495344,0,0)"
-     inkscape:transform-center-x="-14"
-     inkscape:transform-center-y="14"><tspan
-       sodipodi:role="line"
-       id="tspan5436"
-       x="578.25421"
-       y="1367.7223">Longitudinal</tspan></text>
   <g
      inkscape:groupmode="layer"
      id="layer1"

@@ -27,7 +27,7 @@ Kalman filters and modern control systems (see Chapter \ref{ch:controls}) use th
 \end{split}
 \end{align}
 
-The state variables are given in vector form by $x$ and the sensor measurements are contained in the vector $y$. The state space equations are a means of representing with compact notations how the state of a system changes through time based on the initial state of the system and the inputs to the system, $u$, which allows the trajectory (or motion through time) to be calculated. The inputs are assumed to include any external forces applied to the system as well as actuation provided by the system itself. The function $h(x,t)$ transforms the sensor measurements into state variables which is important when the units of a sensor are not the same as the units of the state.
+The state variables are given in vector form by $x$ and the sensor measurements are contained in the vector $y$. The state space equations are a means of representing with compact notations how the state of a system changes through time based on the initial state of the system and the inputs to the system, $u$, which allows the trajectory (or motion through time) to be calculated. The inputs are assumed to include any external forces applied to the system as well as actuation provided by the system itself. The function $h(x,t)$ transforms the sensor measurements into state variables.
 
 For the robots used in these experiments the state vector used follows that found in \cite{Kelly_1994_338, Kelly_1994_333} where the state variables are
 \begin{align*}
@@ -80,13 +80,13 @@ K_k &= P_k^-H_k^T\left[H_kP_k^-H_k^T + R_k\right]^{-1} \\
 P_k^+ &= \left[I - K_kH_k\right]P_k^-
 \end{split}
 \end{align}
-where $P_k$ is the state covariance matrix, $K_k$ is the Kalman gain, $Q_k$ is the process covariance matrix giving a measure of the expected noise in the system model and $R_k$ is the measurement covariance matrix giving the expected noise of the sensors. Using (\ref{eq:kfpredictionupdate}) and (\ref{eq:kfmeasurementupdate}) an estimate of the state of the robot can be obtained at any time for use by the controls algorithms or to give feedback to a human operator.
+where $P_k$ is the state covariance matrix, $K_k$ is the Kalman gain, $Q_k = E[w_kw_k^T]$ is the process covariance matrix giving a measure of the expected noise in the system model and $R_k = E[v_kv_k^T]$ is the measurement covariance matrix giving the expected noise of the sensors. Using (\ref{eq:kfpredictionupdate}) and (\ref{eq:kfmeasurementupdate}) an estimate of the state of the robot can be obtained at any time for use by the controls algorithms, to give feedback to a human operator or to share with other systems that can change their behavior based on the state of the robot.
 
-The variables $\hat{x}_k^-$ in (\ref{eq:kfpredictionupdate}) and $\hat{x}_k^+$ in (\ref{eq:kfmeasurementupdate}) refer to estimates of the state variables before and after the measurement update step in the Kalman filter, respectively. Each of the terms in the Kalman filter equations is discussed in more detail in subsequent sections.
+The variables $\hat{x}_k^-$, $P_{k+1}^-$ in (\ref{eq:kfpredictionupdate}) and $\hat{x}_k^+$, $P_{k}^+$ in (\ref{eq:kfmeasurementupdate}) refer to estimates and covariances of the state variables before and after the measurement update step in the Kalman filter, respectively. Each of the terms in the Kalman filter equations is discussed in more detail in subsequent sections.
 
 \subsection{Models in the Kalman Filter}
 \label{sec:kfModels}
-The Kalman filter relies on several models that are used to determine estimates of the states for a system. The ACS Kalman filter uses four such models:
+The Kalman filter relies on several models that are used to determine estimates and covariances of the states for a system. The ACS Kalman filter uses four such models:
 \begin{itemize}
 \item System dynamics model $\Phi_k$,
 \item measurement model $H_k$,
@@ -221,8 +221,8 @@ x \\ y \\ z \\ V \\ \theta \\ \phi \\ \psi \\ \omega
 \end{align}
 }
 Applying the principal motion assumption to set the terms relating position and angular velocity as well as orientation and linear velocity to zero in addition to converting from continuous to discrete time to put ones on the diagonal (c.f. (\ref{eq:kfContToDiscTransform})) gives
-\begin{align*}
-%\label{eq:kfSystemModelWithAssumptions}
+\begin{align}
+\label{eq:kfSystemModelWithAssumptions}
 x_{k+1} = 
 \underbrace{\left[\begin{array}{c c c c c c c c}
 1 & 0 & 0 & c\psi c\theta \Delta_T & 0 & 0 & 0 & 0 \\
@@ -237,7 +237,7 @@ x_{k+1} =
 \left[\begin{array}{c}
 x \\ y \\ z \\ V \\ \theta \\ \phi \\ \psi \\ \omega
 \end{array}\right]_k
-\end{align*}
+\end{align}
 as the system model that is used in the prediction update step of the Kalman filter equations to calculate the state of the robot in between measurements.
 
 %The matrix $\Gamma$ is
@@ -311,13 +311,13 @@ When the models are not set up correctly then the measurements will likely not m
 
 \section{Determining Heading}
 \label{sec:determineHeading}
-An immediate problem that arose during testing which had to be addressed before new techniques such as those in Chapters \ref{sec:kftrainingparams} and \ref{sec:controllyapunov} could be attempted is that the robots did not always know which direction they were heading due to a lack of sensors such that the yaw state was unobservable. The original sensors used to determine heading on the robots were GPS and a gyro in the IMU. GPS worked fine when the robot was driving forward but when the robot began to drive in reverse the heading would rotate $180^\circ$. The angular velocity measurement from the gyro was integrated over time using the system model from (\ref{eq:kfjacobianresult}) and included as a second heading measurement although this measurement tends to drift over longer periods \cite{ChungOjeda01}. An Ocean Server OS5000 digital compass was added to get a better estimate of heading in a global coordinate system since the magnetometer performance was better with that sensor than with the Microstrain 3DM-GX1 and wheel encoder measurements of linear and angular velocity were also added. The velocities from the encoders were directly incorporated into the measurement update step and the sign of the linear velocity encoder measurement was used to determine the appropriate sign to use for GPS heading.
+An immediate problem that arose during testing which had to be addressed before new techniques such as those in Chapters \ref{sec:kftrainingparams} and \ref{sec:controllyapunov} could be attempted is that the robots did not always know which direction they were heading due to a lack of sensors such that the yaw state was unobservable. The original sensors used to determine heading on the robots were GPS and a gyro in the IMU. GPS worked fine when the robot was driving forward but when the robot began to drive in reverse the heading would rotate $180^\circ$. The angular velocity measurement from the gyro was integrated over time using the system model from (\ref{eq:kfjacobianresult}) and included as a second heading measurement although this measurement tends to drift over longer periods \cite{ChungOjeda01}. An Ocean Server OS5000 digital compass was added to get a better estimate of heading in a global coordinate system since the magnetometer performance was better with that sensor than with the Microstrain 3DM-GX1. Wheel encoder measurements of linear and angular velocity were also added. The velocities from the encoders were directly incorporated into the measurement update step and the sign of the linear velocity encoder measurement was used to determine the appropriate sign to use for GPS heading.
 
 Figure \ref{fig:GEHeadingReverse} shows the routes driven by the robot when testing heading where the heading was reversed on the blue route and the heading was fixed on the red route. Figure \ref{fig:pbDataReverseHeadingBroken} shows sensor data before adding the encoder data to the Kalman filter (but using logged encoder data for comparison purposes to show where the velocity was negative) and the heading can be seen to flip $\pi ~ rads$ where the velocity was negative but the GPS velocity is positive. Figure \ref{fig:pbDataReverseHeadingFixed} is the sensor data after incorporating the encoder velocities into the Kalman filter and using the encoder data to reverse the sign of the GPS velocity whenever the encoder velocity is negative which results in a heading estimate that does not flip.
 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=.7\textwidth]{images/GEHeadingReverseFixed}
+	\includegraphics[width=.7\textwidth]{images/GE/GEHeadingReverseFixed}
 	\caption{Route Driven by PackBot}
 	\label{fig:GEHeadingReverse}
 \end{figure}
@@ -336,27 +336,22 @@ Figure \ref{fig:GEHeadingReverse} shows the routes driven by the robot when test
 	\label{fig:pbDataReverseHeadingFixed}
 \end{figure}
 
-%Adding the Ocean Server OS5000 digital compass allowed the variance of the Mictrostrain 3DM-GX1 angular rate sensor to be set much higher than the original variance and led to a more accurate heading estimate. Figure \ref{fig:pbDataLowYRVar} shows data captured while the robot was spinning in place and it can be seen that the compass yaw and Kalman filter heading estimate do not match very well. When the variance of the gyro data was greatly increased the Kalman filter heading estimate began to track the compass heading output very closely as seen in Figure \ref{fig:pbDataHighYRVar}.
-%
-%\begin{figure}[ht!]
-%	\centering
-%	\includegraphics[width=.8\textwidth]{images/pbDataLowYRVar}
-%	\caption{Low Variance for Yaw Rate Sensor}
-%	\label{fig:pbDataLowYRVar}
-%\end{figure}
-%
-%\begin{figure}[ht!]
-%	\centering
-%	\includegraphics[width=.8\textwidth]{images/pbDataHighYRVar}
-%	\caption{High Variance for Yaw Rate Sensor}
-%	\label{fig:pbDataHighYRVar}
-%\end{figure}
+\section{Fixing Bugs in ACS Kalman Filter}
+\label{sec:kfBugs}
+The ACS Kalman filter contained two major bugs in the Kalman filter equations and only worked because of a reforumlation of the standard Kalman filter equations. The first bug concerned the calculation of the Kalman gain matrix (see Chapter \ref{kfKalmanGain}). The $K_k$ matrix was being calculated correctly but at the end of the calculation gains from previous sensors were added back into their former element locations in the matrix. The reason for this is unknown but it seems likely that it was done to handle the case where individual sensor measurements are incorporated into the measurement update step (\ref{eq:kfmeasurementupdate}) one at a time rather than in bulk in an attempt to speed up the calculations. Whatever the motivation this bug was fixed by removing the code that added previous gain elements back into the Kalman gain matrix. One of the consequences of this bug is that the calculation of the covariance of the state estimate in the prediction update step used the continuous time system model $F$ (\ref{eq:kfjacobianresult}) instead of the discrete time system model $\Phi$ (\ref{eq:kfSystemModelWithAssumptions}) such that instead of $P_{k+1}^- = \Phi_kP_k^-\Phi_k^T + Q_k$ (c.f. (\ref{eq:kfpredictionupdate})) the Kalman filter used
+
+\begin{align*}
+P_{k+1}^- = FP_k^+F^T + Q_k.
+\end{align*}
+The discrete time system model $\Phi_k$ was used in the calculation of the state estimate $\hat{x}_k^-$ though.
+
+The second bug was also a consequence of calculating the Kalman gain incorrectly. The yaw angle calculation was not being found correctly since the covariance was wrong so a correcting term was introduced that fixed the yaw angle when the standard set of sensors were used since they reliably gave measurements at a fixed rate and affected the Kalman gain matrix in a consistent manner. This bug was also fixed by simply removing the correcting term and the yaw angle was estimated correctly after the Kalman gain matrix was implemented properly.
 
 \section{Establishing Ground Truth}
 \label{sec:groundtruth}
 Quantitatively evaluating the performance of Kalman filters can be accomplished in several ways, the best of which is to analyze the output of the Kalman filter against ground truth. Although it is nearly impossible to establish ground truth over a large area in practice the closer the measurements are to an absolute position in the world the better. To determine ground truth for the robots in these experiments a differential GPS (DGPS) system was used independently of the sensors on the robot so that very accurate measurements of the robots actual position could be logged and then used in a post-processing step to determine how well the Kalman filter estimate corresponds to ground truth.
 
-The DGPS system consists of a GPS receiver and serial radio that make up the base station and a GPS receiver, serial radio and small computer that make up the roaming station as in Figure \ref{fig:dgps}. The GPS receivers are both Novatel receivers using the Real Time Kinematics algorithm. The base station is located in a static position and is configured to use a fixed position which is compared to what the current position would be if it were not fixed. The difference between the fixed position and the calculated position are used to generate corrections that would put the position of the GPS antenna at the fixed position and those corrections are sent to and applied at the roaming station resulting in a standard deviation of $2$ $cm$ for the position output of the roaming station. The errors are due to the effects of the GPS signal passing through the atmosphere from the satellites to the antenna as well as to multipath effects closer to the ground. The DGPS corrections are used for each satellite that the ground station and the roaming station share in the constellation of satellites they are using in their solution of a position estimate. The DGPS system is bootstrapped to the robot during testing runs to log data at a rate of $20$ $Hz$ and is only used as a tool to measure ground truth for position and is not meant to be used during normal operation.
+The DGPS system consists of a GPS receiver and serial radio that make up the base station and a GPS receiver, serial radio and small computer that make up the roaming station as in Figure \ref{fig:dgps}. The GPS receivers are both Novatel receivers using the Real Time Kinematics algorithm. The base station is located in a static position and is configured to use a fixed position which is compared to what the current position would be if it were not fixed. The difference between the fixed position and the calculated position are used to generate corrections that would put the position of the GPS antenna at the fixed position and those corrections are sent to and applied at the roaming station resulting in a standard deviation of $2$ $cm$ for the position output of the roaming station. The errors are due to the effects of the GPS signal passing through the atmosphere from the satellites to the antenna as well as to multipath effects closer to the ground. The DGPS corrections are used for each satellite that the ground station and the roaming station share in the constellation of satellites they are using in their solution of a position estimate. The DGPS system is bootstrapped to the robot during testing runs to log data at a rate of $10$ $Hz$ and is only used as a tool to measure ground truth for position and is not meant to be used during normal operation.
 
 With a highly accurate estimate of ground truth established it becomes possible to not only study the performance of the Kalman filter but to also begin determining whether to focus efforts in improving the autonomous navigation behaviors of the robots via the estimation or controls algorithms.
 
