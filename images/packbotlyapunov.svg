@@ -14,7 +14,7 @@
    height="1052.3622047"
    id="svg3607"
    sodipodi:version="0.32"
-   inkscape:version="0.47pre4 r22446"
+   inkscape:version="0.47 r22583"
    sodipodi:docname="packbotlyapunov.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    inkscape:export-filename="/home/thomas/docs/thesis/thomas/images/packbotlyapunov.png"
@@ -126,6 +126,13 @@
        inkscape:vp_y="0 : 1000 : 0"
        inkscape:vp_x="0 : 0.5 : 1"
        sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3204"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -137,14 +144,14 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.35"
-     inkscape:cx="473.5656"
-     inkscape:cy="889.00382"
+     inkscape:zoom="0.7"
+     inkscape:cx="813.10865"
+     inkscape:cy="761.26601"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1920"
-     inkscape:window-height="1151"
+     inkscape:window-height="1148"
      inkscape:window-x="0"
      inkscape:window-y="25"
      inkscape:window-maximized="1" />
@@ -156,7 +163,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -266,20 +273,20 @@
          y="129.08276">e</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow1Mend)"
-       d="M 574.7768,607.89507 C 577.56949,529.10415 554.9176,430.2964 467.70063,396.77318"
+       d="m 611.50995,605.75221 c 2.79269,-78.79092 -28.07348,-176.1701 -99.93331,-221.83617"
        id="path10875"
        sodipodi:nodetypes="cc" />
     <text
        xml:space="preserve"
        style="font-size:40px;font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Liberation Serif;-inkscape-font-specification:Liberation Serif Italic"
-       x="425.2742"
-       y="388.69196"
+       x="474.20276"
+       y="389.7634"
        id="text11398"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan11400"
-         x="425.2742"
-         y="388.69196">ω</tspan></text>
+         x="474.20276"
+         y="389.7634">ω</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:40px;font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Liberation Serif;-inkscape-font-specification:Liberation Serif Italic"
@@ -577,13 +584,6 @@
          y="-24.120604"
          id="tspan7826"
          style="font-size:18.79916763px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:100%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.91279161;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans">E</tspan></text>
-    <image
-       y="-3.412015"
-       x="-252.12419"
-       id="image4027"
-       height="654.90839"
-       width="699.91113"
-       xlink:href="file:///home/thomas/docs/thesis/thomas/images/pb_right_profile.png" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
        d="m 1480.6202,82.133611 197.523,71.960079"
@@ -651,5 +651,13 @@
          id="tspan3734"
          x="1194.2856"
          y="520.93365">dx</tspan></text>
+    <image
+       xlink:href="file:///home/thomas/docs/thesis/thomas/images/packbotOverhead.png"
+       width="1057.2858"
+       height="551.82825"
+       id="image3194"
+       x="-609.3869"
+       y="-746.93683"
+       transform="matrix(-0.99862931,-0.05234026,0.05234026,-0.99862931,0,0)" />
   </g>
 </svg>
