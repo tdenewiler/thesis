@@ -11,15 +11,15 @@ from numpy import * # For array()
 import sys # For argv
 
 if len(sys.argv) < 2:
-    print 'Not the correct input parameters. Usage is ./lyapunovFindEigs.py <h> <gamma> or ./lyapunovFindEigs.py <h> <gamma> <k>'
+    print 'Usage is ./findEigsLyapunov.py <gamma> <h> or ./lyapunovFindEigs.py <gamma> <h> <k>'
     sys.exit(1)
 
 if len(sys.argv) > 4:
-    print 'Not the correct input parameters. Usage is ./lyapunovFindEigs.py <h> <gamma> or ./lyapunovFindEigs.py <h> <gamma> <k>'
+    print 'Usage is ./findEigsLyapunov.py <gamma> <h> or ./lyapunovFindEigs.py <gamma> <h> <k>'
     sys.exit(1)
 
-h = float(sys.argv[1])
-gamma = float(sys.argv[2])
+gamma = float(sys.argv[1])
+h = float(sys.argv[2])
 
 if len(sys.argv) == 3:
     k = 2*gamma*sqrt(h)
@@ -31,9 +31,9 @@ print 'k =', k
 A = array([[-1*k, -1*h*gamma],[gamma, 0]])
 print 'A =', A
 V,D = linalg.eig(A)
-zeta = V[0]/V[1]
-print 'V =', V
-sigma = -V[0]
+zeta = V[0].real/V[1].real
+print 'alpha eig =', V[0], 'and theta eig =', V[1]
+sigma = -V[0].real
 
 if zeta.real == 1:
     print 'System is critically damped since zeta =', zeta
@@ -44,8 +44,8 @@ if zeta.real > 1:
 if zeta.real < 1:
     print 'System is underdamped since zeta =', zeta
 
-if sigma < gamma:
-    print 'Distance converges FASTER than angles since sigma =', sigma, '<', gamma
+if sigma < gamma.real:
+    print 'Distance converges FASTER than angles since sigma =', sigma, '<', gamma.real
 
-if sigma > gamma:
-    print 'Distance converges SLOWER than angles since sigma =', sigma, '>', gamma
+if sigma > gamma.real:
+    print 'Distance converges SLOWER than angles since sigma =', sigma, '>', gamma.real
