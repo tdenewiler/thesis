@@ -1,6 +1,6 @@
 \chapter{Results}
 \label{ch:results}
-The Kalman filter and controls algorithms discussed in this thesis were implemented in software on a PackBot and run in an open field with an uneven surface consisting of dirt, gravel and asphalt as seen in Figure \ref{fig:resultsTestArea}. This testing area is difficult for the robots to navigate because pitch, roll and elevation have significant changes and the loose dirt and gravel can cause the tracks to slip leading to erroneous encoder data.
+The Kalman filter and controls algorithms discussed in this thesis were implemented in software on a PackBot and run in an open field with an uneven surface consisting of dirt, gravel and asphalt as seen in Figure \ref{fig:resultsTestArea}. This testing area is difficult for the robots to navigate because pitch, roll and elevation have significant changes and the loose dirt and gravel can cause the tracks to slip leading to erroneous encoder data. The environment in addition to routes that force the robot to change linear and angular velocities excites all the modes of the system model as well as some effects, such as track slip, which are not modeled at all and rigorously tests the estimation and control algorithms.
 
 \begin{figure}[ht!]
 	\centering
@@ -11,21 +11,26 @@ The Kalman filter and controls algorithms discussed in this thesis were implemen
 
 \section{Kalman Filter Results}
 \label{sec:kfResults}
-*** Run the robot again while varying the stages of improvements and put the results in Table \ref{tab:resultsKF}. ***
+In Chapter \ref{ch:estimation} several aspects of the Kalman filter were modified with the goal of improving robot state estimation. Two metrics have been used to quantify the difference in performance of the Kalman filter after having made changes to the algorithm. Those metrics are the RMS error over the entire course and the amount of error in the position estimate before and after the robot runs a route where the percentage is the position error divided by the total amount of distance traveled over the route. The different changes that were tested were the baseline case, fixing the Kalman filter implementation bugs described in Chapter \ref{sec:kfBugs}, hand tuning the Kalman filter noise models and finally using noise models learned from the training algorithm from Chapter \ref{sec:kftrainingparams}. The results for Kalman filter performance are shown in Table \ref{tab:resultsKF}.
+
 \begin{table}[ht!]
 \caption{Kalman Filter Performance}
 \small
 \centering
 \begin{tabular}{@{}llr@{}} \toprule
-Stage       & RMS Error (m)  & Return Error (\%) \\ \midrule
-Baseline    & 0              & 0                 \\
-Fix KF Bugs & 0              & 0                 \\
-Training    & 0              & 0                 \\ \bottomrule
+Stage                       & RMS Error (m)  & Return Error (\%) \\ \midrule
+Baseline                    & 0              & 0                 \\
+Fix KF Bugs                 & 0              & 0                 \\
+Hand Tuned Noise Models     & 0              & 0                 \\
+Training for Noise Models   & 0              & 0                 \\ \bottomrule
 \end{tabular}
 \label{tab:resultsKF}
 \end{table}
 
-Model based with original noise models.
+\subsection{Kalman Filter Effects on Controller}
+The model based and PID controllers were run with different stages of improvement in the Kalman filter. The results show that not only is the Kalman filter performance better but it can also be seen that the model based controller has much better performance when there are simulated obstacles along the route. In Figures \ref{fig:kfResults1} - \ref{fig:kfResults4} the same route was driven and the waypoints making up the route are shown on the overhead images. The red line is the Kalman filter position esimate, the blue line is raw GPS measurements and the green line is DPGS measurements.
+
+The results of using the model based controller with original noise models is shown in Figure \ref{fig:kfResults1}. It can be seen that going from waypoint $4$ to waypoint $5$ the Kalman filter started to diverge significantly from the GPS measurements and the filter estimate snaps back to line up with the GPS measurements.
 
 \begin{figure}[ht!]
 	\centering
@@ -34,7 +39,7 @@ Model based with original noise models.
 	\label{fig:kfResults1}
 \end{figure}
 
-Model based with learned noise models.
+Running the model based controller with learned noise models resulted in the positions shown in Figure \ref{fig:kfResults2}. Here it can be seen that the Kalman filter position estimate is much closer to the GPS measurements for the entire route and that in certain places, such as near waypoint $4$ and between waypoint $6$ and waypoint $7$ the Kalman filter is able to remove discontinuities in the GPS position. Also, in the section of the route with waypoints close to each other to simulate navigation around obstacles the model based controller is able to drive through the waypoints.
 
 \begin{figure}[ht!]
 	\centering
@@ -43,47 +48,29 @@ Model based with learned noise models.
 	\label{fig:kfResults2}
 \end{figure}
 
-Model based with DGPS as input to Kalman filter and learned noise models.
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=.75\textwidth]{images/GE/20101203_1606_kf_lyapUsingDgpsNewQR}
-	\caption{Model Based Controller with DGPS and Learned Noise Models}
-	\label{fig:kfResults3}
-\end{figure}
-
-PID with original noise models.
+The PID controller with original noise models is shown in Figure \ref{fig:kfResults3}. Similar results are seen in regards to the Kalman filter position estimate snapping to the GPS measurements when significant divergence occurs between wayoint $2$ and waypoint $3$. The PID controller has trouble in the section of the route between waypoint $6$ and waypoint $12$ where the waypoints were set up close together to simulate obstacle along the route. In this section of the route the Kalman filter yaw estimate becomes very poor as the robot was driving in circles trying to reach the waypoints and as a result the Kalman filter position estimate diverges and would have snapped back to the GPS measurement if the route were not finished at waypoint $14$.
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=.75\textwidth]{images/GE/20101203_1755_kf_pidOrigQR}
 	\caption{PID Controller with Original Noise Models}
-	\label{fig:kfResults4}
+	\label{fig:kfResults3}
 \end{figure}
 
-PID with learned noise models.
+The PID controller with learned noise models has similar trouble navigating the waypoints that are close together as seen in Figure \ref{fig:kfResults4}. However, with the learned noise models the Kalman filter position estimate stays much closer to the GPS measurements even when the robot is driving in circles. The improved position estimate is also indicative of an improved yaw estimate from the Kalman filter.
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=.75\textwidth]{images/GE/20101203_1751_kf_pidNewQR}
 	\caption{PID Controller with Learned Noise Models}
-	\label{fig:kfResults5}
-\end{figure}
-
-PID with DGPS as input to Kalman filter and learned noise models.
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=.75\textwidth]{images/GE/20101203_1803_kf_pidUsingDgpsNewQR}
-	\caption{PID Controller with DGPS and Learned Noise Models}
-	\label{fig:kfResults6}
+	\label{fig:kfResults4}
 \end{figure}
 
 \section{Model Based Controller Results}
 \label{sec:lyapunovResults}
 The control law derived in (\ref{eq:lyapunovControlLaw}) was tested in the previously described area in two different ways. The first set of results used a single set of gains and had the goal heading set to use the current heading of the robot so that $\theta^\star=\alpha$ as discussed in Chapter \ref{sec:lyapunovVariables}. Figure *** shows the actual position of the robot during navigation as well as the waypoints that defined the desired route.
 
-Figures \ref{fig:resultsLyapunov1} - \ref{fig:resultsLyapunov6} shows how the linear and angular velocities changed over time as measured by the Kalman filter output. The gains used were $h=0.1$, $k=0.25$ and $\gamma=0.23$. A clear deceleration can be seen as the robot approaches each waypoint although the linear velocity does not go to zero until the final waypoint due to the use of the carrot in the path planner as discussed in Chapter \ref{sec:lyapunovVariables} for determing the error distance $e$. One of the consequences of using a model based controller is that a negative linear velocity was used after reaching the second waypoint and having the error angle $\alpha$ move towards the third waypoint which is rarely, if ever, encountered when using the original PID controller.
+Figures \ref{fig:resultsLyapunov1} - \ref{fig:resultsLyapunov4} shows how the linear and angular velocities changed over time as measured by the Kalman filter output. The gains used were $h=0.1$, $k=0.25$ and $\gamma=0.23$. A clear deceleration can be seen as the robot approaches each waypoint although the linear velocity does not go to zero until the final waypoint due to the use of the carrot in the path planner as discussed in Chapter \ref{sec:lyapunovVariables} for determing the error distance $e$. One of the consequences of using a model based controller is that a negative linear velocity was used after reaching the second waypoint and having the error angle $\alpha$ move towards the third waypoint which is rarely, if ever, encountered when using the original PID controller.
 
 \begin{figure}[ht!]
 	\centering
@@ -101,30 +88,16 @@ Figures \ref{fig:resultsLyapunov1} - \ref{fig:resultsLyapunov6} shows how the li
 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=.5\textwidth]{images/pbtx/20101203_1606_pbtxLyapUsingDgpsNewQR}
-	\caption{Model Based Controller Using DGPS with Learned Noise Models}
-	\label{fig:resultsLyapunov3}
-\end{figure}
-
-\begin{figure}[ht!]
-	\centering
 	\includegraphics[width=.5\textwidth]{images/pbtx/20101203_1755_pbtxPidOrigQR}
 	\caption{PID Controller with Original Noise Models}
-	\label{fig:resultsLyapunov4}
+	\label{fig:resultsLyapunov3}
 \end{figure}
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=.5\textwidth]{images/pbtx/20101203_1751_pbtxPidNewQR}
 	\caption{PID Controller with Learned Noise Models}
-	\label{fig:resultsLyapunov5}
-\end{figure}
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=.5\textwidth]{images/pbtx/20101203_1803_pbtxPidUsingDgpsNewQR}
-	\caption{PID Controller Using DGPS with Learned Noise Models}
-	\label{fig:resultsLyapunov6}
+	\label{fig:resultsLyapunov4}
 \end{figure}
 
 The process of selecting gains in Chapter \ref{sec:lyapunovTrajectoryConvergence} only applies as $(\alpha, \theta)\to(0,0)$ but says nothing about what happens when the angle errors are not small. Empirically it was determined that the gains $h=0.25$, $k=0.2$ and $\gamma=0.2$ worked well in creating smooth trajectories and later it was found that these gains cause $\zeta=1$ so that, when the angle errors are small, the system $A$ is critically damped although $\sigma>\gamma$ so the distance error converges faster than the angle errors. The best results occurred when the gains were set to $h=0.25$, $k=0.2$ and $\gamma=0.2$ \textit{until} the angle errors were $|\alpha|<0.5$ \textit{and} $|\theta|<0.5$ radians which leads to the linear approximation being valid and the gains were then changed to $h=1.1$, $k=0.42$ and $\gamma=0.2$. This second set of gains, used when the angle errors were small, are critically damped for the system $A$ since $\zeta=1$ and the angle errors converge faster than the distance error since $\sigma>\gamma$. The results of this adaptive gain scheme can be seen in Figures \ref{fig:resultsLyapunovPositionAdaptive} and \ref{fig:resultsLyapunovVelocitiesAdaptive}. Note that the goal heading, $\theta^\star$, was set to be the angle from the current waypoint to the next waypoint so that the robot would be pointing in the direction of the next waypoint when it reached the current waypoint. For the last waypoint in the route the goal heading used was $\theta^\star=\alpha$.
