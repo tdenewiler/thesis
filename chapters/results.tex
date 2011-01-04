@@ -28,7 +28,7 @@ Training for Noise Models   & 0              & 0                 \\ \bottomrule
 \end{table}
 
 \subsection{Kalman Filter Effects on Controller}
-The model based and PID controllers were run with different stages of improvement in the Kalman filter. The results show that not only is the Kalman filter performance better but it can also be seen that the model based controller has much better performance when there are simulated obstacles along the route. In Figures \ref{fig:kfResults1} - \ref{fig:kfResults4} the same route was driven and the waypoints making up the route are shown on the overhead images. The red line is the Kalman filter position esimate, the blue line is raw GPS measurements and the green line is DPGS measurements.
+The model based and PID controllers were run with different stages of improvement in the Kalman filter. In this section the data was collected before the bugs in the Kalman filter were fixed (Chapter \ref{sec:kfBugs}) but training of the noise models was used (Chapter \ref{sec:kftrainingparams}). The results are interesting because they show that the previous performance of the PID controller could break down and become unusable as well as because it shows that the training algorithm can improve a filter with equations that are not optimal. The results show that not only is the Kalman filter performance better but it can also be seen that the model based controller has much better performance when there are simulated obstacles along the route. In Figures \ref{fig:kfResults1} - \ref{fig:kfResults4} the same route was driven and the waypoints making up the route are shown on the overhead images. The red line is the Kalman filter position esimate, the blue line is raw GPS measurements and the green line is DPGS measurements.
 
 The results of using the model based controller with original noise models is shown in Figure \ref{fig:kfResults1}. It can be seen that going from waypoint $4$ to waypoint $5$ the Kalman filter started to diverge significantly from the GPS measurements and the filter estimate snaps back to line up with the GPS measurements.
 
@@ -68,9 +68,11 @@ The PID controller with learned noise models has similar trouble navigating the 
 
 \section{Model Based Controller Results}
 \label{sec:lyapunovResults}
+*** For this section I can show some typical examples of controller output for both model based and PID. I can have three plots: (i) PID output $(u,w)$, (ii) model based output $(u,w)$ and (iii) model based error convergence. ***
+
 The control law derived in (\ref{eq:lyapunovControlLaw}) was tested in the previously described area in two different ways. The first set of results used a single set of gains and had the goal heading set to use the current heading of the robot so that $\theta^\star=\alpha$ as discussed in Chapter \ref{sec:lyapunovVariables}. Figure *** shows the actual position of the robot during navigation as well as the waypoints that defined the desired route.
 
-Figures \ref{fig:resultsLyapunov1} - \ref{fig:resultsLyapunov4} shows how the linear and angular velocities changed over time as measured by the Kalman filter output. The gains used were $h=0.1$, $k=0.25$ and $\gamma=0.23$. A clear deceleration can be seen as the robot approaches each waypoint although the linear velocity does not go to zero until the final waypoint due to the use of the carrot in the path planner as discussed in Chapter \ref{sec:lyapunovVariables} for determing the error distance $e$. One of the consequences of using a model based controller is that a negative linear velocity was used after reaching the second waypoint and having the error angle $\alpha$ move towards the third waypoint which is rarely, if ever, encountered when using the original PID controller.
+Figures \ref{fig:resultsLyapunov1} - \ref{fig:resultsLyapunov4} shows how the linear and angular velocities changed over time as measured by the Kalman filter output. The gains used were $h=0.1$, $k=0.25$ and $\gamma=0.23$. A clear deceleration can be seen as the robot approaches each waypoint although the linear velocity does not go to zero until the final waypoint due to the use of the carrot in the path planner as discussed in Chapter \ref{sec:lyapunovVariables} for determing the error distance $e$. One of the consequences of using the model based controller is that three point turns are an intrinsic part of the control law. A three point turn can be seen where a negative linear velocity was used after reaching the second waypoint and having the error angle $\alpha$ move towards the third waypoint which is rarely, if ever, encountered when using the original PID controller.
 
 \begin{figure}[ht!]
 	\centering
@@ -100,25 +102,25 @@ Figures \ref{fig:resultsLyapunov1} - \ref{fig:resultsLyapunov4} shows how the li
 	\label{fig:resultsLyapunov4}
 \end{figure}
 
-The process of selecting gains in Chapter \ref{sec:lyapunovTrajectoryConvergence} only applies as $(\alpha, \theta)\to(0,0)$ but says nothing about what happens when the angle errors are not small. Empirically it was determined that the gains $h=0.25$, $k=0.2$ and $\gamma=0.2$ worked well in creating smooth trajectories and later it was found that these gains cause $\zeta=1$ so that, when the angle errors are small, the system $A$ is critically damped although $\sigma>\gamma$ so the distance error converges faster than the angle errors. The best results occurred when the gains were set to $h=0.25$, $k=0.2$ and $\gamma=0.2$ \textit{until} the angle errors were $|\alpha|<0.5$ \textit{and} $|\theta|<0.5$ radians which leads to the linear approximation being valid and the gains were then changed to $h=1.1$, $k=0.42$ and $\gamma=0.2$. This second set of gains, used when the angle errors were small, are critically damped for the system $A$ since $\zeta=1$ and the angle errors converge faster than the distance error since $\sigma>\gamma$. The results of this adaptive gain scheme can be seen in Figures \ref{fig:resultsLyapunovPositionAdaptive} and \ref{fig:resultsLyapunovVelocitiesAdaptive}. Note that the goal heading, $\theta^\star$, was set to be the angle from the current waypoint to the next waypoint so that the robot would be pointing in the direction of the next waypoint when it reached the current waypoint. For the last waypoint in the route the goal heading used was $\theta^\star=\alpha$.
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=.5\textwidth]{images/GE/20100929_1448_GE_KF_waypts}
-	\caption{Robot Position using Adaptive Gain Scheme}
-	\label{fig:resultsLyapunovPositionAdaptive}
-\end{figure}
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=.5\textwidth]{images/pbtx/20100929_1448_pbtx}
-	\caption{Linear and Angular Velocities with Adaptive Gain Scheme}
-	\label{fig:resultsLyapunovVelocitiesAdaptive}
-\end{figure}
+%The process of selecting gains in Chapter \ref{sec:lyapunovTrajectoryConvergence} only applies as $(\alpha, \theta)\to(0,0)$ but says nothing about what happens when the angle errors are not small. Empirically it was determined that the gains $h=0.25$, $k=0.2$ and $\gamma=0.2$ worked well in creating smooth trajectories and later it was found that these gains cause $\zeta=1$ so that, when the angle errors are small, the system $A$ is critically damped although $\sigma>\gamma$ so the distance error converges faster than the angle errors. The best results occurred when the gains were set to $h=0.25$, $k=0.2$ and $\gamma=0.2$ \textit{until} the angle errors were $|\alpha|<0.5$ \textit{and} $|\theta|<0.5$ radians which leads to the linear approximation being valid and the gains were then changed to $h=1.1$, $k=0.42$ and $\gamma=0.2$. This second set of gains, used when the angle errors were small, are critically damped for the system $A$ since $\zeta=1$ and the angle errors converge faster than the distance error since $\sigma>\gamma$. The results of this adaptive gain scheme can be seen in Figures \ref{fig:resultsLyapunovPositionAdaptive} and \ref{fig:resultsLyapunovVelocitiesAdaptive}. Note that the goal heading, $\theta^\star$, was set to be the angle from the current waypoint to the next waypoint so that the robot would be pointing in the direction of the next waypoint when it reached the current waypoint. For the last waypoint in the route the goal heading used was $\theta^\star=\alpha$.
+%
+%\begin{figure}[ht!]
+%	\centering
+%	\includegraphics[width=.5\textwidth]{images/GE/20100929_1448_GE_KF_waypts}
+%	\caption{Robot Position using Adaptive Gain Scheme}
+%	\label{fig:resultsLyapunovPositionAdaptive}
+%\end{figure}
+%
+%\begin{figure}[ht!]
+%	\centering
+%	\includegraphics[width=.5\textwidth]{images/pbtx/20100929_1448_pbtx}
+%	\caption{Linear and Angular Velocities with Adaptive Gain Scheme}
+%	\label{fig:resultsLyapunovVelocitiesAdaptive}
+%\end{figure}
 
 \subsection{Controller Comparison}
 \label{sec:controllerComparison}
-For both PID (Chapter \ref{sec:pid}, Table \ref{tab:PIDGainEffects}) and the model based controller (Chapter \ref{sec:lyapunovTrajectoryConvergence}) gains have to be selected, the difference being that stability is the goal when selecting PID gains whereas stability is guaranteed with the model based controller. More advanced behaviors such as three point turns are a consequence of the control law in (\ref{eq:lyapunovControlLaw}) derived using a kinematic model of the robot. The other very large difference between the controllers is that a table of gains must be tuned for the PID controller to work at varying linear velocities but the model based controller works very well at different linear and angular velocities. Also, when properties of the robot such as mass are changed by using different payloads for the system the entire table of PID gains must be retuned while, at most, one set of gains must be retuned for the model based controller. This last benefit of the model based controller makes it very appealing to use in fielded systems since it reduces the amount of maintenance and effort required to keep the robot in working condition. The model based controller will also allow for improved navigation performance near obstacles which leads directly to improved autonomy for the robot.
+For both PID (Chapter \ref{sec:pid}, Table \ref{tab:PIDGainEffects}) and the model based controller (Chapter \ref{sec:lyapunovTrajectoryConvergence}) gains have to be selected, the difference being that stability is the goal when selecting PID gains whereas stability is guaranteed with the model based controller. More advanced behaviors such as three point turns are a consequence of the control law in (\ref{eq:lyapunovControlLaw}) derived using a kinematic model of the robot. The other very large difference between the controllers is that a table of gains must be tuned for the PID controller to work at varying linear velocities but the model based controller works very well at different linear and angular velocities. Also, when properties of the robot such as mass are changed by using different payloads for the system the entire table of PID gains must be retuned while, at most, one set of gains must be retuned for the model based controller. This last benefit of the model based controller makes it very appealing to use in fielded systems since it reduces the amount of maintenance and effort required to keep the robot in working condition. The model based controller will also allow for improved navigation performance near obstacles which leads directly to improved autonomy for the robot. The local path planner is much simpler with the model based controller since it simply requires moving the target frame based on the calculated errors whereas the PID controller uses an entirely new algorithm that is not a normal part of the control algorithm to set the carrot following mode \cite{Hogg02}.
 
 Many different controller configurations are possible based on varying the gains used and the calculation of the desired heading at waypoints. The tested configurations included:
 \begin{enumerate}
