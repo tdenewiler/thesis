@@ -124,13 +124,14 @@ Many different controller configurations are possible based on varying the gains
 \begin{enumerate}
 \item PID with best available gains,
 \item Fuzzy logic with best available rules,
-\item Model based with $\theta^\star$ set as angle from current waypoint to next waypoint with gains set to minimize distance error before angle errors ($\gamma = $, $h = $, $k = $),
-\item Model based with $\theta^\star$ set as angle from previous waypoint to current waypoint with gains set to minimize distance error before angle errors ($\gamma = $, $h = $, $k = $),
-\item Model based with $\theta^\star$ set as angle from current waypoint to next waypoint with gains set to minimize angle errors before distance error ($\gamma = $, $h = $, $k = $),
-\item Model based with $\theta^\star$ set as angle from previous waypoint to current waypoint with gains set to minimize angle errors before distance error ($\gamma = $, $h = $, $k = $),
-\item Model based with $\theta^\star$ set as angle from current waypoint to next waypoint with gains set to minimize distance error before $\alpha$ before $\theta$ ($\gamma = $, $h = $, $k = $),
-\item Model based with $\theta^\star$ set as angle from previous waypoint to current waypoint with gains set to minimize distance error before $\alpha$ before $\theta$ ($\gamma = $, $h = $, $k = $),
-\item Model based with parking behavior turned on and gains set to have angle errors converge at the same rate and faster than the distance error converges ($\gamma = 0.25$, $h = 1.1$, $k = 2\gamma\sqrt{h}$).
+\item Model based with $\theta^\star$ set as angle from current waypoint to next waypoint with gains set to minimize $e$ before angle errors ($\gamma = 0.25$, $h = 0.33$, $k = 0.30$),
+\item Model based with $\theta^\star$ set as angle from previous waypoint to current waypoint with gains set to minimize $e$ before angle errors ($\gamma = 0.25$, $h = 0.33$, $k = 0.30$),
+\item Model based with $\theta^\star$ set as angle from current waypoint to next waypoint with gains set to minimize angle errors before $e$ ($\gamma = 0.25$, $h = 1.1$, $k = 2\gamma\sqrt{h}$),
+\item Model based with $\theta^\star$ set as angle from previous waypoint to current waypoint with gains set to minimize angle errors before $e$ ($\gamma = 0.25$, $h = 1.1$, $k = 2\gamma\sqrt{h}$),
+\item Model based with $\theta^\star$ set as angle from current waypoint to next waypoint with gains set to minimize $e$ before $\alpha$ before $\theta$ ($\gamma = 0.25$, $h = 0.35$, $k = 0.35$),
+\item Model based with $\theta^\star$ set as angle from previous waypoint to current waypoint with gains set to minimize $e$ before $\alpha$ before $\theta$ ($\gamma = 0.25$, $h = 0.35$, $k = 0.35$),
+\item Model based with parking behavior turned on and gains set to have angle errors converge at the same rate and faster than $e$ converges ($\gamma = 0.25$, $h = 1.1$, $k = 2\gamma\sqrt{h}$).
+\item Model based with parking behavior turned on and gains set to have $e$ converge faster than the the angle errors ($\gamma = 0.25$, $h = 0.33$, $k = 0.30$).
 \end{enumerate}
 Note that in all cases for the model based controller the desired goal heading $\theta^\star$ for the final waypoint was set to be the angle from the previous waypoint to the last waypoint.
 
@@ -148,7 +149,7 @@ The results using the different setups described are shown for the different rou
 \item the maximum velocity achieved by the robot during the course,
 \item the number of times that the robot stops where a stop is defined as the robot having a velocity that drops below a small velocity.
 \end{itemize}
-Note that for the model based controller in driving mode values of $(\lambda, \epsilon)$ to control the extension of the distance error were $(???,???)$ for the open space route, $(???,???)$ for the obstacle route and $(???,???)$ for the mixed route and were determined empirically.
+Note that for the model based controller in driving mode values of $(\lambda, \epsilon)$ to control the extension of the distance error were $(???,???)$ for the open space route, $(???,???)$ for the obstacle route and $(???,???)$ for the mixed route and were determined empirically. For the model based controller in parking mode the same algorithm was run but $\epsilon=0$ was enough to keep the distance error from increasing and $\lambda$ was unused.
 
 \begin{table}[ht!]
 \caption{Controller Comparison on Open Space Route}
@@ -164,7 +165,8 @@ Setup & Time (s) & Cross Track Error (m) & Max Velocity (m/s) & \# Stops \\ \mid
 6     & 0        & 0                     & 0                  & 0        \\
 7     & 0        & 0                     & 0                  & 0        \\
 8     & 0        & 0                     & 0                  & 0        \\
-9     & 0        & 0                     & 0                  & 0        \\ \bottomrule
+9     & 0        & 0                     & 0                  & 0        \\
+10    & 0        & 0                     & 0                  & 0        \\ \bottomrule
 \end{tabular}
 \label{tab:resultsControllersOpenSpace}
 \end{table}
@@ -183,7 +185,8 @@ Setup & Time (s) & Cross Track Error (m) & Max Velocity (m/s) & \# Stops \\ \mid
 6     & 0        & 0                     & 0                  & 0        \\
 7     & 0        & 0                     & 0                  & 0        \\
 8     & 0        & 0                     & 0                  & 0        \\
-9     & 0        & 0                     & 0                  & 0        \\ \bottomrule
+9     & 0        & 0                     & 0                  & 0        \\
+10    & 0        & 0                     & 0                  & 0        \\ \bottomrule
 \end{tabular}
 \label{tab:resultsControllersObstacles}
 \end{table}
@@ -202,7 +205,8 @@ Setup & Time (s) & Cross Track Error (m) & Max Velocity (m/s) & \# Stops \\ \mid
 6     & 0        & 0                     & 0                  & 0        \\
 7     & 0        & 0                     & 0                  & 0        \\
 8     & 0        & 0                     & 0                  & 0        \\
-9     & 0        & 0                     & 0                  & 0        \\ \bottomrule
+9     & 0        & 0                     & 0                  & 0        \\
+10    & 0        & 0                     & 0                  & 0        \\ \bottomrule
 \end{tabular}
 \label{tab:resultsControllersMixed}
 \end{table}

@@ -8,5 +8,5 @@
 \item Use a high quality IMU and compass that serve as ground truth for Euler angles in addition to the DGPS system so that the training algorithm attempts to minimize the errors between Euler angles in addition to position.
 \item Implement the more advanced work done by \cite{Lapierre06} and \cite{Gulati08} to improve the performance of the model based controller. In particular \cite{Gulati08} uses control Lyapunov functions that attempt to constrain the accelerations of the vehicle and uses splines to generate intermediate waypoints between the vehicles current position and the goal position.
 \item Extend the model based controller to have constraints that allow the controller to work with non-unicycle like vehicles such as those that have Ackerman steering like most personal automobiles which are not physically able to rotate in place.
-\item Build on the current extended Kalman filter in ACS to implement an unscented Kalman filter as described by \cite{ThrunProbRobots06} to better handle the nonlinearities of the system.
+\item Build on the current extended Kalman filter in ACS to implement an unscented Kalman filter as described by \cite{ThrunProbRobots06} and \cite{Orderud05} to better handle the nonlinearities of the system.
 \end{itemize}
