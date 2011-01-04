@@ -1,6 +1,6 @@
 \chapter{Controls}
 \label{ch:controls}
-Control systems are responsible for computing the commands necessary for actuators to cause the trajectory of a system to go from its current state to a desired state, or for answering the question "How do I get there?". There are many different methods that can be used to determine the output commands. One of the more popular and widely implemented control systems is the PID (Proportional, Integral, Differential) controller. Model based controllers utilize knowledge of the physics of the system to compute appropriate output commands. The robots in these experiments originally used PID controllers for position and heading control and were later tested with a model based contoller that takes advantage of Lyapunov stability theory.
+Control systems are responsible for computing the commands necessary for actuators to cause the trajectory of a system to go from its current state to a desired state, or for answering the question "How do I get there?". There are many different methods that can be used to determine the output commands. One of the more popular and widely implemented control systems is the PID (Proportional, Integral, Differential) controller. Model based controllers utilize knowledge of the physics of the system to compute appropriate output commands. The robots in these experiments originally used PID controllers for position and heading control and were later tested with a model based contoller that takes advantage of Lyapunov stability theory. Both types of controllers described in this Chapter take in state estimates from the Kalman filter from Chapter \ref{ch:estimation} and output linear and angular velocity commands to the robots.
 
 \section{PID}
 \label{sec:pid}
@@ -47,6 +47,9 @@ $K_d$        & Small Decrease & Decrease  & Decrease      & None \\ \bottomrule
 \end{tabular}
 \label{tab:PIDGainEffects}
 \end{table}
+
+\subsection{PID Implementation}
+The PID controller used by SSCPAC was only for angular rate output while the linear velocity output was set to a maximum allowable velocity and then a simple ramp function was used to slow the robot down as it approached a waypoint. In conjunction with the PID controller a simple local path planner was developed following work in \cite{Hogg02} in which a carrot is placed a reasonable distance in front of the robot on the path from the previous to the current waypoint and the carrot position was used to correct the heading. This causes the PID controller to move the robot onto that path faster than it would if the heading error were only based on the angle to the waypoint when the waypoint is a large distance from the robots current position. The carrot could also be extended along the path so that the robot would not stop at each intermediate waypoint but would instead cut the corner on the way to the next waypoint. One of the difficulties in using the PID controller, and a motivation for finding a different control scheme, is that as the maximum allowable linear velocity was set to larger values the performance of the controller would work poorly when the waypoints were spaced close together as is the case when obstacles are present. The converse is also true. As mentioned previously gain scheduling is a time intensive task but it is possible that it would have provided a working solution.
 
 \section{Model Based Controller}
 \label{sec:lyapunov}
@@ -253,7 +256,15 @@ The method used to calculate the variables needed for the control law in (\ref{e
 \end{enumerate}
 Note that all of the angle variables need to be normalized so that they are in the range $(-\pi,\pi]$ and it is very important to calculate the angle errors in the correct direction as this is where many subtle errors can occur during implementation.
 
-\subsection{Effect of Gains on Trajectory}
+\subsection{Model Based Driving Mode}
+\label{sec:drivingMode}
+The parking mode described above can be extended such that the control law will cause the robot to drive through intermediate waypoints on a route rather than stop at each waypoint.
+
+*** In driving mode the determination of whether the robot is within a capture radius of the current waypoint so that the next waypoint becomes the current target has to be modified. One way to do this is to artificially move the current waypoint position by $W_x += \cos(\psi)$ and $W_y += \sin(\psi)$. If this is not done then the robot will overshoot the waypoint because the error distance has been increased and the angle errors will increase causing the robot to slow down and go back to the original waypoint position. It looks stupid. ***
+
+*** Talk about how gains with $e$ converging before $\alpha$ before $\theta$ could be better in driving mode. ***
+
+\subsection{Practical Considerations for Selecting Gains}
 \label{sec:lyapunovTrajectoryConvergence}
 The gains $h$, $k$ and $\gamma$ in the control law (\ref{eq:lyapunovControlLaw}) determine the resulting trajectory that the robot will use when driving from its current position to the goal point and heading. The first thing to notice is that the linear velocity is at a maximum when the angle error $\alpha=0$ since that leads to $\cos(\alpha)=1$ and $u_{\text{max}}=e\gamma$. As discussed in Chapter \ref{sec:lyapunovVariables} a carrot can be set by the path planner to limit the maximum error distance $e$ so that $e$ is bounded. When that is the case the maximum linear velocity is proportional to the gain $\gamma$. For example, if the carrot has a maximum lookahead distance of $10m$ and $\gamma=0.2$ then $u_{\text{max}}=10*0.2=2\tfrac{m}{s}$ which is a reasonable limit for a PackBot.
 
@@ -336,13 +347,5 @@ k &= 2\gamma\sqrt{h} > 2\gamma \\
 \end{align*}
 
 Using this method any two gains can be selected and the third gain can be found which satisfies the above properties. For example, setting $\gamma=0.2$ to limit the maximum linear velocity and $h=1.1$ to keep it small but greater than one leads to $k=2\gamma\sqrt{h}=0.42$. From this it can be seen that $\lambda_\alpha(A) = \lambda_\theta(A) = 0.21 \Rightarrow \zeta = 1$ so the system $A$ is critically damped and $\sigma = 0.21>0.2=\gamma$ so that the angle errors will converge before the distance error.
-
-\subsection{Model Based Driving Mode}
-\label{sec:drivingMode}
-The parking mode described above can be extended such that the control law will cause the robot to drive through intermediate waypoints on a route rather than stop at each waypoint.
-
-*** In driving mode the determination of whether the robot is within a capture radius of the current waypoint so that the next waypoint becomes the current target has to be modified. One way to do this is to artificially move the current waypoint position by $W_x += \cos(\psi)$ and $W_y += \sin(\psi)$. If this is not done then the robot will overshoot the waypoint because the error distance has been increased and the angle errors will increase causing the robot to slow down and go back to the original waypoint position. It looks stupid. ***
-
-*** Talk about how gains with $e$ converging before $\alpha$ before $\theta$ could be better in driving mode. ***
 
 The model based controller developed in this Chapter along with the analysis of selecting appropriate gains replaces the original PID controller when answering the question "How do I get there?".

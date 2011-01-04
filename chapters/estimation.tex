@@ -260,18 +260,18 @@ as the system model that is used in the prediction update step of the Kalman fil
 \label{sec:kfMeasurementModel}
 The measurement model converts sensor data to the state variable coordinate system and for a standard sensor suite is by far the simplest model used in the ACS Kalman filter. The idea is that, for a sensor that measures one of the states, the data that is output by the sensor has to have the same units and be in the same range as the state variable. This is best illustrated by an example.
 
-Suppose a compass and an IMU both measure the yaw state variable and the compass output is $0 - 360^\circ$ whereas the IMU output is $0 - 2\pi~rads$ and the yaw state in the Kalman filter is tracked in the range $0 - 2\pi ~ rads$. If, for one time step, both compass and IMU measurements are available to be incorporated into the Kalman filter then the measurement update step from (\ref{eq:kfmeasurementupdate}) is run and the $H$ matrix is
+Suppose a compass and an IMU both measure the yaw state variable and the compass output is $0 - 360^\circ$ whereas the IMU output is $0 - 2\pi~rads$ and the yaw state in the Kalman filter is tracked in the range $0 - 2\pi ~ rads$. If, for one time step, both compass and IMU measurements are available to be incorporated into the Kalman filter then the measurement update step from (\ref{eq:kfmeasurementupdate}) is run and the $H_k$ matrix is
 \begin{align*}
-H = \left[\begin{array}{c c c c c c c c}
+H_k = \left[\begin{array}{c c c c c c c c}
 0 & 0 & 0 & 0 & 0 & 0 & \frac{\pi}{180^\circ} & 0 \\
 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0
 \end{array}\right]
 \end{align*}
 and the $y$ vector is a $2\times1$ column vector with the compass measurement in the $y_{(1,1)}$ element and the IMU measurement in the $y_{(2,1)}$ element.
 
-There is one row per sensor measurement and one column per state in the measurement matrix so in this example $H$ is a $2\times8$ matrix. The compass measurement corresponds to the first row and the data is converted from degrees to radians. The IMU measurement corresponds to the second row and, since the units of the sensor data are the same as the units of the state variable, the data is not transformed at all.
+There is one row per sensor measurement and one column per state in the measurement matrix so in this example $H_k$ is a $2\times8$ matrix. The compass measurement corresponds to the first row and the data is converted from degrees to radians. The IMU measurement corresponds to the second row and, since the units of the sensor data are the same as the units of the state variable, the data is not transformed at all.
 
-In the case when there is a single sensor measuring each of the states and those sensors output data that is in the correct units and range of the state variables then $H=I$, the identity matrix.
+In the case when there is a single sensor measuring each of the states and those sensors output data that is in the correct units and range of the state variables then $H_k=I$, the identity matrix.
 
 \subsection{Noise Models}
 \label{sec:kfNoiseModels}
@@ -298,7 +298,7 @@ where
 P_{k+1}^- &= \Phi_kP_k^+\Phi_k^T + Q_k.
 \end{align*}
 
-From these equations it can be seen that all four models used in the Kalman filter are used to calculate the Kalman gain matrix since $\Phi$, $Q_k$, $H$ and $R_k$ are all present. In the measurement update step the Kalman gain is multiplied by the difference between the measured values $y_k$ of the state and the expected values of those measurements based on the system model $\hat{y}_k$ where $\hat{y}_k = H\hat{x}_k^-$ is what the sensors would report if there were no noise in the measurements and the system model were perfect. The state estimate from the measurement update step is
+From these equations it can be seen that all four models used in the Kalman filter are used to calculate the Kalman gain matrix since $\Phi_k$, $Q_k$, $H_k$ and $R_k$ are all present. In the measurement update step the Kalman gain is multiplied by the difference between the measured values $y_k$ of the state and the expected values of those measurements based on the system model $\hat{y}_k$ where $\hat{y}_k = H_k\hat{x}_k^-$ is what the sensors would report if there were no noise in the measurements and the system model were perfect. The state estimate from the measurement update step is
 \begin{align*}
 \hat{x}_k^+ &= \hat{x}_k^- + K_k\left[y_k - H_k\hat{x}_k^-\right].
 \end{align*}
@@ -311,7 +311,7 @@ When the models are not set up correctly then the measurements will likely not m
 
 \section{Determining Heading}
 \label{sec:determineHeading}
-An immediate problem that arose during testing which had to be addressed before new techniques such as those in Chapters \ref{sec:kftrainingparams} and \ref{sec:controllyapunov} could be attempted is that the robots did not always know which direction they were heading due to a lack of sensors such that the yaw state was unobservable. The original sensors used to determine heading on the robots were GPS and a gyro in the IMU. GPS worked fine when the robot was driving forward but when the robot began to drive in reverse the heading would rotate $180^\circ$. The angular velocity measurement from the gyro was integrated over time using the system model from (\ref{eq:kfjacobianresult}) and included as a second heading measurement although this measurement tends to drift over longer periods \cite{ChungOjeda01}. An Ocean Server OS5000 digital compass was added to get a better estimate of heading in a global coordinate system since the magnetometer performance was better with that sensor than with the Microstrain 3DM-GX1. Wheel encoder measurements of linear and angular velocity were also added. The velocities from the encoders were directly incorporated into the measurement update step and the sign of the linear velocity encoder measurement was used to determine the appropriate sign to use for GPS heading.
+An immediate problem that arose during testing which had to be addressed before new techniques such as training the noise models in Chapters \ref{sec:kftrainingparams} and implementing a model based controller in Chapter \ref{sec:controllyapunov} could be attempted is that the robots did not always know which direction they were heading due to a lack of sensors such that the yaw state was unobservable. The original sensors used to determine heading on the robots were GPS and a gyro in the IMU. GPS worked fine when the robot was driving forward but when the robot began to drive in reverse the heading would rotate $180^\circ$. The angular velocity measurement from the gyro was integrated over time using the system model from (\ref{eq:kfjacobianresult}) and included as a second heading measurement although this measurement tends to drift over longer periods \cite{ChungOjeda01}. An Ocean Server OS5000 digital compass was added to get a better estimate of heading in a global coordinate system since the magnetometer performance was better with that sensor than with the Microstrain 3DM-GX1. Wheel encoder measurements of linear and angular velocity were also added. The velocities from the encoders were directly incorporated into the measurement update step and the sign of the linear velocity encoder measurement was used to determine the appropriate sign to use for GPS heading.
 
 Figure \ref{fig:GEHeadingReverse} shows the routes driven by the robot when testing heading where the heading was reversed on the blue route and the heading was fixed on the red route. Figure \ref{fig:pbDataReverseHeadingBroken} shows sensor data before adding the encoder data to the Kalman filter (but using logged encoder data for comparison purposes to show where the velocity was negative) and the heading can be seen to flip $\pi ~ rads$ where the velocity was negative but the GPS velocity is positive. Figure \ref{fig:pbDataReverseHeadingFixed} is the sensor data after incorporating the encoder velocities into the Kalman filter and using the encoder data to reverse the sign of the GPS velocity whenever the encoder velocity is negative which results in a heading estimate that does not flip.
 
@@ -338,16 +338,16 @@ Figure \ref{fig:GEHeadingReverse} shows the routes driven by the robot when test
 
 \section{Fixing Bugs in ACS Kalman Filter}
 \label{sec:kfBugs}
-The ACS Kalman filter contained three major bugs in the Kalman filter equations and only worked because of a reforumlation of the standard Kalman filter equations. The first bug concerned the calculation of the Kalman gain matrix (see Chapter \ref{kfKalmanGain}). The $K_k$ matrix was being calculated correctly but at the end of the calculation gains from previous sensors were added back into their former element locations in the matrix. This bug was fixed by removing the code that added previous gain elements back into the Kalman gain matrix. One of the consequences of this bug is that the calculation of the covariance of the state estimate in the prediction update step used the continuous time system model $F$ (\ref{eq:kfjacobianresult}) instead of the discrete time system model $\Phi$ (\ref{eq:kfSystemModelWithAssumptions}) such that instead of $P_{k+1}^- = \Phi_kP_k^-\Phi_k^T + Q_k$ (c.f. (\ref{eq:kfpredictionupdate})) the Kalman filter used
+The ACS Kalman filter contained three major bugs in the Kalman filter equations and only worked because of a reforumlation of the standard Kalman filter equations. The first bug concerned the calculation of the Kalman gain matrix (see Chapter \ref{kfKalmanGain}). The $K_k$ matrix was being calculated correctly but at the end of the calculation gains from previous sensors were added back into their former element locations in the matrix. This bug was fixed by removing the code that added previous gain elements back into the Kalman gain matrix. One of the consequences of this bug is that the calculation of the covariance of the state estimate in the prediction update step used the continuous time system model $F$ (\ref{eq:kfjacobianresult}) instead of the discrete time system model $\Phi_k$ (\ref{eq:kfSystemModelWithAssumptions}) such that instead of $P_{k+1}^- = \Phi_kP_k^-\Phi_k^T + Q_k$ (c.f. (\ref{eq:kfpredictionupdate})) the Kalman filter used
 
 \begin{align*}
 P_{k+1}^- = FP_k^+F^T + Q_k.
 \end{align*}
 The discrete time system model $\Phi_k$ was used in the calculation of the state estimate $\hat{x}_k^-$ though. After this fix the discrete time system model was used appropriately in the state covariance calculation during the prediction update step.
 
-The second bug was also a consequence of calculating the Kalman gain incorrectly. The yaw angle calculation was not being found correctly since the covariance was wrong so a correcting term was introduced that fixed the yaw angle when the standard set of sensors were used since they reliably gave measurements at a fixed rate and affected the Kalman gain matrix in a consistent manner. This bug was also fixed by simply removing the correcting term and the yaw angle was estimated correctly after the Kalman gain matrix was implemented properly.
+The second bug was a consequence of calculating the Kalman gain incorrectly. The yaw angle calculation was not being done correctly since the state covariance estimate was wrong so a correcting term was introduced that fixed the yaw angle when the standard set of sensors were used since they reliably gave measurements at a fixed rate and affected the Kalman gain matrix in a consistent manner. This bug was also fixed by simply removing the correcting term and the yaw angle was estimated correctly after the Kalman gain matrix was implemented properly.
 
-The third bug was slightly less significant but still posed several problems. In the measurement update step (\ref{eq:kfmeasurementupdate}) the measurement model $H$ was set up to use the latest received data from each sensor at each time step rather than only use new measurements if they were available from each sensor. This bug manifested itself most prominently in sensors with slow update rates such as GPS. One particular robot configuration used a GPS receiver that output position fixes at $1 Hz$ which resulted in the Kalman filter measurement update (running at $100 Hz$) using the same position measurement for $100$ time steps when that particular measurement should only have been used a single time out of the $100$ time steps. This became obvious when the control system exhibited the behavior of cycling through slowing down and speeding up in a very jerky fashion. This occurred because the Kalman filter was trying to push the position estimate backwards towared the most recent GPS measurement instead of letting the system model $\Phi$ allow the robot position to propagate forward based on the robot kinematics.
+The third bug was slightly less significant but still posed several problems. In the measurement update step (\ref{eq:kfmeasurementupdate}) the measurement model $H_k$ was set up to use the latest received data from each sensor at each time step rather than only use new measurements if they were available from each sensor. This bug manifested itself most prominently in sensors with slow update rates such as GPS. One particular robot configuration used a GPS receiver that output position fixes at $1 Hz$ which resulted in the Kalman filter measurement update (running at $100 Hz$) using the same position measurement for $100$ time steps when that particular measurement should only have been used a single time out of the $100$ time steps. This became obvious when the control system exhibited the behavior of cycling through slowing down and speeding up in a very jerky fashion. This occurred because the Kalman filter was trying to push the position estimate backwards toward the most recent GPS measurement instead of letting the system model $\Phi_k$ allow the robot position to propagate forward based on the robot kinematics.
 
 \section{Establishing Ground Truth}
 \label{sec:groundtruth}
@@ -399,7 +399,7 @@ Attempting to determine the proper values for the noise models $Q_k$ in (\ref{eq
 
 \subsection{Discriminative Training of Kalman Filter Parameters}
 \label{sec:kftrainingparams}
-\cite{Abbeel-RSS-05} describes a method to automatically learn what the covariance matrices $Q_k$ and $R_k$ that make up the noise models in the Kalman filter should be by using a discriminative training algorithm. \cite{SakaiKuroda10} recently used a variation of the algorithm described in \cite{Abbeel-RSS-05} to learn parameter values for the noise filters used in their unscented Kalman filter. This method takes advantage of ground truth measurements obtained using a DGPS system like that described in Chapter \ref{sec:groundtruth}. Note that in the following expressions the term $h(\mu_t)$ is the position output by the Kalman filter and $y$ is the DGPS position output so the goal is to find values of $Q_k$ and $R_k$ that minimizes the difference between the output of the Kalman filter and DGPS ground truth.
+A method to automatically learn what the covariance matrices $Q_k$ and $R_k$ that make up the noise models in the Kalman filter should be by using a discriminative training algorithm was described in \cite{Abbeel-RSS-05}. Building upon that work \cite{SakaiKuroda10} recently used a variation of the algorithm described in \cite{Abbeel-RSS-05} to learn parameter values for the noise filters used in their unscented Kalman filter. This method takes advantage of ground truth measurements obtained using a DGPS system like that described in Chapter \ref{sec:groundtruth}. Note that in the following expressions the term $h(\mu_t)$ is the position output by the Kalman filter and $y$ is the DGPS position output so the goal is to find values of $Q_k$ and $R_k$ that minimize the difference between the output of the Kalman filter and DGPS ground truth.
 
 There are several metrics that can be applied to the data with the two most relevant metrics being the residual error metric and the prediction likelihood error metric. The residual prediction error is used to estimate $Q_k$ and $R_k$ using
 \begin{align*}
@@ -419,23 +419,23 @@ The prediction likelihood method use the metric
 \begin{align*}
 \left<R_{\text{pred}},Q_{\text{pred}}\right> = \argmax_{R,Q}\sum_{t=0}^T -\log|2\pi\Omega_t| - (y_t-h(\mu_t))^T\Omega_t^{-1}(y_t-h(\mu_t))
 \end{align*}
-where $\Omega = H_t\Sigma_tH_t^T+P$. The error metric used for the prediction likelihood method is
+where $\Omega_t = H_t\Sigma_tH_t^T+P$. The error metric used for the prediction likelihood method is
 \begin{align}
 \label{eq:kftrainingpred}
 e = -\frac{1}{T}\sum_{t=1}^T \left(\log|2\pi\Omega_t| - (y_t-h(\mu_t))^T\Omega_t^{-1}(y_t-h(\mu_t))\right)
 \end{align}
-where $\Omega$ is the same as in the above description.
+where $\Omega_t$ is the same as in the above description.
 
 \subsection{Simulating Robot Runs}
 \label{sec:kfSimulation}
-For the training algorithm to work the sensor data collected from a robot running has to be replayed a large number of times and a simulation of the robot run helps to reduce the amount of time taken to replay the data when using the candidate noise models so that the results can be evaluated. As shown in Table \ref{tab:kfSimulationErrors} the position errors as calculated using (\ref{eq:kftrainingres}) were very close to the position errors from the actual robot run. The average error was $0.0556~m$ over nine different runs which gives a baseline for the convergence criterion. If the training algorithm is able to converge with errors on the scale of twice the average error due to simulation of the robot runs then that represents a significant improvement in Kalman filter performance and the simulations can be considered valid.
+For the training algorithm to work the sensor data collected from a robot has to be replayed a large number of times and a simulation of the robot run helps to reduce the amount of time taken to replay the data when using the candidate noise models so that the results can be evaluated. As shown in Table \ref{tab:kfSimulationErrors} the position errors as calculated using (\ref{eq:kftrainingres}) were very close between the simulated runs and the actual robot run. The average error was $0.0556~m$ over nine different runs which gives a baseline for the convergence criterion. The best that the training program can do is converge to an error approximately equal to the average error of the simulation compared to actual data.
 
 \begin{table}[ht!]
 \caption{Kalman Filter Simulation Errors}
 \small
 \centering
 \begin{tabular}{@{}lllr@{}} \toprule
-Run & Initial Error (m) & Simulation Error (m) & Error Difference (m) \\ \midrule
+Run & Actual Error (m)  & Simulation Error (m) & Error Difference (m) \\ \midrule
 1   & 0.452886          & 0.423056             & 0.029830             \\
 2   & 0.177620          & 0.210472             & 0.032852             \\
 3   & 0.109484          & 0.080400             & 0.029084             \\
