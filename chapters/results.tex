@@ -11,24 +11,27 @@ The Kalman filter and controls algorithms discussed in this thesis were implemen
 
 \section{Kalman Filter Results}
 \label{sec:kfResults}
-In Chapter \ref{ch:estimation} several aspects of the Kalman filter were modified with the goal of improving robot state estimation. Two metrics have been used to quantify the difference in performance of the Kalman filter after having made changes to the algorithm. Those metrics are the RMS error over the entire course and the amount of error in the position estimate before and after the robot runs a route where the percentage is the position error divided by the total amount of distance traveled over the route. The different changes that were tested were the baseline case, fixing the Kalman filter implementation bugs described in Chapter \ref{sec:kfBugs}, hand tuning the Kalman filter noise models and finally using noise models learned from the training algorithm from Chapter \ref{sec:kftrainingparams}. The results for Kalman filter performance are shown in Table \ref{tab:resultsKF}.
+In Chapter \ref{ch:estimation} several aspects of the Kalman filter were modified with the goal of improving robot state estimation. Two metrics have been used to quantify the difference in performance of the Kalman filter after having made changes to the algorithm. Those metrics are the RMS error over the entire course and the amount of error in the position estimate before and after the robot runs a route where the percentage is the position error divided by the total amount of distance traveled over the route. Also included is the total distance traveled during the run that the data was logged. The different changes that were tested were the baseline case, fixing the Kalman filter implementation bugs described in Chapter \ref{sec:kfBugs}, hand tuning the Kalman filter noise models and finally using noise models learned from the training algorithm from Chapter \ref{sec:kftrainingparams}. The results for Kalman filter performance are shown in Table \ref{tab:resultsKF}.
 
+% Note for data sources: baseline is 20010107_1037, fixes is 20100107_1411, hand tuned is 20100107_1415, trained is 20100107_1905.
 \begin{table}[ht!]
 \caption{Kalman Filter Performance}
 \small
 \centering
-\begin{tabular}{@{}llr@{}} \toprule
-Stage                       & RMS Error (m)  & Return Error (\%) \\ \midrule
-Baseline                    & 0              & 0                 \\
-Fix KF Bugs                 & 0              & 0                 \\
-Hand Tuned Noise Models     & 0              & 0                 \\
-Training for Noise Models   & 0              & 0                 \\ \bottomrule
+\begin{tabular}{@{}lllr@{}} \toprule
+Stage      & RMS Error (m)  & Return Error (\%) & Distance Traveled (m) \\ \midrule
+Baseline   & 10.62          & 1.51              & 224.22 \\
+Fix Bugs   & 4.38           & 0.79              & 182.70 \\
+Hand Tuned & 4.87           & 1.32              & 184.09 \\
+Trained    & 3.64           & 0.99              & 332.62 \\ \bottomrule
 \end{tabular}
 \label{tab:resultsKF}
 \end{table}
 
+The most significant improvement came from fixing the bugs in the Kalman filter code. Using the training algorithm to tune the parameters in the noise models showed a marked improvement over the hand tuned case and was also better on average than the case where the bugs were fixed. Although the trained noise models case has a slightly greater error in the difference between starting and stopping positions that run was much greater in total distance traveled and the a return error of $0.99\%$ over a $332m$ run is more than sufficient to perform retrotraverse in most environments where the robots are used.
+
 \subsection{Kalman Filter Effects on Controller}
-The model based and PID controllers were run with different stages of improvement in the Kalman filter. In this section the data was collected before the bugs in the Kalman filter were fixed (Chapter \ref{sec:kfBugs}) but training of the noise models was used (Chapter \ref{sec:kftrainingparams}). The results are interesting because they show that the previous performance of the PID controller could break down and become unusable as well as because it shows that the training algorithm can improve a filter with equations that are not optimal. The results show that not only is the Kalman filter performance better but it can also be seen that the model based controller has much better performance when there are simulated obstacles along the route. In Figures \ref{fig:kfResults1} - \ref{fig:kfResults4} the same route was driven and the waypoints making up the route are shown on the overhead images. The red line is the Kalman filter position esimate, the blue line is raw GPS measurements and the green line is DPGS measurements.
+The model based and PID controllers were run with different stages of improvement in the Kalman filter. In this section the data was collected before the bugs in the Kalman filter were fixed (Chapter \ref{sec:kfBugs}) but training of the noise models was used (Chapter \ref{sec:kftrainingparams}). The results are interesting because they show that the previous performance of the PID controller could break down and become unusable as well as because it shows that the training algorithm can improve a filter with equations that are not optimal. The results show that not only is the Kalman filter performance better after using the training algorithm but it can also be seen that the model based controller has much better performance when there are simulated obstacles along the route. In Figures \ref{fig:kfResults1} - \ref{fig:kfResults4} the same route was driven and the waypoints making up the route are shown on the overhead images. The red line is the Kalman filter position esimate, the blue line is raw GPS measurements and the green line is DPGS measurements.
 
 The results of using the model based controller with original noise models is shown in Figure \ref{fig:kfResults1}. It can be seen that going from waypoint $4$ to waypoint $5$ the Kalman filter started to diverge significantly from the GPS measurements and the filter estimate snaps back to line up with the GPS measurements.
 
@@ -101,22 +104,6 @@ Figures \ref{fig:resultsLyapunov1} - \ref{fig:resultsLyapunov4} shows how the li
 	\caption{PID Controller with Learned Noise Models}
 	\label{fig:resultsLyapunov4}
 \end{figure}
-
-%The process of selecting gains in Chapter \ref{sec:lyapunovTrajectoryConvergence} only applies as $(\alpha, \theta)\to(0,0)$ but says nothing about what happens when the angle errors are not small. Empirically it was determined that the gains $h=0.25$, $k=0.2$ and $\gamma=0.2$ worked well in creating smooth trajectories and later it was found that these gains cause $\zeta=1$ so that, when the angle errors are small, the system $A$ is critically damped although $\sigma>\gamma$ so the distance error converges faster than the angle errors. The best results occurred when the gains were set to $h=0.25$, $k=0.2$ and $\gamma=0.2$ \textit{until} the angle errors were $|\alpha|<0.5$ \textit{and} $|\theta|<0.5$ radians which leads to the linear approximation being valid and the gains were then changed to $h=1.1$, $k=0.42$ and $\gamma=0.2$. This second set of gains, used when the angle errors were small, are critically damped for the system $A$ since $\zeta=1$ and the angle errors converge faster than the distance error since $\sigma>\gamma$. The results of this adaptive gain scheme can be seen in Figures \ref{fig:resultsLyapunovPositionAdaptive} and \ref{fig:resultsLyapunovVelocitiesAdaptive}. Note that the goal heading, $\theta^\star$, was set to be the angle from the current waypoint to the next waypoint so that the robot would be pointing in the direction of the next waypoint when it reached the current waypoint. For the last waypoint in the route the goal heading used was $\theta^\star=\alpha$.
-%
-%\begin{figure}[ht!]
-%	\centering
-%	\includegraphics[width=.5\textwidth]{images/GE/20100929_1448_GE_KF_waypts}
-%	\caption{Robot Position using Adaptive Gain Scheme}
-%	\label{fig:resultsLyapunovPositionAdaptive}
-%\end{figure}
-%
-%\begin{figure}[ht!]
-%	\centering
-%	\includegraphics[width=.5\textwidth]{images/pbtx/20100929_1448_pbtx}
-%	\caption{Linear and Angular Velocities with Adaptive Gain Scheme}
-%	\label{fig:resultsLyapunovVelocitiesAdaptive}
-%\end{figure}
 
 \subsection{Controller Comparison}
 \label{sec:controllerComparison}

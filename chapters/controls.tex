@@ -106,8 +106,8 @@ A kinematic model of the robot is used to predict how the robot moves without co
 \begin{align}
 \label{eq:lyapunovkinematics1}
 \begin{split}
-\dot{x} &= u\cos(\phi) \\
-\dot{y} &= u\sin(\phi) \\
+\dot{x} &= u\cos\phi \\
+\dot{y} &= u\sin\phi \\
 \dot{\phi} &= \omega.
 \end{split}
 \end{align}
@@ -187,7 +187,7 @@ Replacing $u$ in the expression for $\dot{V}_2$ in (\ref{eq:Vderivatives}) resul
 \end{split}
 \end{align}
 
-Similarly, $\dot{V}_2$ is negative semidefinite if $\omega$ takes the form
+Similarly, $\dot{V}_2$ is negative definite if $\omega$ takes the form
 \begin{align}
 \label{eq:lyapunovomega}
 \begin{split}
@@ -241,7 +241,7 @@ The method used to calculate the variables needed for the control law in (\ref{e
 \item $dy$ is the horizontal component of the error vector $e$ as seen in Figure \ref{fig:pblyapunov}.
 \item Use $e = \sqrt{dx^2 + dy^2}$ to get the distance to the end waypoint on the current path segment. This will cause the robot to slow down as it reaches every waypoint, even intermediate ones. Conversely, if $e$ is very large then $u$ could grow to be too large as well and necessitate the use of a limiting value for $u$.
 \item $\psi$ is the current heading of the robot in the world coordinate frame and is calculated in the Kalman filter based on the results from Chapter \ref{ch:estimation}.
-\item The angle of the error vector $e$ is from the current position to the waypoint and found as $\theta_e = \tan^{-1}\left(\frac{dy}{dx}\right)$.
+\item The angle of the error vector $e$ is from the current position to the waypoint and found as $\theta_e = \tan^{-1}\left(\frac{dx}{dy}\right)$.
 \item $\alpha$ is the angle from the error vector $\theta_e$ to the current heading of the robot $\psi$ and is calculated by $\alpha = \theta_e - \psi$.
 \item $\theta^\star$ is the desired heading in the global coordinate system and there are multiple ways that it \textit{could} be set.
 \begin{itemize}

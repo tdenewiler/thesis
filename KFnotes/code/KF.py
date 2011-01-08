@@ -19,9 +19,9 @@ import os
 import sys
 
 pngres = 600
-showplots = 1
+showplots = 0
 saveplots = 0
-makemovie = 0
+makemovie = 1
 
 # Number of time steps.
 N = 50
@@ -242,7 +242,7 @@ if makemovie:
         legend((lP,lM),('Prediction Update','Measurement Update'))
         
         # Save each image.
-        filename = str('pngtmp/%03d' % i) + '.png'
+        filename = str('pngtmp/%05d' % i) + '.png'
         savefig(filename, dpi=100)
     
         # Let the user know what's happening occasionally.
