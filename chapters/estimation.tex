@@ -309,32 +309,32 @@ As discussed in Chapter \ref{sec:kfMeasurementModel} the measurement model is fa
 
 When the models are not set up correctly then the measurements will likely not match the predicted state estimates and the Kalman gains will grow larger during each measurement update step to force the state estimate to trust the measurements more than the system model.
 
-\section{Determining Heading}
-\label{sec:determineHeading}
-An immediate problem that arose during testing which had to be addressed before new techniques such as training the noise models in Chapters \ref{sec:kftrainingparams} and implementing a model based controller in Chapter \ref{sec:controllyapunov} could be attempted is that the robots did not always know which direction they were heading due to a lack of sensors such that the yaw state was unobservable. The original sensors used to determine heading on the robots were GPS and a gyro in the IMU. GPS worked fine when the robot was driving forward but when the robot began to drive in reverse the heading would rotate $180^\circ$. The angular velocity measurement from the gyro was integrated over time using the system model from (\ref{eq:kfjacobianresult}) and included as a second heading measurement although this measurement tends to drift over longer periods \cite{ChungOjeda01}. An Ocean Server OS5000 digital compass was added to get a better estimate of heading in a global coordinate system since the magnetometer performance was better with that sensor than with the Microstrain 3DM-GX1. Wheel encoder measurements of linear and angular velocity were also added. The velocities from the encoders were directly incorporated into the measurement update step and the sign of the linear velocity encoder measurement was used to determine the appropriate sign to use for GPS heading.
-
-Figure \ref{fig:GEHeadingReverse} shows the routes driven by the robot when testing heading where the heading was reversed on the blue route and the heading was fixed on the red route. Figure \ref{fig:pbDataReverseHeadingBroken} shows sensor data before adding the encoder data to the Kalman filter (but using logged encoder data for comparison purposes to show where the velocity was negative) and the heading can be seen to flip $\pi ~ rads$ where the velocity was negative but the GPS velocity is positive. Figure \ref{fig:pbDataReverseHeadingFixed} is the sensor data after incorporating the encoder velocities into the Kalman filter and using the encoder data to reverse the sign of the GPS velocity whenever the encoder velocity is negative which results in a heading estimate that does not flip.
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=.7\textwidth]{images/GE/GEHeadingReverseFixed}
-	\caption{Route Driven by PackBot}
-	\label{fig:GEHeadingReverse}
-\end{figure}
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=.7\textwidth]{images/pbDataReverseHeading}
-	\caption{Heading and Velocity Reversed}
-	\label{fig:pbDataReverseHeadingBroken}
-\end{figure}
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=.7\textwidth]{images/KFDataHeadingReverseFixed}
-	\caption{Heading Fixed When Driving in Reverse}
-	\label{fig:pbDataReverseHeadingFixed}
-\end{figure}
+%\section{Determining Heading}
+%\label{sec:determineHeading}
+%An immediate problem that arose during testing which had to be addressed before new techniques such as training the noise models in Chapters \ref{sec:kftrainingparams} and implementing a model based controller in Chapter \ref{sec:controllyapunov} could be attempted is that the robots did not always know which direction they were heading due to a lack of sensors such that the yaw state was unobservable. The original sensors used to determine heading on the robots were GPS and a gyro in the IMU. GPS worked fine when the robot was driving forward but when the robot began to drive in reverse the heading would rotate $180^\circ$. The angular velocity measurement from the gyro was integrated over time using the system model from (\ref{eq:kfjacobianresult}) and included as a second heading measurement although this measurement tends to drift over longer periods \cite{ChungOjeda01}. An Ocean Server OS5000 digital compass was added to get a better estimate of heading in a global coordinate system since the magnetometer performance was better with that sensor than with the Microstrain 3DM-GX1. Wheel encoder measurements of linear and angular velocity were also added. The velocities from the encoders were directly incorporated into the measurement update step and the sign of the linear velocity encoder measurement was used to determine the appropriate sign to use for GPS heading.
+%
+%Figure \ref{fig:GEHeadingReverse} shows the routes driven by the robot when testing heading where the heading was reversed on the blue route and the heading was fixed on the red route. Figure \ref{fig:pbDataReverseHeadingBroken} shows sensor data before adding the encoder data to the Kalman filter (but using logged encoder data for comparison purposes to show where the velocity was negative) and the heading can be seen to flip $\pi ~ rads$ where the velocity was negative but the GPS velocity is positive. Figure \ref{fig:pbDataReverseHeadingFixed} is the sensor data after incorporating the encoder velocities into the Kalman filter and using the encoder data to reverse the sign of the GPS velocity whenever the encoder velocity is negative which results in a heading estimate that does not flip.
+%
+%\begin{figure}[ht!]
+%	\centering
+%	\includegraphics[width=.7\textwidth]{images/GE/GEHeadingReverseFixed}
+%	\caption{Route Driven by PackBot to Test Heading}
+%	\label{fig:GEHeadingReverse}
+%\end{figure}
+%
+%\begin{figure}[ht!]
+%	\centering
+%	\includegraphics[width=.7\textwidth]{images/pbDataReverseHeading}
+%	\caption{Heading and Velocity Reversed}
+%	\label{fig:pbDataReverseHeadingBroken}
+%\end{figure}
+%
+%\begin{figure}[ht!]
+%	\centering
+%	\includegraphics[width=.7\textwidth]{images/KFDataHeadingReverseFixed}
+%	\caption{Heading Fixed When Driving in Reverse}
+%	\label{fig:pbDataReverseHeadingFixed}
+%\end{figure}
 
 \section{Fixing Bugs in ACS Kalman Filter}
 \label{sec:kfBugs}
