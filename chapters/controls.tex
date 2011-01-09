@@ -258,11 +258,23 @@ Note that all of the angle variables need to be normalized so that they are in t
 
 \subsection{Model Based Driving Mode}
 \label{sec:drivingMode}
-The parking mode described above can be extended such that the control law will cause the robot to drive through intermediate waypoints on a route rather than stop at each waypoint.
+The parking mode described above can be extended such that the control law will cause the robot to drive through intermediate waypoints on a route rather than stop at each waypoint. The basic idea is that the target position as given in the goal frame $<g>$ of Figure \ref{fig:pblyapunov} is moved such that the distance error $e$ is increased. Since the linear velocity output of the controller is a function of $e$ (c.f. (\ref{eq:lyapunovControlLaw})) that output will increase causing the robot to drive faster through the intermediate waypoints. As described in \cite{Aicardi_UnicycleLyapunov95} an effective means of moving the goal frame is to control its rate of motion, $\dot{s}$, via the function
+\begin{align}
+\label{eq:moveTargetFrame}
+\dot{s} =
+\begin{cases}
+0, & V = \lambda e^2 + (\alpha^2+h\theta^2) > \epsilon \\
+f(e,\alpha,\theta), & V = \lambda e^2 + (\alpha^2+h\theta^2) \leq \epsilon
+\end{cases}
+\end{align}
+where $0<\epsilon<\frac{\pi^2}{4}$. The function $V$ describes an ellipsoid such that if any of the errors are larger than the threshold given by $\epsilon$ then the goal frame will not be moved and the parking behavior will be used. When the robot is aligned with both the waypoint and the desired heading, causing $(\alpha,\theta)=(0,0)$, then a reasonable course of action is to maintain the maximum allowable linear velocity and it is for this reason that the design variable $\lambda$ is typically chosen to be very small to limit the amount of influence that the distance error has on the motion of the goal frame. The implemented function to move the goal frame according to (\ref{eq:moveTargetFrame}) was selected to be
+\begin{align}
+\label{eq:moveTargetFrameFunction}
+f(e,\alpha,\theta) = u_{\text{max}} * \text{max}(0, 1 - \frac{V}{\epsilon}.
+\end{align}
+It can be seen from (\ref{eq:moveTargetFrame}) and (\ref{eq:moveTargetFrameFunction}) that by setting $\epsilon$ to a small value makes it more difficult for the system to enter the ellipsoidal domain where $V\leq\epsilon$ and also decreases the amount of motion for the goal frame. Note that setting $\epsilon=0$ results in the parking mode since $\dot{s}=0$ and the goal frame never moves.
 
-*** In driving mode the determination of whether the robot is within a capture radius of the current waypoint so that the next waypoint becomes the current target has to be modified. One way to do this is to artificially move the current waypoint position by $W_x += \cos(\psi)$ and $W_y += \sin(\psi)$. If this is not done then the robot will overshoot the waypoint because the error distance has been increased and the angle errors will increase causing the robot to slow down and go back to the original waypoint position. It looks stupid. ***
-
-*** Talk about how gains with $e$ converging before $\alpha$ before $\theta$ could be better in driving mode. ***
+The resulting behavior of the robot has a very natural appearance as this is how humans typically drive. When the road ahead is straight and we want to continue driving straight we keep our eyes focused further down the road and maintain speed. However, when the road ahead is twisty or we want to make a turn we slow down and focus our eyes closer to our current position.
 
 \subsection{Practical Considerations for Selecting Gains}
 \label{sec:lyapunovTrajectoryConvergence}
@@ -290,7 +302,7 @@ u &= \gamma e \\
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=.75\textwidth]{images/plotSinCos}
-	\caption{Plot of $\alpha$, $\sin\alpha$, $\cos\alpha$ and $\sin\alpha*\cos\alpha$}
+	\caption{Useful Trigonometric Functions of $\alpha$}
 	\label{fig:plotSinCos}
 \end{figure}
 
@@ -304,7 +316,7 @@ Similarly, the behavior of the angle errors is related to the matrix $A$ and non
 \end{align*}
 and $\dot{\alpha}$ has the solution $\alpha=\text{exp}(\lambda_\alpha t)$ and $\dot{\theta}$ has the solution $\theta=\text{exp}(\lambda_\theta t)$.
 
-Three reasonable design considerations in selecting the gains are:
+In parking mode three reasonable design considerations in selecting the gains are:
 \begin{itemize}
 \item limit the maximum linear velocity,
 \item find critically damped gains,
@@ -347,5 +359,7 @@ k &= 2\gamma\sqrt{h} > 2\gamma \\
 \end{align*}
 
 Using this method any two gains can be selected and the third gain can be found which satisfies the above properties. For example, setting $\gamma=0.2$ to limit the maximum linear velocity and $h=1.1$ to keep it small but greater than one leads to $k=2\gamma\sqrt{h}=0.42$. From this it can be seen that $\lambda_\alpha(A) = \lambda_\theta(A) = 0.21 \Rightarrow \zeta = 1$ so the system $A$ is critically damped and $\sigma = 0.21>0.2=\gamma$ so that the angle errors will converge before the distance error.
+
+When using (\ref{eq:moveTargetFrame}) to move the goal frame and put the robot into driving mode it can be more desirable to generate trajectories such that the robot stays on a straight line path to the next waypoint so that the angle errors are decreased and drives faster. One way to have the robot drive towards the waypoint is to set the gains such that the distance error converges before the angle errors and have $\alpha$ converge before $\theta$. An example of the gains that produce these effects is $\gamma=0.25$, $h=0.33$ and $k=0.30$. Another way to cause the robot to drive on the line segment connecting the previous and current waypoints is to have the target heading be set as the angle from the previous waypoint to the current waypoint.
 
 The model based controller developed in this Chapter along with the analysis of selecting appropriate gains replaces the original PID controller when answering the question "How do I get there?".
