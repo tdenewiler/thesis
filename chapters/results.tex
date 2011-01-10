@@ -73,38 +73,27 @@ The PID controller with learned noise models has similar trouble navigating the 
 
 \section{Model Based Controller Results}
 \label{sec:lyapunovResults}
-*** For this section I can show some typical examples of controller output for both model based and PID. I can have three plots: (i) PID output $(u,w)$, (ii) model based output $(u,w)$ and (iii) model based error convergence. ***
-
-The control law derived in (\ref{eq:lyapunovControlLaw}) was tested in the previously described area in two different ways. The first set of results used a single set of gains and had the goal heading set to use the current heading of the robot so that $\theta^\star=\alpha$ as discussed in Chapter \ref{sec:lyapunovVariables}. Figure *** shows the actual position of the robot during navigation as well as the waypoints that defined the desired route.
-
-Figures \ref{fig:resultsLyapunov1} - \ref{fig:resultsLyapunov4} shows how the linear and angular velocities changed over time as measured by the Kalman filter output. The gains used were $h=0.1$, $k=0.25$ and $\gamma=0.23$. A clear deceleration can be seen as the robot approaches each waypoint although the linear velocity does not go to zero until the final waypoint due to the use of the carrot in the path planner as discussed in Chapter \ref{sec:lyapunovVariables} for determing the error distance $e$. One of the consequences of using the model based controller is that three point turns are an intrinsic part of the control law. A three point turn can be seen where a negative linear velocity was used after reaching the second waypoint and having the error angle $\alpha$ move towards the third waypoint which is rarely, if ever, encountered when using the original PID controller.
+The linear and angular velocity outputs that were the result of running a simple route with the PID controller are shown in Figure \ref{fig:pidOutput}. This compares to the outputs of the model based controller shown in Figure \ref{fig:mbOutput} where it can be seen that the angular velocity is smooth and the linear velocity drives much faster, using $100\%$ effort at times but smoothly decelerating as waypoints are reached. The linear velocity output does not go to zero until the final waypoint is reached as a consequence of the moving target frame described in Chapter \ref{sec:drivingMode}. The errors for the model based controller are shown in Figure \ref{fig:mbErrors} which shows that $e$ and $\alpha$ decrease exponentially. The angle error $\theta$ does not decrease but this is because the gains and desired goal heading were set up in such a way as to favor driving the distance error and the angle error $\alpha$ to zero much more than for $\theta$.
 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=.5\textwidth]{images/pbtx/20101203_1551_pbtxLyapOrigQR}
-	\caption{Model Based Controller with Original Noise Models}
-	\label{fig:resultsLyapunov1}
+	\includegraphics[width=.5\textwidth]{images/pbtx/20110109_1815_pbtx_simpleDrivePID}
+	\caption{Typical PID Controller Velocity Output}
+	\label{fig:pidOutput}
 \end{figure}
 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=.5\textwidth]{images/pbtx/20101203_1545_pbtxLyapNewQR}
-	\caption{Model Based Controller with Learned Noise Models}
-	\label{fig:resultsLyapunov2}
+	\includegraphics[width=.5\textwidth]{images/pbtx/20110109_1837_pbtx_simpleDrive}
+	\caption{Typical Model Based Controller Velocity Output}
+	\label{fig:mbOutput}
 \end{figure}
 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=.5\textwidth]{images/pbtx/20101203_1755_pbtxPidOrigQR}
-	\caption{PID Controller with Original Noise Models}
-	\label{fig:resultsLyapunov3}
-\end{figure}
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=.5\textwidth]{images/pbtx/20101203_1751_pbtxPidNewQR}
-	\caption{PID Controller with Learned Noise Models}
-	\label{fig:resultsLyapunov4}
+	\includegraphics[width=.5\textwidth]{images/pbtx/20110109_1837_pbtx_simpleDriveErrors}
+	\caption{Model Based Controller Errors}
+	\label{fig:mbErrors}
 \end{figure}
 
 \subsection{Controller Comparison}
@@ -119,8 +108,8 @@ Many different controller configurations are possible based on varying the gains
 \item Model based with $\theta^\star$ set as angle from previous waypoint to current waypoint with gains set to minimize $e$ before angle errors ($\gamma = 0.25$, $h = 0.33$, $k = 0.30$),
 \item Model based with $\theta^\star$ set as angle from current waypoint to next waypoint with gains set to minimize angle errors before $e$ ($\gamma = 0.25$, $h = 1.1$, $k = 2\gamma\sqrt{h}$),
 \item Model based with $\theta^\star$ set as angle from previous waypoint to current waypoint with gains set to minimize angle errors before $e$ ($\gamma = 0.25$, $h = 1.1$, $k = 2\gamma\sqrt{h}$),
-\item Model based with $\theta^\star$ set as angle from current waypoint to next waypoint with gains set to minimize $e$ before $\alpha$ before $\theta$ ($\gamma = 0.25$, $h = 0.35$, $k = 0.35$),
-\item Model based with $\theta^\star$ set as angle from previous waypoint to current waypoint with gains set to minimize $e$ before $\alpha$ before $\theta$ ($\gamma = 0.25$, $h = 0.35$, $k = 0.35$),
+\item Model based with $\theta^\star$ set as angle from current waypoint to next waypoint with gains set to minimize $e$ before $\alpha$ before $\theta$ ($\gamma = 0.25$, $h = 0.35$, $k = 0.30$),
+\item Model based with $\theta^\star$ set as angle from previous waypoint to current waypoint with gains set to minimize $e$ before $\alpha$ before $\theta$ ($\gamma = 0.25$, $h = 0.35$, $k = 0.30$),
 \item Model based with parking behavior turned on and gains set to have angle errors converge at the same rate and faster than $e$ converges ($\gamma = 0.25$, $h = 1.1$, $k = 2\gamma\sqrt{h}$).
 \item Model based with parking behavior turned on and gains set to have $e$ converge faster than the the angle errors ($\gamma = 0.25$, $h = 0.33$, $k = 0.30$).
 \end{enumerate}
@@ -128,10 +117,29 @@ Note that in all cases for the model based controller the desired goal heading $
 
 Each controller configuration was run on several courses that test specific behaviors such as
 \begin{itemize}
-\item allowing for maximum velocities to be sustained with large amounts of open space on the route by having long path segments shown in Figure ***,
-\item short path segments between waypoints to simulate obstacles along the route shown in Figure ***,
-\item a mixture of long and short path segments shown in Figure ***.
+\item allowing for maximum velocities to be sustained with large amounts of open space on the route by having long path segments shown in Figure \ref{fig:routeLong}, with $\lambda = 0.001$, $\epsilon = 2.0$, $R_{\text{cap}} = 1.0$ and there are $x$ waypoints with an average distance between them of $x m$,
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.5\textwidth]{images/GE/GELongSegmentsRoute}
+	\caption{Route with Long Path Segments}
+	\label{fig:routeLong}
+\end{figure}
+\item short path segments between waypoints to simulate obstacles along the route shown in Figure \ref{fig:routeShort}, with $\lambda = 0.003$, $\epsilon = 1.0$, $R_{\text{cap}} = 0.25$ and there are $x$ waypoints with an average distance between them of $x m$,
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.5\textwidth]{images/GE/GEShortSegmentsRoute}
+	\caption{Route with Short Path Segments}
+	\label{fig:routeShort}
+\end{figure}
+\item a mixture of long and short path segments shown in Figure \ref{fig:routeMixed}, with $\lambda = 0.002$, $\epsilon = 1.5$, $R_{\text{cap}} = 0.75$ and there are $x$ waypoints with an average distance between them of $x m$.
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=.5\textwidth]{images/GE/GEMixedSegmentsRoute}
+	\caption{Route with Mixed Length Path Segments}
+	\label{fig:routeMixed}
+\end{figure}
 \end{itemize}
+The variable $R_{\text{cap}}$ is the capture radius for each waypoint which is used to determine when the robot is close enough to the current waypoint that the next waypoint should be set as the current target.
 
 The results using the different setups described are shown for the different routes in Tables \ref{tab:resultsControllersOpenSpace} - \ref{tab:resultsControllersMixed} where the metrics used to compare the controller performance are
 \begin{itemize}
@@ -140,7 +148,7 @@ The results using the different setups described are shown for the different rou
 \item the maximum velocity achieved by the robot during the course,
 \item the number of times that the robot stops where a stop is defined as the robot having a velocity that drops below a small velocity.
 \end{itemize}
-Note that for the model based controller in driving mode values of $(\lambda, \epsilon)$ to control the extension of the distance error were $(???,???)$ for the open space route, $(???,???)$ for the obstacle route and $(???,???)$ for the mixed route and were determined empirically. For the model based controller in parking mode the same algorithm was run but $\epsilon=0$ was enough to keep the distance error from increasing and $\lambda$ was unused.
+For the model based controller in parking mode the same algorithm was run but $\epsilon=0$ was enough to keep the distance error from increasing and $\lambda$ was unused.
 
 \begin{table}[ht!]
 \caption{Controller Comparison on Open Space Route}

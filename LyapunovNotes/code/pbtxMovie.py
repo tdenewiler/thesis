@@ -18,7 +18,7 @@ reader = csv.DictReader(f)
 
 # Resolution of plots.
 # 200 dpi is great for movies, 100 is okay but may be blurry on large projectors.
-pngres = 40
+pngres = 100
 
 # Declare vectors to hold data.
 date = []
@@ -105,12 +105,13 @@ except OSError:
     sys.exit("This part of the script can be turned off by setting makemovie=0. Quitting.\n")
     
 # Go through each data set and generate a new plot.
+N = len(time)
+#N = 1000
 print 'Image resolution is', pngres, 'dpi'
+print 'Using', N, 'samples.'
 titlename = str('Controller Errors with h = %.2f' % h[0]) + str(', $\gamma$ = %.2f' % gamma[0]) + str(', k = %.2f' %k[0])
-#titlename = str('Controller Errors with h = %f, gamma = %f, k = %f' % h[0], gamma[0], k[0])
 print titlename
-for i in range(len(time)):
-#for i in range(300):
+for i in range(N):
     le = plot(e[0:i])
     lalpha = plot(alpha[0:i])
     ltheta = plot(theta[0:i])
@@ -123,7 +124,7 @@ for i in range(len(time)):
     savefig(filename, dpi=pngres)
     # Let the user know what's happening occasionally.
     if not (i+1) % 25:
-        print 'Wrote file', i+1, 'of', len(time), ' =', filename
+        print 'Wrote file', i+1, 'of', N, ' =', filename
     # Clear the figure to make way for the next image.
     clf()
 
