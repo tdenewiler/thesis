@@ -142,7 +142,8 @@ The results using the different setups described are shown for the different rou
 \item the time required to complete the course,
 \item the average cross track error during the course to show whether the robot followed a straight line between waypoints which is important when obstacles are in the area and not important when large amounts of open space are available for navigation (although some operators become nervous when the robot trajectory has large curvature and deviates from a straight line path even if open space is available),
 \item the maximum velocity achieved by the robot during the course,
-\item the number of times that the robot stops where a stop is defined as the robot having a velocity that drops below a small velocity.
+\item the number of times that the robot stops where a stop is defined as the robot having a velocity that drops below a small velocity,
+\item the average error in heading from the desired heading when reaching the waypoints.
 \end{itemize}
 For the model based controller in parking mode the same algorithm was run but $\epsilon=0$ was enough to keep the distance error from increasing and $\lambda$ was unused.
 
