@@ -108,10 +108,6 @@ Many different controller configurations are possible based on varying the gains
 \item Model based with $\theta^\star$ set as angle from previous waypoint to current waypoint with gains set to minimize $e$ before angle errors ($\gamma = 0.25$, $h = 0.33$, $k = 0.30$),
 \item Model based with $\theta^\star$ set as angle from current waypoint to next waypoint with gains set to minimize angle errors before $e$ ($\gamma = 0.25$, $h = 1.1$, $k = 2\gamma\sqrt{h}$),
 \item Model based with $\theta^\star$ set as angle from previous waypoint to current waypoint with gains set to minimize angle errors before $e$ ($\gamma = 0.25$, $h = 1.1$, $k = 2\gamma\sqrt{h}$),
-\item Model based with $\theta^\star$ set as angle from current waypoint to next waypoint with gains set to minimize $e$ before $\alpha$ before $\theta$ ($\gamma = 0.25$, $h = 0.35$, $k = 0.30$),
-\item Model based with $\theta^\star$ set as angle from previous waypoint to current waypoint with gains set to minimize $e$ before $\alpha$ before $\theta$ ($\gamma = 0.25$, $h = 0.35$, $k = 0.30$),
-\item Model based with parking behavior turned on and gains set to have angle errors converge at the same rate and faster than $e$ converges ($\gamma = 0.25$, $h = 1.1$, $k = 2\gamma\sqrt{h}$).
-\item Model based with parking behavior turned on and gains set to have $e$ converge faster than the the angle errors ($\gamma = 0.25$, $h = 0.33$, $k = 0.30$).
 \end{enumerate}
 Note that in all cases for the model based controller the desired goal heading $\theta^\star$ for the final waypoint was set to be the angle from the previous waypoint to the last waypoint.
 
@@ -155,17 +151,13 @@ For the model based controller in parking mode the same algorithm was run but $\
 \small
 \centering
 \begin{tabular}{@{}llllr@{}} \toprule
-Setup & Time (s) & Cross Track Error (m) & Max Velocity (m/s) & \# Stops \\ \midrule
-1     & 0        & 0                     & 0                  & 0        \\
+Setup & Time (s) & Cross Track Error (m) & Max Velocity (\%)  & \# Stops \\ \midrule
+1     & 77.49    & 0.77                  & 33.3               & 2        \\
 2     & 0        & 0                     & 0                  & 0        \\
-3     & 0        & 0                     & 0                  & 0        \\
-4     & 0        & 0                     & 0                  & 0        \\
+3     & 70.10    & 5.07                  & 100.0              & 5        \\
+4     & 59.87    & 5.60                  & 100.0              & 4        \\
 5     & 0        & 0                     & 0                  & 0        \\
-6     & 0        & 0                     & 0                  & 0        \\
-7     & 0        & 0                     & 0                  & 0        \\
-8     & 0        & 0                     & 0                  & 0        \\
-9     & 0        & 0                     & 0                  & 0        \\
-10    & 0        & 0                     & 0                  & 0        \\ \bottomrule
+6     & 0        & 0                     & 0                  & 0        \\ \bottomrule
 \end{tabular}
 \label{tab:resultsControllersOpenSpace}
 \end{table}
@@ -175,17 +167,13 @@ Setup & Time (s) & Cross Track Error (m) & Max Velocity (m/s) & \# Stops \\ \mid
 \small
 \centering
 \begin{tabular}{@{}llllr@{}} \toprule
-Setup & Time (s) & Cross Track Error (m) & Max Velocity (m/s) & \# Stops \\ \midrule
-1     & 0        & 0                     & 0                  & 0        \\
+Setup & Time (s) & Cross Track Error (m) & Max Velocity (\%)  & \# Stops \\ \midrule
+1     & N/A      & N/A                   & N/A                & N/A      \\
 2     & 0        & 0                     & 0                  & 0        \\
-3     & 0        & 0                     & 0                  & 0        \\
-4     & 0        & 0                     & 0                  & 0        \\
+3     & 87.01    & 2.73                  & 100.0              & 8        \\
+4     & 65.71    & 3.15                  & 100.0              & 7        \\
 5     & 0        & 0                     & 0                  & 0        \\
-6     & 0        & 0                     & 0                  & 0        \\
-7     & 0        & 0                     & 0                  & 0        \\
-8     & 0        & 0                     & 0                  & 0        \\
-9     & 0        & 0                     & 0                  & 0        \\
-10    & 0        & 0                     & 0                  & 0        \\ \bottomrule
+6     & 0        & 0                     & 0                  & 0        \\ \bottomrule
 \end{tabular}
 \label{tab:resultsControllersObstacles}
 \end{table}
@@ -195,17 +183,17 @@ Setup & Time (s) & Cross Track Error (m) & Max Velocity (m/s) & \# Stops \\ \mid
 \small
 \centering
 \begin{tabular}{@{}llllr@{}} \toprule
-Setup & Time (s) & Cross Track Error (m) & Max Velocity (m/s) & \# Stops \\ \midrule
-1     & 0        & 0                     & 0                  & 0        \\
+Setup & Time (s) & Cross Track Error (m) & Max Velocity (\%)  & \# Stops \\ \midrule
+1     & N/A      & N/A                   & N/A                & N/A      \\
 2     & 0        & 0                     & 0                  & 0        \\
-3     & 0        & 0                     & 0                  & 0        \\
-4     & 0        & 0                     & 0                  & 0        \\
+3     & 240.12   & 0.66                  & 36.1               & 35       \\
+4     & 125.73   & 0.83                  & 58.72              & 29       \\
 5     & 0        & 0                     & 0                  & 0        \\
-6     & 0        & 0                     & 0                  & 0        \\
-7     & 0        & 0                     & 0                  & 0        \\
-8     & 0        & 0                     & 0                  & 0        \\
-9     & 0        & 0                     & 0                  & 0        \\
-10    & 0        & 0                     & 0                  & 0        \\ \bottomrule
+6     & 0        & 0                     & 0                  & 0        \\ \bottomrule
 \end{tabular}
 \label{tab:resultsControllersMixed}
 \end{table}
+
+The PID controller only worked well on the route with long path segments. For the short and mixed path segment routes it actually became sad to watch and the tests were aborted because the robot was just spinning in circles and running the batteries down, similar to what was seen in Figure \ref{fig:kfResults4}.
+
+*** Talk about the model based controller results here especially in regards to which setup works best for the different scenarios. ***
