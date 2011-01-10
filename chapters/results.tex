@@ -150,14 +150,14 @@ For the model based controller in parking mode the same algorithm was run but $\
 \caption{Controller Comparison on Open Space Route}
 \small
 \centering
-\begin{tabular}{@{}llllr@{}} \toprule
-Setup & Time (s) & Cross Track Error (m) & Max Velocity (\%)  & \# Stops \\ \midrule
-1     & 77.49    & 0.77                  & 33.3               & 2        \\
-2     & 0        & 0                     & 0                  & 0        \\
-3     & 70.10    & 5.07                  & 100.0              & 5        \\
-4     & 59.87    & 5.60                  & 100.0              & 4        \\
-5     & 0        & 0                     & 0                  & 0        \\
-6     & 0        & 0                     & 0                  & 0        \\ \bottomrule
+\begin{tabular}{@{}lllllr@{}} \toprule
+Setup & Time (s) & Cross Track Error (m) & $u_{\text{max}}$ (\%) & Stops & $\psi_{\text{waypt}}$ Error ($\left.^\circ\right.$) \\ \midrule
+1     & 77.49    & 0.77                  & 33.3                  & 2     & 0 \\
+2     & 0        & 0                     & 0                     & 0     & 0 \\
+3     & 70.10    & 5.07                  & 100.0                 & 5     & 0 \\
+4     & 59.87    & 5.60                  & 100.0                 & 4     & 0 \\
+5     & 0        & 0                     & 0                     & 0     & 0 \\
+6     & 0        & 0                     & 0                     & 0     & 0 \\ \bottomrule
 \end{tabular}
 \label{tab:resultsControllersOpenSpace}
 \end{table}
@@ -166,14 +166,14 @@ Setup & Time (s) & Cross Track Error (m) & Max Velocity (\%)  & \# Stops \\ \mid
 \caption{Controller Comparison on Simulated Obstacle Route}
 \small
 \centering
-\begin{tabular}{@{}llllr@{}} \toprule
-Setup & Time (s) & Cross Track Error (m) & Max Velocity (\%)  & \# Stops \\ \midrule
-1     & N/A      & N/A                   & N/A                & N/A      \\
-2     & 0        & 0                     & 0                  & 0        \\
-3     & 87.01    & 2.73                  & 100.0              & 8        \\
-4     & 65.71    & 3.15                  & 100.0              & 7        \\
-5     & 0        & 0                     & 0                  & 0        \\
-6     & 0        & 0                     & 0                  & 0        \\ \bottomrule
+\begin{tabular}{@{}lllllr@{}} \toprule
+Setup & Time (s) & Cross Track Error (m) & $u_{\text{max}}$ (\%) & Stops & $\psi_{\text{waypt}}$ Error ($\left.^\circ\right.$) \\ \midrule
+1     & N/A      & N/A                   & N/A                   & N/A   & 0 \\
+2     & 0        & 0                     & 0                     & 0     & 0 \\
+3     & 87.01    & 2.73                  & 100.0                 & 8     & 0 \\
+4     & 65.71    & 3.15                  & 100.0                 & 7     & 0 \\
+5     & 0        & 0                     & 0                     & 0     & 0 \\
+6     & 0        & 0                     & 0                     & 0     & 0 \\ \bottomrule
 \end{tabular}
 \label{tab:resultsControllersObstacles}
 \end{table}
@@ -182,14 +182,14 @@ Setup & Time (s) & Cross Track Error (m) & Max Velocity (\%)  & \# Stops \\ \mid
 \caption{Controller Comparison on Mixed Route}
 \small
 \centering
-\begin{tabular}{@{}llllr@{}} \toprule
-Setup & Time (s) & Cross Track Error (m) & Max Velocity (\%)  & \# Stops \\ \midrule
-1     & N/A      & N/A                   & N/A                & N/A      \\
-2     & 0        & 0                     & 0                  & 0        \\
-3     & 240.12   & 0.66                  & 36.1               & 35       \\
-4     & 125.73   & 0.83                  & 58.72              & 29       \\
-5     & 0        & 0                     & 0                  & 0        \\
-6     & 0        & 0                     & 0                  & 0        \\ \bottomrule
+\begin{tabular}{@{}lllllr@{}} \toprule
+Setup & Time (s) & Cross Track Error (m) & $u_{\text{max}}$ (\%) & Stops & $\psi_{\text{waypt}}$ Error ($\left.^\circ\right.$) \\ \midrule
+1     & N/A      & N/A                   & N/A                   & N/A   & 0 \\
+2     & 0        & 0                     & 0                     & 0     & 0 \\
+3     & 240.12   & 0.66                  & 36.1                  & 35    & 0 \\
+4     & 125.73   & 0.83                  & 58.72                 & 29    & 0 \\
+5     & 0        & 0                     & 0                     & 0     & 0 \\
+6     & 0        & 0                     & 0                     & 0     & 0 \\ \bottomrule
 \end{tabular}
 \label{tab:resultsControllersMixed}
 \end{table}
