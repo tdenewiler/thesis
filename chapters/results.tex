@@ -189,13 +189,13 @@ Setup & Time (s) & XT (m) & $u_{\text{max}}$ (\%) & Stops \\ \midrule
 1     & N/A      & N/A    & N/A                   & N/A   \\
 2     & 0        & 0      & 0                     & 0     \\
 3     & 240.12   & 0.66   & 36.1                  & 35    \\
-4     & 125.73   & 0.83   & 58.72                 & 29    \\
+4     & 118.58   & 0.71   & 42.21                 & 37    \\
 5     & 113.96   & 0.79   & 41.68                 & 30    \\
-6     & 0        & 0      & 0                     & 0     \\ \bottomrule
+6     & 114.56   & 0.77   & 43.78                 & 35    \\ \bottomrule
 \end{tabular}
 \label{tab:resultsControllersMixed}
 \end{table}
 
 The PID controller only worked well on the route with long path segments. For the short and mixed path segment routes it actually became sad to watch and the tests were aborted because the robot was just spinning in circles and running the batteries down, similar to what was seen in Figure \ref{fig:kfResults4}.
 
-*** Talk about the model based controller results here especially in regards to which setup works best for the different scenarios. ***
+All of the model based controllers are fairly similar. However, it can be seen that Setup $3$ consistently has longer run times but smaller cross track errors. This indicates that during those runs the robot was on the line between the previous and current waypoints with a heading towards the waypoint but that the robot slowed down at each of the waypoints because the angle errors were larger than in other runs. For all three routes each configuration of the model based controller exhibits an inverse relationship between cross track error and time taken to complete the route.
