@@ -258,7 +258,7 @@ as the system model that is used in the prediction update step of the Kalman fil
 
 \subsection{Measurement Model}
 \label{sec:kfMeasurementModel}
-The measurement model converts sensor data to the state variable coordinate system and for a standard sensor suite is by far the simplest model used in the ACS Kalman filter. The idea is that, for a sensor that measures one of the states, the data that is output by the sensor has to have the same units and be in the same range as the state variable. This is best illustrated by an example.
+The measurement model converts sensor data to the state variable coordinate system and for a standard sensor suite is by far the simplest model used in the ACS Kalman filter. The idea is that, for a sensor that measures one of the states, the data output by the sensor has to have the same units and be in the same range as the state variable. This is best illustrated by an example.
 
 Suppose a compass and an IMU both measure the yaw state variable and the compass output is $0 - 360^\circ$ whereas the IMU output is $0 - 2\pi~rads$ and the yaw state in the Kalman filter is tracked in the range $0 - 2\pi ~ rads$. If, for one time step, both compass and IMU measurements are available to be incorporated into the Kalman filter then the measurement update step from (\ref{eq:kfmeasurementupdate}) is run and the $H_k$ matrix is
 \begin{align*}
@@ -338,7 +338,7 @@ When the models are not set up correctly then the measurements will likely not m
 
 \section{Fixing Bugs in ACS Kalman Filter}
 \label{sec:kfBugs}
-The ACS Kalman filter contained three major bugs in the Kalman filter equations and only worked because of a reforumlation of the standard Kalman filter equations. The first bug concerned the calculation of the Kalman gain matrix (see Chapter \ref{kfKalmanGain}). The $K_k$ matrix was being calculated correctly but at the end of the calculation gains from previous sensors were added back into their former element locations in the matrix. This bug was fixed by removing the code that added previous gain elements back into the Kalman gain matrix. One of the consequences of this bug is that the calculation of the covariance of the state estimate in the prediction update step used the continuous time system model $F$ (\ref{eq:kfjacobianresult}) instead of the discrete time system model $\Phi_k$ (\ref{eq:kfSystemModelWithAssumptions}) such that instead of $P_{k+1}^- = \Phi_kP_k^-\Phi_k^T + Q_k$ (c.f. (\ref{eq:kfpredictionupdate})) the Kalman filter used
+The ACS Kalman filter contained three major bugs in the equations and only worked because of a reforumlation of the standard Kalman filter equations. The first bug concerned the calculation of the Kalman gain matrix (see Chapter \ref{kfKalmanGain}). The $K_k$ matrix was being calculated correctly but at the end of the calculation gains from previous sensors were added back into their former element locations in the matrix. This bug was fixed by removing the code that added previous gain elements back into the Kalman gain matrix. One of the consequences of this bug is that the calculation of the covariance of the state estimate in the prediction update step used the continuous time system model $F$ (\ref{eq:kfjacobianresult}) instead of the discrete time system model $\Phi_k$ (\ref{eq:kfSystemModelWithAssumptions}) such that instead of $P_{k+1}^- = \Phi_kP_k^-\Phi_k^T + Q_k$ (c.f. (\ref{eq:kfpredictionupdate})) the Kalman filter used
 
 \begin{align*}
 P_{k+1}^- = FP_k^+F^T + Q_k.
@@ -428,7 +428,7 @@ where $\Omega_t$ is the same as in the above description.
 
 \subsection{Simulating Robot Runs}
 \label{sec:kfSimulation}
-For the training algorithm to work the sensor data collected from a robot has to be replayed a large number of times and a simulation of the robot run helps to reduce the amount of time taken to replay the data when using the candidate noise models so that the results can be evaluated. As shown in Table \ref{tab:kfSimulationErrors} the position errors as calculated using (\ref{eq:kftrainingres}) were very close between the simulated runs and the actual robot run. The average error was $0.0556~m$ over nine different runs which gives a baseline for the convergence criterion. The best that the training program can do is converge to an error approximately equal to the average error of the simulation compared to actual data.
+For the training algorithm to work the sensor data collected from a robot has to be replayed a large number of times. To accomplish this a simulation of the robot that runs faster than real time run helps to reduce the amount of time taken to replay the data when using the candidate noise models so that the results can be evaluated. As shown in Table \ref{tab:kfSimulationErrors} the position errors as calculated using (\ref{eq:kftrainingres}) were very close between the simulated runs and the actual robot run. The average error was $0.0556~m$ over nine different runs which gives a baseline for the convergence criterion. The best that the training program can do is converge to an error approximately equal to the average error of the simulation compared to actual data.
 
 \begin{table}[ht!]
 \caption{Kalman Filter Simulation Errors}

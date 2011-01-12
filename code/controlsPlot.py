@@ -10,7 +10,7 @@ reader = csv.DictReader(f)
 
 # Resolution of plots and whether to save them to a file.
 pngres = 600
-saveplots = 1
+saveplots = 0
 
 # Declare vectors to hold data.
 date = []
@@ -84,23 +84,23 @@ for i in arange(len(vel)):
         x += 1
     if (vel[i] > velmin) and (atvelmin):
         atvelmin = 0
-print 'Number of stops =', x-1
+print 'Number of stops =', x-1 'Subtract one since the velocity starts at 0 and we should not count that as a stop.
 x = 0
 for i in arange(len(u)):
     x += fabs(u[i]) + fabs(w[i])
 print 'Effort =', x
-sys.exit()
+#sys.exit()
 
 # Plot the Lyapunov vectors versus time.
 figure()
 #le = plot(e)
 #lheading = plot(heading)
 #lgoalyaw = plot(goalyaw)
-lpidu = plot(pidu)
-lpidw = plot(pidw)
+#lpidu = plot(pidu)
+#lpidw = plot(pidw)
 #lVdot = plot(Vdot)
-#lu = plot(u)
-#lw = plot(w)
+lu = plot(u)
+lw = plot(w)
 #lencvelt = plot(encvelt)
 #lencvelr = plot(encvelr)
 #lvel = plot(vel)
@@ -118,8 +118,8 @@ ylabel("Data")
 #figlegend((lencvelt, lvel, lyaw), ('Encoder Velocity', 'GPS Velocity', 'Yaw'), 'upper right')
 #figlegend((le, lheading, lgoalyaw, lVdot, lu, lw, lencvelt, lencvelr), ('e (m)', u"\u03b1"' (rad)', u"\u03b8"' (rad)', 'Vdot', 'u', 'w', 'Enc u', 'Enc w'), 'upper right')
 #figlegend((le, lheading, lgoalyaw, lu, lw, lencvelt, lencvelr), ('e (m)', u"\u03b1"' (rad)', u"\u03b8"' (rad)', 'u', 'w', 'Enc u', 'Enc w'), 'upper right')
-#figlegend((lu, lw), ('Linear Velocity (%)', 'Angular Velocity (%)'), 'upper right')
-figlegend((lpidu, lpidw), ('Linear Velocity (%)', 'Angular Velocity (%)'), 'upper right')
+figlegend((lu, lw), ('Linear Velocity (%)', 'Angular Velocity (%)'), 'upper right')
+#figlegend((lpidu, lpidw), ('Linear Velocity (%)', 'Angular Velocity (%)'), 'upper right')
 if saveplots:
     savefig("pbData.svg")
     savefig("pbData.png", dpi = pngres)
