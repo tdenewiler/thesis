@@ -84,7 +84,7 @@ for i in arange(len(vel)):
         x += 1
     if (vel[i] > velmin) and (atvelmin):
         atvelmin = 0
-print 'Number of stops =', x-1 'Subtract one since the velocity starts at 0 and we should not count that as a stop.
+print 'Number of stops =', x-1 #Subtract one since the velocity starts at 0 and we should not count that as a stop.
 x = 0
 for i in arange(len(u)):
     x += fabs(u[i]) + fabs(w[i])
