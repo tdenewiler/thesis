@@ -1,6 +1,6 @@
 \chapter{Results}
 \label{ch:results}
-The Kalman filter and controls algorithms discussed in this thesis were implemented in software on a PackBot and run in an open field with an uneven surface consisting of dirt, gravel and asphalt as seen in Figure \ref{fig:resultsTestArea}. This testing area is difficult for the robots to navigate because pitch, roll and elevation have significant changes and the loose dirt and gravel can cause the tracks to slip leading to erroneous encoder data. The environment in addition to routes that force the robot to change linear and angular velocities excites all the modes of the system model as well as some effects, such as track slip, which are not modeled at all and rigorously tests the estimation and control algorithms.
+The Kalman filter and controls algorithms discussed in this thesis were implemented in software on a Packbot and run in an open field with an uneven surface consisting of dirt, gravel and asphalt as seen in Figure \ref{fig:resultsTestArea}. This testing area is difficult for the robots to navigate because pitch, roll and elevation have significant changes and the loose dirt and gravel can cause the tracks to slip leading to erroneous encoder data. The environment in addition to routes that force the robot to change linear and angular velocities excites all the modes of the system model as well as some effects, such as track slip, which are not modeled at all and rigorously tests the estimation and control algorithms.
 
 \begin{figure}[ht!]
 	\centering
@@ -113,24 +113,24 @@ Note that in all cases for the model based controller the desired goal heading $
 
 Each controller configuration was run on several courses that test specific behaviors such as
 \begin{itemize}
-\item allowing for maximum velocities to be sustained with large amounts of open space on the route by having long path segments shown in Figure \ref{fig:routeLong}, with $\lambda = 0.001$, $\epsilon = 2.0$, $R_{\text{cap}} = 1.0$ and there are $x$ waypoints with an average distance between them of $x m$,
+\item allowing for maximum velocities to be sustained with large amounts of open space on the route by having long path segments shown in Figure \ref{fig:routeLong}, with $\lambda = 0.001$, $\epsilon = 2.0$, $R_{\text{cap}} = 1.0$ and there are $13$ waypoints covering a total of $90.73 m$ with an average distance between them of $7.56 m$,
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=.5\textwidth]{images/GE/GELongSegmentsRoute}
+	\includegraphics[width=.5\textwidth]{images/GE/GELongSegmentsRoute2}
 	\caption{Route with Long Path Segments}
 	\label{fig:routeLong}
 \end{figure}
-\item short path segments between waypoints to simulate obstacles along the route shown in Figure \ref{fig:routeShort}, with $\lambda = 0.003$, $\epsilon = 1.0$, $R_{\text{cap}} = 0.25$ and there are $x$ waypoints with an average distance between them of $x m$,
+\item short path segments between waypoints to simulate obstacles along the route shown in Figure \ref{fig:routeShort}, with $\lambda = 0.001$, $\epsilon = 1.0$, $R_{\text{cap}} = 0.2$ and there are $27$ waypoints covering a total of $43.18 m$ with an average distance between them of $1.66 m$,
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=.5\textwidth]{images/GE/GEShortSegmentsRoute}
+	\includegraphics[width=.5\textwidth]{images/GE/GEShortSegmentsRoute2}
 	\caption{Route with Short Path Segments}
 	\label{fig:routeShort}
 \end{figure}
-\item a mixture of long and short path segments shown in Figure \ref{fig:routeMixed}, with $\lambda = 0.002$, $\epsilon = 1.5$, $R_{\text{cap}} = 0.75$ and there are $x$ waypoints with an average distance between them of $x m$.
+\item a mixture of long and short path segments shown in Figure \ref{fig:routeMixed}, with $\lambda = 0.001$, $\epsilon = 1.5$, $R_{\text{cap}} = 0.5$ and there are $13$ covering a total of $70.87 m$ waypoints with an average distance between them of $5.45 m$.
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=.5\textwidth]{images/GE/GEMixedSegmentsRoute}
+	\includegraphics[width=.5\textwidth]{images/GE/GEMixedSegmentsRoute2}
 	\caption{Route with Mixed Length Path Segments}
 	\label{fig:routeMixed}
 \end{figure}
@@ -156,10 +156,10 @@ For the model based controller in parking mode the same algorithm was run but $\
 Setup & Time (s) & XT (m) & $u_{\text{max}}$ (\%) & Stops \\ \midrule
 1     & 77.49    & 0.77   & 33.3                  & 2     \\
 2     & 0        & 0      & 0                     & 0     \\
-3     & 70.10    & 5.07   & 100.0                 & 5     \\
-4     & 59.87    & 5.60   & 100.0                 & 4     \\
-5     & 66.28    & 5.48   & 100.0                 & 5     \\
-6     & 68.61    & 5.21   & 100.0                 & 6     \\ \bottomrule
+3     & 75.12    & 2.52   & 100.0                 & 3     \\
+4     & 71.42    & 2.71   & 100.0                 & 4     \\
+5     & 110.09   & 2.42   & 100.0                 & 14    \\
+6     & 75.45    & 2.80   & 100.0                 & 5     \\ \bottomrule
 \end{tabular}
 \label{tab:resultsControllersOpenSpace}
 \end{table}
@@ -172,10 +172,10 @@ Setup & Time (s) & XT (m) & $u_{\text{max}}$ (\%) & Stops \\ \midrule
 Setup & Time (s) & XT (m) & $u_{\text{max}}$ (\%) & Stops \\ \midrule
 1     & N/A      & N/A    & N/A                   & N/A   \\
 2     & 0        & 0      & 0                     & 0     \\
-3     & 87.01    & 2.73   & 100.0                 & 8     \\
-4     & 65.71    & 3.15   & 100.0                 & 7     \\
-5     & 64.31    & 3.32   & 100.0                 & 9     \\
-6     & 70.82    & 3.04   & 100.0                 & 9     \\ \bottomrule
+3     & 134.92   & 0.85   & 42.52                 & 20    \\
+4     & 75.92    & 0.94   & 50.86                 & 21    \\
+5     & 113.96   & 0.79   & 41.68                 & 30    \\
+6     & 114.56   & 0.77   & 43.78                 & 35    \\ \bottomrule
 \end{tabular}
 \label{tab:resultsControllersObstacles}
 \end{table}
@@ -188,14 +188,14 @@ Setup & Time (s) & XT (m) & $u_{\text{max}}$ (\%) & Stops \\ \midrule
 Setup & Time (s) & XT (m) & $u_{\text{max}}$ (\%) & Stops \\ \midrule
 1     & N/A      & N/A    & N/A                   & N/A   \\
 2     & 0        & 0      & 0                     & 0     \\
-3     & 240.12   & 0.66   & 36.1                  & 35    \\
-4     & 118.58   & 0.71   & 42.21                 & 37    \\
-5     & 113.96   & 0.79   & 41.68                 & 30    \\
-6     & 114.56   & 0.77   & 43.78                 & 35    \\ \bottomrule
+3     & 103.39   & 2.51   & 100.0                 & 11    \\
+4     & 76.91    & 2.98   & 100.0                 & 12    \\
+5     & 164.65   & 2.34   & 100.0                 & 22    \\
+6     & 83.84    & 2.87   & 100.0                 & 12    \\ \bottomrule
 \end{tabular}
 \label{tab:resultsControllersMixed}
 \end{table}
 
 The PID controller only worked well on the route with long path segments. For the short and mixed path segment routes it actually became sad to watch and the tests were aborted because the robot was just spinning in circles and running the batteries down, similar to what was seen in Figure \ref{fig:kfResults4}.
 
-All of the model based controllers are fairly similar. However, it can be seen that Setup $3$ consistently has longer run times but smaller cross track errors. This indicates that during those runs the robot was on the line between the previous and current waypoints with a heading towards the waypoint but that the robot slowed down at each of the waypoints because the angle errors were larger than in other runs. For all three routes each configuration of the model based controller exhibits an inverse relationship between cross track error and time taken to complete the route.
+All of the model based controllers are fairly similar. However, it can be seen that Setup $3$ consistently has longer run times but smaller cross track errors. This indicates that during those runs the robot was on the line between the previous and current waypoints with a heading towards the waypoint but that the robot slowed down at each of the waypoints because the angle errors were larger than in other runs. For all three routes each configuration of the model based controller exhibits an inverse relationship between cross track error and time taken to complete the route. The best setup for the most common scenarios that SSCPAC robots will encounter is likely to be Setup $4$ where the robot drives fast and stays fairly close the straight line path between waypoints.
