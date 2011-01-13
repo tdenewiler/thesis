@@ -1,6 +1,6 @@
 \chapter{Controls}
 \label{ch:controls}
-Control systems are responsible for computing the commands necessary for actuators to cause the trajectory of a system to go from its current state to a desired state, or for answering the question "How do I get there?". There are many different methods that can be used to determine the output commands. One of the more popular and widely implemented control systems is the PID (Proportional, Integral, Differential) controller. Model based controllers utilize knowledge of the physics of the system to compute appropriate output commands. The robots in these experiments originally used PID controllers for position and heading control and were later tested with a model based contoller that takes advantage of Lyapunov stability theory. Both types of controllers described in this Chapter take in state estimates from the Kalman filter from Chapter \ref{ch:estimation} and output linear and angular velocity commands to the robots.
+Control systems are responsible for computing the commands necessary for actuators to cause the trajectory of a system to go from its current state to a desired state, or for answering the question "How do I get there?". There are many different methods that can be used to determine the output commands. One of the more popular and widely implemented control systems is the PID (Proportional, Integral, Differential) controller. Model based controllers utilize knowledge of the physics of the system to compute appropriate output commands. The robots in these experiments originally used PID controllers for heading control and were later tested with a model based contoller that takes advantage of Lyapunov stability theory. Both types of controllers described in this Chapter take in state estimates from the Kalman filter from Chapter \ref{ch:estimation} and output linear and angular velocity commands to the robots.
 
 \section{PID}
 \label{sec:pid}
@@ -53,6 +53,8 @@ The PID controller used by SSCPAC was only for angular rate output while the lin
 
 \section{Model Based Controller}
 \label{sec:lyapunov}
+The motivation to find a replacement for the PID controller was caused by one major shortcoming. When the PID gains were set to work well when the robot was running at full speed the robot did not work well when slowing down, as is typically the case when obstacles are encountered. Tuning the gains to work well at slow speeds caused the robot to drive poorly at fast speeds. As will be shown in Chapter \ref{ch:results} the model based controller works well at varying speeds. There are also cases where the PID controller becomes unstable and cannot converge to a goal position. The model based controller does not suffer from this deficiency.
+
 An alternative control method to using classical PID controllers is to use model based controllers based on Lyapunov stability theory. An intuitive way to conceptualize controllers based on this stabilty theory is by thinking of them as decreasing the overall energy of a system, even when the variables involved in the control Lyapunov functions do not represent energy \cite{Khalil02}.
 
 The theorem for Lyapunov stability states that for an equilibrium point $x=0$ and a domain $D\subset\mathbb{R}^n$ that contains $x=0$ and for which there is a function $V:D\to\mathbb{R}$ that is continuously differentiable and has the following properties 
@@ -73,7 +75,7 @@ then $x=0$ is asymptotically stable.
 
 It is not always possible to find such a control Lyapunov function $V$ but when one is found then this theorem holds and the "energy" of the system will always be positive and decreasing. The "energy" can consist of any variables that make $V(0) = 0$ and $V(x) > 0$ and consist of a combination of the errors that are to be minimized in a system. In that case the errors are always decreasing since $\dot{V}(x) < 0$ and the system will reach the desired state.
 
-Two different modes of the model based controller were developed and tested for this Thesis. The difference between the two modes is the behavior of the robot as it approaches intermediate waypoints while navigating to its final destination. The first mode is considered to be useful for a parking behavior where the robot stops at each waypoint including the intermediate waypoints. The second mode is a slightly modified version of the parking behavior where the distance error is extended beyond each intermediate waypoint so that the robot will drive through the waypoints without stopping (although the robot often does slow down some) until it reaches its final destination. This second mode will be referred to as the driving mode. During the following development of the control law the parking mode will be described fully and then extensions will build directly on top of the parking mode to describe the driving mode in Chapter \ref{sec:drivingMode}.
+Two different modes of the model based controller were developed and tested during these experiments. The difference between the two modes is the behavior of the robot as it approaches intermediate waypoints while navigating to its final destination. The first mode is considered to be useful for a parking behavior where the robot stops at each waypoint including the intermediate waypoints. The second mode is a slightly modified version of the parking behavior where the distance error is extended beyond each intermediate waypoint so that the robot will drive through the waypoints without stopping (although the robot often does slow down some) until it reaches its final destination. This second mode will be referred to as the driving mode. During the following development of the control law the parking mode will be described fully and then extensions will build directly on top of the parking mode to describe the driving mode in Chapter \ref{sec:drivingMode}.
 
 \subsection{Unicycle-like Robot Kinematics}
 \label{sec:unicycleKinematics}
@@ -86,21 +88,26 @@ Several groups have implemented model based controllers rooted in Lyapunov stabi
 	\label{fig:pblyapunov}
 \end{figure}
 
-Figure \ref{fig:pblyapunov} will be used as the basis for the equations that follow and will be explained in further detail here. Given a robot at some arbitrary initial position we want it to move to a goal position with a specific heading where the goal position is the origin of the $<g>$ coordinate system and the desired heading is along the $x$-axis of the $<g>$ coordinate system labeled $\theta^\star$. The states that define the robot's current position, heading, and linear and angular velocities are calculated using the Kalman filter of Chapter \ref{sec:extendedkf} whereas the goal position and heading are given as inputs to the robot. Note that the linear velocity is given by $u$ and the angular velocity by $\omega$. The control system attempts to force three separate errors to zero:
+Figure \ref{fig:pblyapunov} will be used as the basis for the equations that follow and will be explained in further detail here. Since life is never easy this controller has been developed with the global $x$-axis pointing East, the local $x$-axis pointing to the right of the robot while the global $y$-axis is North and the local $y$-axis is pointing forward of the robot. Since the Kalman filter has the local $x$-axis forward and the local $y$-axis pointing left the yaw state has to be transformed into the new coordinate system.
+
+Given a robot at some arbitrary initial position we want it to move to a goal position with a specific heading where the goal position is the origin of the $<g>$ coordinate system and the desired heading is along the $x$-axis of the $<g>$ coordinate system labeled $\theta^\star$. The states that define the robot's current position, heading, and linear and angular velocities are calculated using the Kalman filter of Chapter \ref{sec:extendedkf} whereas the goal position and heading are given as inputs to the robot. Note that the linear velocity is given by $u$ and the angular velocity by $\omega$.
+
+The control system attempts to force three separate errors to zero:
 \begin{itemize}
 \item $e$, the magnitude of the translation error vector as measured between the current position and goal position,
 \item $\theta$, the angle between the desired heading and the translational error vector $e$,
 \item $\alpha$, the angle between the current heading and the translational error vector $e$.
 \end{itemize}
 
-Additional variables used to calculate the errors include
+The reason that those three particular errors were selected is driven by the fact that the robots are nonholonomic (they are only able to move forwards or backwards along the direction of their current heading and cannot move sideways). For holonomic robots a reasonable controller that gets the robot to a desired position with a desired heading would simply move at an angle towards the goal position and along the way correct its heading. Since that is not possible for the robots here some tradeoffs are required and those come in the form of the two angle errors, $\theta$ and $\alpha$. One way that a controller for nonholonomic vehicles could work is to rotate until the robot is pointed towards the goal position, then move in a straight line to the goal position and finally rotate in place again to the desired heading. However, that is boring and not very efficient as it would mean that the robot would have to stop at each waypoint along a route so that it could correct its heading to point to the next waypoint. The approach taken with the model based controller described here is to let the robot have the ability to align itself with the goal heading by zeroing out $\theta$ and $\alpha$ before it arrives at the goal position. This approach will allow the robot to maintain speed when it arrives at intermediate waypoints along the route.
+
+Additional variables used to calculate the errors and shown in Figure \ref{fig:pblyapunov} include:
 \begin{itemize}
-\item $\theta^\star$, the target heading in the global coordinate system which is aligned with the $x$-axis,
+\item $\theta^\star$, the target heading in the global coordinate system which is aligned with the $x$-axis of $<g>$,
+\item $\theta_e$, the angle of the error vector in the global coordinate system,
 \item $\psi$, the current heading of the robot in the global coordinate system,
 \item $\phi$, the difference between the target heading and the current heading in the global coordinate system.
 \end{itemize}
-
-Since unicycle-like robots exhibit non-holonomic constraints (they are only able to move forwards or backwards along the direction of their current heading and are not able to perform strafing maneuvers) it is necessary to use all three errors in the control system. The errors can all be calculated using the inputs to the robot of a goal position and goal heading and the state estimate output of the Kalman filter.
 
 A kinematic model of the robot is used to predict how the robot moves without considering the effects of the mass of the robot or outside forces (such as friction between the robot tracks and the ground) acting on the robot with
 \begin{align}
@@ -209,7 +216,7 @@ Substituting $\dot{V}_1$ from (\ref{eq:V1dotfinal}) and $\dot{V}_2$ from (\ref{e
 %\label{eq:Vdotfinal}
 \dot{V} = \dot{V}_1 + \dot{V}_2 = -\lambda\gamma e^2\cos^2\alpha - k\alpha^2 \leq 0.
 \end{align*}
-This expression is equal to zero if and only if $\alpha=0$ \textit{and} $e=0$, which only occurs when the robot has reached its goal pose. Therefore, at any point along the robots trajectory other than the goal point this function is negative definite and satisfies the properties for asymptotic stability given by (\ref{eq:lyapunovTheorem}) and (\ref{eq:lyapunovAsymptoticStability}).
+This expression is equal to zero if and only if $\alpha=0$ \textit{and} $e=0$, which only occurs when the robot has reached its goal pose. Additionally, it can be shown that $\theta=0$ when $\dot{V}=0$ by invoking Barbalat's lemma \cite{Aicardi_UnicycleLyapunov95}. Therefore, at any point along the robots trajectory other than the goal position and heading this function is negative definite and satisfies the properties for asymptotic stability given by (\ref{eq:lyapunovTheorem}) and (\ref{eq:lyapunovAsymptoticStability}).
 
 Using the expressions for $u$ in (\ref{eq:lyapunovu}) and $\omega$ in (\ref{eq:lyapunovomega}) and substituting those values back into the kinematic model from (\ref{eq:lyapunovkinematics}) gives
 \begin{align}
@@ -237,24 +244,23 @@ u &= \gamma e\cos\alpha \\
 \label{sec:lyapunovVariables}
 The method used to calculate the variables needed for the control law in (\ref{eq:lyapunovControlLaw}) based on Figure \ref{fig:pblyapunov} is:
 \begin{enumerate}
-\item $dx$ is the vertical component of the error vector $e$ since the $x-$axis is forward of the vehicle as seen in Figure \ref{fig:pblyapunov}.
-\item $dy$ is the horizontal component of the error vector $e$ as seen in Figure \ref{fig:pblyapunov}.
-\item Use $e = \sqrt{dx^2 + dy^2}$ to get the distance to the end waypoint on the current path segment. This will cause the robot to slow down as it reaches every waypoint, even intermediate ones. Conversely, if $e$ is very large then $u$ could grow to be too large as well and necessitate the use of a limiting value for $u$.
-\item $\psi$ is the current heading of the robot in the world coordinate frame and is calculated in the Kalman filter based on the results from Chapter \ref{ch:estimation}.
-\item The angle of the error vector $e$ is from the current position to the waypoint and found as $\theta_e = \tan^{-1}\left(\frac{dx}{dy}\right)$.
-\item $\alpha$ is the angle from the error vector $\theta_e$ to the current heading of the robot $\psi$ and is calculated by $\alpha = \theta_e - \psi$.
-\item $\theta^\star$ is the desired heading in the global coordinate system and there are multiple ways that it \textit{could} be set.
+\item $dx_e$ is the horizontal component of the error vector $e$ as seen in Figure \ref{fig:pblyapunov}.
+\item $dy_e$ is the vertical component of the error vector $e$ as seen in Figure \ref{fig:pblyapunov}.
+\item Use $e = \sqrt{dx_e^2 + dy_e^2}$ to get the distance to the waypoint on the current path segment.
+\item $\psi$ is the current heading of the robot in the world coordinate frame and is calculated in the Kalman filter based on the results from Chapter \ref{ch:estimation}. Note that this has to be rotated so that it works in the current coordinate system.
+\item $\theta_e$ is the angle of the error vector $e$ and is found as $\theta_e = \text{atan2}(dy_e,dx_e)$.
+\item $\theta^\star$ is the desired heading in the global coordinate system and there are multiple ways that it \textit{could} be set. Suppose that the robot is between waypoint $1$ and waypoint $2$ on a route and that waypoint $3$ exists and the waypoints have coordinates given by $(x_1,y_1)$, $(x_2,y_2)$ and $(x_3,y_3)$. Then,
 \begin{itemize}
-\item $\theta^\star=0$ sets the desired heading as North and $\theta^\star=\pi$ sets it as South.
+\item $\theta^\star=0$ sets the desired heading as East and $\theta^\star=\frac{\pi}{2}$ sets it as North.
 \item $\theta^\star=\psi$ would make the desired heading be the same as whatever the current heading happens to be.
 \item $\theta^\star$ can be sent in as an additional parameter of a waypoint, say from MOCU via JAUS.
-\item $\theta^\star$ can be the angle from the previous waypoint to the current waypoint.
-\item $\theta^\star$ can be the angle from the current waypoint to the next waypoint.
+\item $\theta^\star$ can be the angle from the previous waypoint to the current waypoint. This is found by using $dx_{\theta^\star}=x_2-x_1$, $dy_{\theta^\star}=y_2-y_1$ and $\theta^\star=\text{atan2}(dy_{\theta^\star},dx_{\theta^\star})$.
+\item $\theta^\star$ can be the angle from the current waypoint to the next waypoint. This is found by using $dx_{\theta^\star}=x_3-x_2$, $dy_{\theta^\star}=y_3-y_2$ and $\theta^\star=\text{atan2}(dy_{\theta^\star},dx_{\theta^\star})$.
 \end{itemize}
 \item $\phi=\theta^\star-\psi$.
-\item $\theta=\alpha + \phi$.
+\item $\theta=\theta^\star - \theta_e$.
+\item $\alpha = \theta - \phi$.
 \end{enumerate}
-Note that all of the angle variables need to be normalized so that they are in the range $(-\pi,\pi]$ and it is very important to calculate the angle errors in the correct direction as this is where many subtle errors can occur during implementation.
 
 \subsection{Model Based Driving Mode}
 \label{sec:drivingMode}
@@ -270,7 +276,7 @@ f(e,\alpha,\theta), & V = \lambda e^2 + (\alpha^2+h\theta^2) \leq \epsilon
 where $0<\epsilon<\frac{\pi^2}{4}$. The function $V$ describes an ellipsoid such that if any of the errors are larger than the threshold given by $\epsilon$ then the goal frame will not be moved and the parking behavior will be used. When the robot is aligned with both the waypoint and the desired heading, causing $(\alpha,\theta)=(0,0)$, then a reasonable course of action is to maintain the maximum allowable linear velocity and it is for this reason that the design variable $\lambda$ is typically chosen to be very small to limit the amount of influence that the distance error has on the motion of the goal frame. The implemented function to move the goal frame according to (\ref{eq:moveTargetFrame}) was selected to be
 \begin{align}
 \label{eq:moveTargetFrameFunction}
-f(e,\alpha,\theta) = u_{\text{max}} * \text{max}(0, 1 - \frac{V}{\epsilon}.
+f(e,\alpha,\theta) = u_{\text{max}} * \text{max}\left(0, 1 - \frac{V}{\epsilon}\right).
 \end{align}
 It can be seen from (\ref{eq:moveTargetFrame}) and (\ref{eq:moveTargetFrameFunction}) that by setting $\epsilon$ to a small value makes it more difficult for the system to enter the ellipsoidal domain where $V\leq\epsilon$ and also decreases the amount of motion for the goal frame. Note that setting $\epsilon=0$ results in the parking mode since $\dot{s}=0$ and the goal frame never moves.
 
@@ -328,7 +334,7 @@ Limiting the maximum linear velocity has been discussed already and involves the
 \end{align*}
 and the gains are critically damped when $\zeta = 1 \Rightarrow \lambda_\alpha(A)=\lambda_\theta(A)=\lambda$ so that both angle errors $\alpha$ and $\theta$ are converging to zero at the same rate. When the system is critically damped the angle errors will converge before the distance error if $\sigma>\gamma$ since that means the rate of convergence for the angle errors is greater than the rate of convergence for the distance error. In the case where the $A$ matrix is overdamped $\zeta > 1 \Rightarrow \lambda_\alpha(A) > \lambda_\theta(A)$ then $\alpha$ will converge to zero before $\theta$ and conversely when $A$ is underdamped $\zeta < 1$ and $\theta$ converges before $\alpha$.
 
-By selecting the gains to satisfy the design considerations above the robot will align itself with the goal heading before arriving at the goal point and will smoothly decrease its linear velocity as it approaches the goal point. One alternative occurs when the distance error converges before the angle errors, $\gamma>\sigma$, and the robot will get to the goal point and then finish aligning with the goal heading which has several problems: (i) the robot does not look as intelligent since the trajectory does not appear to be as "natural" as the way a human would drive and (ii) rotating in place is typically a much more difficult maneuver for tracked robots to perform and increases the fatigue on the treads compared to turning while driving forward. The other alternative is that one angle error will converge before the other and this can lead to oscillations in heading since the two angle errors are coupled.
+By selecting the gains to satisfy the design considerations above the robot will align itself with the goal heading before arriving at the goal point and will smoothly decrease its linear velocity as it approaches the goal point. One alternative occurs when the distance error converges before the angle errors, $\gamma>\sigma$, and the robot will get to the goal point and then finish aligning with the goal heading which has several problems: (i) the robot does not look as intelligent since the trajectory does not appear to be as "natural" as the way a human would drive and (ii) rotating in place is typically a much more difficult maneuver for tracked robots to perform and increases the fatigue on the treads compared to turning while driving forward.
 
 To deterministically discover gains that will satisfy the properties discussed two conditions must be met:
 \begin{itemize}
