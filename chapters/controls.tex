@@ -84,7 +84,7 @@ Several groups have implemented model based controllers rooted in Lyapunov stabi
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=.95\textwidth]{images/packbotlyapunov}
-	\caption{PackBot Coordinate System for Model Based Controller}
+	\caption{Packbot Coordinate System for Model Based Controller}
 	\label{fig:pblyapunov}
 \end{figure}
 
@@ -284,7 +284,7 @@ The resulting behavior of the robot has a very natural appearance as this is how
 
 \subsection{Practical Considerations for Selecting Gains}
 \label{sec:lyapunovTrajectoryConvergence}
-The gains $h$, $k$ and $\gamma$ in the control law (\ref{eq:lyapunovControlLaw}) determine the resulting trajectory that the robot will use when driving from its current position to the goal point and heading. The first thing to notice is that the linear velocity is at a maximum when the angle error $\alpha=0$ since that leads to $\cos(\alpha)=1$ and $u_{\text{max}}=e\gamma$. As discussed in Chapter \ref{sec:lyapunovVariables} a carrot can be set by the path planner to limit the maximum error distance $e$ so that $e$ is bounded. When that is the case the maximum linear velocity is proportional to the gain $\gamma$. For example, if the carrot has a maximum lookahead distance of $10m$ and $\gamma=0.2$ then $u_{\text{max}}=10*0.2=2\tfrac{m}{s}$ which is a reasonable limit for a PackBot.
+The gains $h$, $k$ and $\gamma$ in the control law (\ref{eq:lyapunovControlLaw}) determine the resulting trajectory that the robot will use when driving from its current position to the goal point and heading. The first thing to notice is that the linear velocity is at a maximum when the angle error $\alpha=0$ since that leads to $\cos(\alpha)=1$ and $u_{\text{max}}=e\gamma$. As discussed in Chapter \ref{sec:lyapunovVariables} a carrot can be set by the path planner to limit the maximum error distance $e$ so that $e$ is bounded. When that is the case the maximum linear velocity is proportional to the gain $\gamma$. For example, if the carrot has a maximum lookahead distance of $10m$ and $\gamma=0.2$ then $u_{\text{max}}=10*0.2=2\tfrac{m}{s}$ which is a reasonable limit for a Packbot.
 
 There are many ways to select what values the gains $h$ and $k$ should take, especially once $\gamma$ is set, and some of the properties of the kinematics equations (\ref{eq:lyapunovfinalkinematics}) as the angle errors $(\alpha, \theta)$ approach $(0, 0)$ are helpful in making those selections as the system involving the errors to be minimized is approximately linear. The key to this linearization is to notice that when $\alpha$ is near zero several terms in (\ref{eq:lyapunovfinalkinematics}) cancel out since $\alpha\to0\Rightarrow \alpha=\cos(\alpha)*\sin(\alpha)=\sin(\alpha)$ as seen in Figure \ref{fig:plotSinCos}. When that is the case the following linear approximation holds:
 \begin{align}

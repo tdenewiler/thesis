@@ -89,7 +89,7 @@ x = 0
 for i in arange(len(u)):
     x += fabs(u[i]) + fabs(w[i])
 print 'Effort =', x
-#sys.exit()
+sys.exit()
 
 # Plot the Lyapunov vectors versus time.
 figure()
