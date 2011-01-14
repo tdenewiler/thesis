@@ -10,7 +10,7 @@ reader = csv.DictReader(f)
 
 # Resolution of plots and whether to save them to a file.
 pngres = 600
-saveplots = 0
+saveplots = 1
 
 # Declare vectors to hold data.
 date = []
@@ -89,7 +89,7 @@ x = 0
 for i in arange(len(u)):
     x += fabs(u[i]) + fabs(w[i])
 print 'Effort =', x
-sys.exit()
+#sys.exit()
 
 # Plot the Lyapunov vectors versus time.
 figure()
