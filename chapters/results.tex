@@ -84,14 +84,14 @@ The linear and angular velocity outputs that were the result of running a simple
 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=.5\textwidth]{images/pbtx/20110109_1837_pbtx_simpleDrive}
+	\includegraphics[width=.5\textwidth]{images/pbtx/20110113_1451_pbtx_simpleDrive}
 	\caption{Typical Model Based Controller Velocity Output}
 	\label{fig:mbOutput}
 \end{figure}
 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=.5\textwidth]{images/pbtx/20110109_1837_pbtx_simpleDriveErrors}
+	\includegraphics[width=.5\textwidth]{images/pbtx/20110113_1451_pbtx_simpleDriveErrors}
 	\caption{Model Based Controller Errors}
 	\label{fig:mbErrors}
 \end{figure}
@@ -154,7 +154,7 @@ For the model based controller in parking mode the same algorithm was run but $\
 \centering
 \begin{tabular}{@{}llllr@{}} \toprule
 Setup & Time (s) & XT (m) & $u_{\text{max}}$ (\%) & Stops \\ \midrule
-1     & 77.49    & 0.77   & 33.3                  & 2     \\
+1     & 82.67    & 0.61   & 33.3                  & 1     \\
 2     & 0        & 0      & 0                     & 0     \\
 3     & 75.12    & 2.52   & 100.0                 & 3     \\
 4     & 71.42    & 2.71   & 100.0                 & 4     \\
@@ -174,8 +174,8 @@ Setup & Time (s) & XT (m) & $u_{\text{max}}$ (\%) & Stops \\ \midrule
 2     & 0        & 0      & 0                     & 0     \\
 3     & 134.92   & 0.85   & 42.52                 & 20    \\
 4     & 75.92    & 0.94   & 50.86                 & 21    \\
-5     & 113.96   & 0.79   & 41.68                 & 30    \\
-6     & 114.56   & 0.77   & 43.78                 & 35    \\ \bottomrule
+5     & 232.09   & 0.79   & 27.90                 & 31    \\
+6     & 75.99    & 0.91   & 49.96                 & 23    \\ \bottomrule
 \end{tabular}
 \label{tab:resultsControllersObstacles}
 \end{table}
@@ -198,4 +198,4 @@ Setup & Time (s) & XT (m) & $u_{\text{max}}$ (\%) & Stops \\ \midrule
 
 The PID controller only worked well on the route with long path segments. For the short and mixed path segment routes it actually became sad to watch and the tests were aborted because the robot was just spinning in circles and running the batteries down, similar to what was seen in Figure \ref{fig:kfResults4}.
 
-All of the model based controllers are fairly similar. However, it can be seen that Setup $3$ consistently has longer run times but smaller cross track errors. This indicates that during those runs the robot was on the line between the previous and current waypoints with a heading towards the waypoint but that the robot slowed down at each of the waypoints because the angle errors were larger than in other runs. For all three routes each configuration of the model based controller exhibits an inverse relationship between cross track error and time taken to complete the route. The best setup for the most common scenarios that SSCPAC robots will encounter is likely to be Setup $4$ where the robot drives fast and stays fairly close the straight line path between waypoints.
+All of the model based controllers are fairly similar. However, it can be seen that Setup $3$ consistently has longer run times but smaller cross track errors. This indicates that during those runs the robot was on the line between the previous and current waypoints with a heading towards the waypoint but that the robot slowed down at each of the waypoints because the angle errors were larger than in other runs. For all three routes each configuration of the model based controller exhibits an inverse relationship between cross track error and time taken to complete the route. The best setup for the most common scenarios that SSCPAC robots will encounter is likely to be either Setup $4$ or Setup $6$ where the robot drives fast and stays fairly close the straight line path between waypoints. Those two setups have the desired goal heading, $\theta^\star$, set to be the angle from the previous waypoint to the current waypoint which has more to do with the robot staying on the line between waypoints than do the gains.
