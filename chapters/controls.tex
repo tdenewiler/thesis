@@ -312,7 +312,7 @@ u &= \gamma e \\
 	\label{fig:plotSinCos}
 \end{figure}
 
-This shows that, in the neighborhood of $(\alpha, \theta)=(0, 0)$, the distance error $e$ converges at a rate of $\text{exp}(-\gamma t)$ while the angle errors converge at a rate of $\text{exp}(-\sigma t)$ where $-\sigma$ is the real part of the dominant pole of the linear system $A$ in (\ref{eq:lyapunovLinearSystem}) which can be found from the eigenvalues of $A$. The reason that the errors converge at those rates is that, for the distance error, $e=\text{exp}(-\gamma t)$ is a solution to the equation $\dot{e}=-\gamma e$ since 
+This shows that, in the neighborhood of $(\alpha, \theta)=(0, 0)$, the distance error $e$ converges linearly at a rate of $-\gamma$ while the angle errors converge at a rate of $-\sigma$ where $-\sigma$ is the real part of the dominant pole of the linear system $A$ in (\ref{eq:lyapunovLinearSystem}) which can be found from the eigenvalues of $A$. The reason that the errors converge at those rates is that, for the distance error, $e=\text{exp}(-\gamma t)$ is a solution to the equation $\dot{e}=-\gamma e$ since 
 \begin{align*}
 \tfrac{d}{dt}e=\tfrac{d}{dt}\text{exp}(-\gamma t) = -\gamma \text{exp}(-\gamma t)=-\gamma e.
 \end{align*}
