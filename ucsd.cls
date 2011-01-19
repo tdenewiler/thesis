@@ -588,7 +588,7 @@ by\par
 \@author\par
 {\@degree} in \@field\par
 \vspace{.1in}
-University of California {\@campus}, \@degreeyear \par
+University of California, {\@campus}, \@degreeyear \par
 \vspace{.1in}
 {\@chair}, Chair}
 \vspace{.1in}

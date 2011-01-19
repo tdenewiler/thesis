@@ -1,6 +1,6 @@
 \chapter{State Estimation}
 \label{ch:estimation}
-One of the ACS libraries is the extended Kalman filter which is used on the EOD robots for state estimation and is the main method used for answering the question ``Where am I?''. The idea behind the Kalman filter is relatively straightforward in that the robot has some basic idea of where it is in the world using its sensors but there is uncertainty involved in that estimate due to:
+One of the ACS libraries is the extended Kalman filter which is used on the EOD robots for state estimation and is the main method used to answer the question ``Where am I?''. The idea behind the Kalman filter is relatively straightforward in that the robot has some basic idea of where it is in the world using its sensors but there is uncertainty involved in that estimate due to:
 \begin{itemize}
 \item different measurement accuracies from the sensors,
 \item multiple sensors measuring the same state,
@@ -8,7 +8,7 @@ One of the ACS libraries is the extended Kalman filter which is used on the EOD 
 \item imperfect models of the robot dynamics.
 \end{itemize}
 
-The Kalman filter is a method to merge physical models and sensor data to come up with an estimate of where the robot is located, what its orientation is and how fast it is moving that is better than any of the individual sensor measurements \cite{Simon06OptimalEstimation}, \cite{Grewal08}, \cite{Orderud05}. There are four models used in the Kalman filter:
+The Kalman filter is a method to merge physical models and sensor data to realize an estimate of robot location, what its orientation is and how fast it is moving. This estimate is better than any of the individual sensor measurements \cite{Simon06OptimalEstimation}, \cite{Grewal08}, \cite{Orderud05}. There are four models used in the Kalman filter:
 \begin{itemize}
 \item system model based on physics,
 \item measurement model to transform sensor output to state coordinate system,
@@ -44,7 +44,7 @@ In this vector $x$, $y$ and $z$ are positions, $V$ is linear velocity, $\theta$,
 
 \section{The Kalman Filter}
 \label{sec:kalmanfilter}
-The ACS Kalman filter is typical of all Kalman filters in that it consists of a prediction update step and a measurement update step where the prediction update is run as fast as possible and the measurement update is run whenever new sensor data becomes available as depicted in the block diagram of Figure \ref{fig:kf}. The prediction update step uses a model of the system dynamics and a measurement of elapsed time to determine where the system is in the world and will inevitably have errors. Some of the errors are due to effects that are not captured in the models, (im)precision of the clock on the computer for measuring time and simplifying assumptions that are made in order to be able to calculate the system model in real-time using embedded computers. The measurement update step is basically a feedback step to help correct for errors in the system model using sensors to provide current data \cite{Kelly_1994_338}.
+The ACS Kalman filter is typical of all Kalman filters in that it consists of a prediction update step and a measurement update step where the prediction update is run as fast as possible and the measurement update is run whenever new sensor data becomes available as depicted in the block diagram of Figure \ref{fig:kf}. The prediction update step uses a model of the system dynamics and a measurement of elapsed time to determine where the system is in the world and will inevitably have errors. Some of the errors are due to effects that are not captured in the models, including (im)precision of the clock on the computer for measuring time as well as simplifying assumptions that are made in order to be able to calculate the system model in real-time using embedded computers. The measurement update step is basically a feedback step to help correct for errors in the system model using sensors to provide current data \cite{Kelly_1994_338}.
 
 \begin{figure}[ht!]
 	\centering
@@ -53,7 +53,7 @@ The ACS Kalman filter is typical of all Kalman filters in that it consists of a 
 	\label{fig:kf}
 \end{figure}
 
-The Kalman filters that run on the small UGVs used in these experiments run on digital computers and are necessarily used in discrete time rather than continuous time because of the nature of computers. Additionally, the standard Kalman filter equations make the assumption that the system and measurement models are linear. From \cite{Kelly_1994_338}, \cite{Simon06OptimalEstimation} the discretized and linearized versions of (\ref{eq:statespace}) mean that the state space equations are represented as
+The Kalman filters that run on the small robots used in these experiments run on digital computers and are necessarily used in discrete time rather than continuous time because of the nature of computers. Additionally, the standard Kalman filter equations make the assumption that the system and measurement models are linear. From \cite{Kelly_1994_338}, \cite{Simon06OptimalEstimation} the discretized and linearized versions of (\ref{eq:statespace}) equate to the state space equations that are represented as
 \begin{align*}
 %\label{eq:kfstatemodel}
 \begin{split}
@@ -61,7 +61,7 @@ x_{k+1} &= \Phi_kx_k + w_k \\
 y_k &= H_kx_k + v_k
 \end{split}
 \end{align*}
-where $\Phi_k$ is the discrete time state transition matrix relating the state at time $k+1$ to time $k$ in the absence of inputs or noise and models the system dynamics, $w_k$ is system noise due to an imperfect model, $H_k$ is the measurement matrix which relates the measurements to the state vector and $v_k$ is the sensor measurement noise. The ACS Kalman filter uses an unforced model so all inputs are considered disturbances to the steady-state dynamics. This means that $w_k$ includes noise, modeling errors, external forces and actuator forces.
+where $\Phi_k$ is the discrete time state transition matrix relating the state at time $k+1$ to time $k$ in the absence of inputs or noise and models the system dynamics, $w_k$ is system noise due to an imperfect model. $H_k$ is the measurement matrix which relates the measurements to the state vector and $v_k$ is the sensor measurement noise. The ACS Kalman filter uses an unforced model so all inputs are considered disturbances to the steady-state dynamics. This means that $w_k$ includes noise, modeling errors, external forces and actuator forces.
 
 The prediction update step marches the system dynamics forward in time using the equations
 \begin{align}
@@ -80,7 +80,7 @@ K_k &= P_k^-H_k^T\left[H_kP_k^-H_k^T + R_k\right]^{-1} \\
 P_k^+ &= \left[I - K_kH_k\right]P_k^-
 \end{split}
 \end{align}
-where $P_k$ is the state covariance matrix, $K_k$ is the Kalman gain, $Q_k = E[w_kw_k^T]$ is the process covariance matrix giving a measure of the expected noise in the system model and $R_k = E[v_kv_k^T]$ is the measurement covariance matrix giving the expected noise of the sensors. Using (\ref{eq:kfpredictionupdate}) and (\ref{eq:kfmeasurementupdate}) an estimate of the state of the robot can be obtained at any time for use by the controls algorithms, to give feedback to a human operator or to share with other systems that can change their behavior based on the state of the robot.
+where $P_k$ is the state covariance matrix, $K_k$ is the Kalman gain, $Q_k = E[w_kw_k^T]$ is the process covariance matrix giving a measure of the expected noise in the system model and $R_k = E[v_kv_k^T]$ is the measurement covariance matrix giving the expected noise of the sensors. Using (\ref{eq:kfpredictionupdate}) and (\ref{eq:kfmeasurementupdate}) a state estimate of the robot can be obtained at any time. This estimate can be used for the controls algorithms, to give feedback to an operator or to share with other systems that can change their behavior based on the robot state.
 
 The variables $\hat{x}_k^-$, $P_{k+1}^-$ in (\ref{eq:kfpredictionupdate}) and $\hat{x}_k^+$, $P_{k}^+$ in (\ref{eq:kfmeasurementupdate}) refer to estimates and covariances of the state variables before and after the measurement update step in the Kalman filter, respectively. Each of the terms in the Kalman filter equations is discussed in more detail in subsequent sections.
 
@@ -110,23 +110,30 @@ The second assumption says that, during a single time step, the position of the 
 
 \subsection{Continuous to Discrete Time Transform}
 \label{sec:kfContToDiscTransform}
-The system model will initially be developed using continuous time nonlinear differential equations but the Kalman filter on the robots will be running on digital computers so the model will need to be converted to discrete time. In continuous time the system model will be
+The system model will initially be developed using continuous time nonlinear differential equations but the Kalman filter on the robots will be running on digital computers so the model will need to be converted to discrete time. In continuous time the system model is 
 \begin{align*}
 \dot{x} = Fx
 \end{align*}
-and in discrete time the system model will be
+and in discrete time the system model is
 \begin{align*}
 x_{k+1} = \Phi_k x_k.
 \end{align*}
-The transformation from continuous to discrete time obeys an exponential matrix transformation with a Taylor series approximation \cite{Gelb74} given by
+The transformation from continuous to discrete time obeys an exponential matrix transformation with a Taylor series approximation given by \cite{Phadke99}, \cite{Gelb74}
 \begin{align*}
 \Phi_k = e^{F\Delta_T} = I + F\Delta_T + \frac{(F\Delta_T)^2}{2!} + \ldots + \frac{(F\Delta_T)^n}{n!}
 \end{align*}
-A first order Taylor series approximation is generally considered good enough when $\Delta_T$ is small and if the nonlinearities in the system are small enough. In the case of the robots used in these experiments that is assumed to be the case so the transformation used is simply
+since
+\begin{align*}
+e^A = \sum_{i=0}^N \frac{A^i}{i!}
+\end{align*}
+and $A^0=I$, the identity matrix.
+
+A first order Taylor series approximation is generally considered good enough when $\Delta_T$ is small and when the nonlinearities in the system are small enough, meaning that the Taylor remainder is small. In the case of the robots used in these experiments that is assumed to be the case so the transformation used is simply
 \begin{align}
 \label{eq:kfContToDiscTransform}
 \Phi_k = I + F\Delta_T.
 \end{align}
+Note that when the low dynamics assumption and the principal motion assumption are invoked the term $F^2=0$ so the nonlinearities are indeed small when those assumptions hold.
 
 \subsection{System Dynamics Model}
 \label{sec:dynamics}

@@ -100,34 +100,43 @@ The linear and angular velocity outputs that were the result of running a simple
 \label{sec:controllerComparison}
 For both PID (Chapter \ref{sec:pid}, Table \ref{tab:PIDGainEffects}) and the model based controller (Chapter \ref{sec:lyapunovTrajectoryConvergence}) gains have to be selected, the difference being that stability is the goal when selecting PID gains whereas stability is guaranteed with the model based controller. More advanced behaviors such as three point turns are a consequence of the control law in (\ref{eq:lyapunovControlLaw}) derived using a kinematic model of the robot. The other very large difference between the controllers is that a table of gains must be tuned for the PID controller to work at varying linear velocities but the model based controller works very well at different linear and angular velocities. Also, when properties of the robot such as mass are changed by using different payloads for the system the entire table of PID gains must be retuned while, at most, one set of gains must be retuned for the model based controller. This last benefit of the model based controller makes it very appealing to use in fielded systems since it reduces the amount of maintenance and effort required to keep the robot in optimal working condition. The model based controller will also allow for improved navigation performance near obstacles which leads directly to improved autonomy for the robot. The local path planner is much simpler with the model based controller since it simply requires moving the target frame based on the calculated errors whereas the PID controller uses an entirely new algorithm that is not a normal part of the control algorithm to set the carrot following mode \cite{Hogg02}.
 
-Many different controller configurations are possible based on varying the gains used and the calculation of the desired heading at waypoints. The tested configurations included:
-\begin{enumerate}
-\item PID with best available gains,
-\item Fuzzy logic with best available rules,
-\item Model based with $\theta^\star$ set as angle from current waypoint to next waypoint with gains set to minimize $e$ before angle errors ($\gamma = 0.25$, $h = 0.33$, $k = 0.30$),
-\item Model based with $\theta^\star$ set as angle from previous waypoint to current waypoint with gains set to minimize $e$ before angle errors ($\gamma = 0.25$, $h = 0.33$, $k = 0.30$),
-\item Model based with $\theta^\star$ set as angle from current waypoint to next waypoint with gains set to minimize angle errors before $e$ ($\gamma = 0.25$, $h = 1.1$, $k = 2\gamma\sqrt{h}$),
-\item Model based with $\theta^\star$ set as angle from previous waypoint to current waypoint with gains set to minimize angle errors before $e$ ($\gamma = 0.25$, $h = 1.1$, $k = 2\gamma\sqrt{h}$),
-\end{enumerate}
+Many different controller configurations are possible based on varying the gains used and the calculation of the desired heading at waypoints. The tested configurations are shown in Table \ref{tab:resultsControllersSetup}.
+
+\begin{table}[ht!]
+\caption{Controller Setups}
+\small
+\centering
+\begin{tabular}{@{}lllllr@{}} \toprule
+Setup & Controller  & $\gamma$ & $h$  & $k$               & $\theta^\star$ \\ \midrule
+1     & PID         & N/A      & N/A  & N/A               & N/A \\
+2     & Fuzzy Logic & N/A      & N/A  & N/A               & N/A \\
+3     & Model Based & 0.25     & 0.33 & 0.30              & CN \\
+4     & Model Based & 0.25     & 0.33 & 0.30              & PC \\
+5     & Model Based & 0.25     & 1.10 & $2\gamma\sqrt{h}$ & CN \\
+6     & Model Based & 0.25     & 1.10 & $2\gamma\sqrt{h}$ & PC \\ \bottomrule
+\end{tabular}
+\label{tab:resultsControllersSetup}
+\end{table}
+
 Note that in all cases for the model based controller the desired goal heading $\theta^\star$ for the final waypoint was set to be the angle from the previous waypoint to the last waypoint.
 
-Each controller configuration was run on several courses that test specific behaviors such as
+Each controller configuration was run on several courses that test specific behaviors.
 \begin{itemize}
-\item allowing for maximum velocities to be sustained with large amounts of open space on the route by having long path segments shown in Figure \ref{fig:routeLong}, with $\lambda = 0.001$, $\epsilon = 2.0$, $R_{\text{cap}} = 1.0$ and there are $13$ waypoints covering a total of $90.73 m$ with an average distance between them of $7.56 m$,
+\item Allowing for maximum velocities to be sustained with large amounts of open space on the route by having long path segments shown in Figure \ref{fig:routeLong}. This route used $\lambda = 0.001$, $\epsilon = 2.0$, $R_{\text{cap}} = 1.0$. There are $13$ waypoints covering a total of $90.73 m$ with an average distance between them of $7.56 m$.
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=.5\textwidth]{images/GE/GELongSegmentsRoute2}
 	\caption{Route with Long Path Segments}
 	\label{fig:routeLong}
 \end{figure}
-\item short path segments between waypoints to simulate obstacles along the route shown in Figure \ref{fig:routeShort}, with $\lambda = 0.001$, $\epsilon = 1.0$, $R_{\text{cap}} = 0.2$ and there are $27$ waypoints covering a total of $43.18 m$ with an average distance between them of $1.66 m$,
+\item Short path segments between waypoints to simulate obstacles along the route shown in Figure \ref{fig:routeShort}. This route used $\lambda = 0.001$, $\epsilon = 1.0$, $R_{\text{cap}} = 0.2$. There are $27$ waypoints covering a total of $43.18 m$ with an average distance between them of $1.66 m$.
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=.5\textwidth]{images/GE/GEShortSegmentsRoute2}
 	\caption{Route with Short Path Segments}
 	\label{fig:routeShort}
 \end{figure}
-\item a mixture of long and short path segments shown in Figure \ref{fig:routeMixed}, with $\lambda = 0.001$, $\epsilon = 1.5$, $R_{\text{cap}} = 0.5$ and there are $13$ covering a total of $70.87 m$ waypoints with an average distance between them of $5.45 m$.
+\item A mixture of long and short path segments shown in Figure \ref{fig:routeMixed}. This route used $\lambda = 0.001$, $\epsilon = 1.5$, $R_{\text{cap}} = 0.5$. There are $13$ covering a total of $70.87 m$ waypoints with an average distance between them of $5.45 m$.
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=.5\textwidth]{images/GE/GEMixedSegmentsRoute2}
