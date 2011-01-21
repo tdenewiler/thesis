@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-# Simulation of differential drive robot using model based controller
+# Simulation of differential drive robot using model-based controller
 # based on Lyapunov stability theory.
 
 from scipy import *
