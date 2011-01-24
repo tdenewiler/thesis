@@ -1,6 +1,6 @@
 \chapter{Controls}
 \label{ch:controls}
-Control systems are responsible for computing the commands necessary for actuators to cause the trajectory of a system to go from its current state to a desired state, or for answering the question "How do I get there?". There are many different methods that can be used to determine the output commands. One of the more popular and widely implemented control systems is the PID (Proportional, Integral, Differential) controller. Model-based controllers utilize knowledge of the physics of the system to compute appropriate output commands. The robots in these experiments originally used PID controllers for heading control. Later, they were tested with a model-based contoller that takes advantage of Lyapunov stability theory. Both types of controllers described in this Chapter take in state estimates from the Kalman filter of Chapter \ref{ch:estimation} and output linear and angular velocity commands to the robots.
+Control systems are responsible for computing the commands necessary for actuators to cause the trajectory of a system to go from its current state to a desired state, or for answering the question "How do I get there?". There are many different methods that can be used to determine the output commands. One of the more popular and widely implemented control systems is the PID (Proportional, Integral, Differential) controller. Model-based controllers utilize knowledge of the physics of the system to compute appropriate output commands. The robots in these experiments originally used PID controllers for heading control. Later, they were tested with a model-based contoller that takes advantage of Lyapunov stability theory. Both types of controllers described in this chapter take in state estimates from the Kalman filter of Chapter \ref{ch:estimation} and output linear and angular velocity commands to the robots.
 
 \section{PID}
 \label{sec:pid}
@@ -31,7 +31,7 @@ The only parameters available to tune PID controllers for performance are the ga
 
 When the characteristics of a robot are changed the PID gains must also be modified to reflect those changes. These characteristics include mass, center of mass, treads, motors and payloads as these all affect the dynamics of the system. Gain scheduling is the process of tuning a system to use a different set of gains based on the operating environment or characteristics of the robot and is very time consuming. This motivates the search for a better control system for these small robots.
 
-Table \ref{tab:PIDGainEffects} shows how increasing the different gain values affects the performance of the controller output in terms of rise time, overshoot, settling time and steady state error. It can be seen that a large amount of coupling exists between the gains and attempting to fix one aspect of the controller output can have unintended consequences that cause other aspects of controller output to perform poorly. This is in contrast to the gains that arise for model-based controllers as seen in Chapter \ref{sec:lyapunovTrajectoryConvergence}.
+Table \ref{tab:PIDGainEffects} shows how increasing the different gain values affects the performance of the controller output in terms of rise time, overshoot, settling time and steady state error. It can be seen that a large amount of coupling exists between the gains and attempting to fix one aspect of the controller output can have unintended consequences that cause other aspects of controller output to perform poorly. This is in contrast to the gains that arise for model-based controllers as seen in Section \ref{sec:lyapunovTrajectoryConvergence}.
 
 \begin{table}[ht!]
 \caption{Effects on Controller Output of Modifying PID Gains}
@@ -73,7 +73,7 @@ then $x=0$ is asymptotically stable.
 
 It is not always possible to find such a control Lyapunov function $V$, but when one is found then this theorem holds and the "energy" of the system will always be positive and decreasing. The "energy" can consist of any variables that make $V(0) = 0$ and $V(x) > 0$ and consist of a combination of the errors that are to be minimized in a system. In that case the errors are always decreasing since $\dot{V}(x) < 0$ and the system will reach the desired state.
 
-Two different modes of the model-based controller were developed and tested during these experiments. The difference between the two modes is the behavior of the robot as it approaches intermediate waypoints while navigating to its final destination. The first mode is considered to be useful for a parking behavior where the robot stops at each waypoint, including the intermediate waypoints. The second mode is a slightly modified version of the parking behavior, where the distance error is extended beyond each intermediate waypoint so that the robot will drive through the waypoints without stopping (although the robot often does slow down some) until it reaches its final destination. This second mode will be referred to as the driving mode. During the following development of the control law the parking mode will be described fully and then extensions will build directly on top of the parking mode to describe the driving mode in Chapter \ref{sec:drivingMode}.
+Two different modes of the model-based controller were developed and tested during these experiments. The difference between the two modes is the behavior of the robot as it approaches intermediate waypoints while navigating to its final destination. The first mode is considered to be useful for a parking behavior where the robot stops at each waypoint, including the intermediate waypoints. The second mode is a slightly modified version of the parking behavior, where the distance error is extended beyond each intermediate waypoint so that the robot will drive through the waypoints without stopping (although the robot often does slow down some) until it reaches its final destination. This second mode will be referred to as the driving mode. During the following development of the control law the parking mode will be described fully and then extensions will build directly on top of the parking mode to describe the driving mode in Section \ref{sec:drivingMode}.
 
 \subsection{Error Terms for the Model-Based Controller}
 \label{sec:errorTermsMBC}
@@ -88,7 +88,7 @@ Several groups have implemented model-based controllers rooted in Lyapunov stabi
 
 Figure \ref{fig:pblyapunov} will be used as the basis for the equations that follow and will be explained in further detail here. Since life is never easy, this controller has been developed with the global $x$-axis pointing East, the local $x$-axis pointing to the right of the robot while the global $y$-axis is North and the local $y$-axis is pointing forward of the robot. Since the Kalman filter has the local $x$-axis forward and the local $y$-axis pointing left the yaw state has to be transformed into the new coordinate system.
 
-Given a robot at some arbitrary initial position we want it to move to a goal position with a specific heading, where the goal position is the origin of the $<g>$ coordinate system and the desired heading is along the $x$-axis of the $<g>$ coordinate system, labeled $\theta^\star$. The states that define the robot's current position, heading, and linear and angular velocities are calculated using the Kalman filter of Chapter \ref{sec:extendedkf} whereas the goal position and heading are given as inputs to the robot. Note that the linear velocity is given by $u$ and the angular velocity by $\omega$.
+Given a robot at some arbitrary initial position we want it to move to a goal position with a specific heading, where the goal position is the origin of the $<g>$ coordinate system and the desired heading is along the $x$-axis of the $<g>$ coordinate system, labeled $\theta^\star$. The states that define the robot's current position, heading, and linear and angular velocities are calculated using the Kalman filter of Section \ref{sec:extendedkf} whereas the goal position and heading are given as inputs to the robot. Note that the linear velocity is given by $u$ and the angular velocity by $\omega$.
 
 The control system attempts to force three separate errors to zero:
 \begin{itemize}
@@ -153,7 +153,7 @@ The control Lyapunov function is selected to be positive, contain all three erro
 \label{eq:lyapunovfunction}
 V = V_1 + V_2 = \frac{1}{2}\lambda e^2 + \frac{1}{2}\left(\alpha^2+h\theta^2\right)
 \end{align}
-where $\lambda$ and $h$ are positive constants that can be used to tune the controller output (see Chapter \ref{sec:lyapunovTrajectoryConvergence}). Using the kinematics equations in (\ref{eq:lyapunovkinematics}), the derivative of each term of the candidate control Lyapunov function can be found as
+where $\lambda$ and $h$ are positive constants that can be used to tune the controller output (see Section \ref{sec:lyapunovTrajectoryConvergence}). Using the kinematics equations in (\ref{eq:lyapunovkinematics}), the derivative of each term of the candidate control Lyapunov function can be found as
 \begin{align}
 \label{eq:Vderivatives}
 \begin{split}
@@ -231,7 +231,7 @@ Using the expressions for $u$ in (\ref{eq:lyapunovu}) and $\omega$ in (\ref{eq:l
 \end{split}
 \end{align}
 
-Combining (\ref{eq:lyapunovu}) and (\ref{eq:lyapunovomega}) gives the following control law to replace the PID controller from Chapter \ref{sec:pid}:
+Combining (\ref{eq:lyapunovu}) and (\ref{eq:lyapunovomega}) gives the following control law to replace the PID controller from Section \ref{sec:pid}:
 \begin{align}
 \label{eq:lyapunovControlLaw}
 \begin{split}
@@ -368,4 +368,4 @@ Using this method, any two gains can be selected and the third gain can be found
 
 When using (\ref{eq:moveTargetFrame}) to move the goal frame and put the robot into driving mode, it can be more desirable to generate trajectories such that the robot stays on a straight line path to the next waypoint. The result is that the angle errors are decreased and the robot drives faster as it goes through intermediate waypoints. One way to have the robot drive towards the waypoint is to set the gains such that the distance error converges faster than the angle errors and have $\alpha$ converge faster than $\theta$. An example of the gains that produce these effects is $\gamma=0.25$, $h=0.33$ and $k=0.30$. Another way to cause the robot to drive on the line segment connecting the previous and current waypoints is to set the target heading to be the angle from the previous waypoint to the current waypoint.
 
-The model-based controller developed in this Chapter, along with the analysis of selecting appropriate gains, replaces the original PID controller when answering the question "How do I get there?".
+The model-based controller developed in this chapter, along with the analysis of selecting appropriate gains, replaces the original PID controller when answering the question "How do I get there?".
