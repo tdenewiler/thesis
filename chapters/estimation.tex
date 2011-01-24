@@ -403,6 +403,24 @@ Run & Actual Error (m)  & Simulation Error (m) & Error Difference (m) \\ \midrul
 \label{sec:coordinateAscent}
 In order to evaluate the error metrics in (\ref{eq:kftrainingres}) and (\ref{eq:kftrainingpred}) it is necessary to search through the space of parameters to find the optimal parameters to use in the $Q_k$ and $R_k$ matrices. Initially, a program was written to attempt a naive, brute force approach of trying every possible combination of parameters. The brute force algorithm turned out to be difficult to implement, took several days to run and returned unimpressive results that did not really improve the Kalman filter estimates. Following the description in \cite{Abbeel-RSS-05} a coordinate ascent algorithm was then written with much better results and faster convergence times.
 
-The coordinate ascent algorithm was initialized by a set of hand-tuned noise model parameters and then the robot run was simulated. For each parameter in the noise models the value of the parameter is then increased by $\alpha_i \%$ and the error metric is evaluated. If the resulting error is less than the previous best result the parameter is kept at the increased value, otherwise the parameter is decreased by $\alpha_d \%$. The values $\alpha_i$ and $\alpha_d$ are known as the learning rates. One iteration of the algorithm consists of running the simulation and evaluating the error metric for each of the noise parameters. The algorithm continues until the error is less than some convergence value $\epsilon$ or until two consecutive iterations are run without producing a new minimum error.
+The coordinate ascent algorithm was initialized by a set of hand-tuned noise model parameters and then the robot run was simulated. For each parameter in the noise models the value of the parameter is then increased by $\alpha_i \%$ and the error metric is evaluated. If the resulting error is less than the previous best result the parameter is kept at the increased value, otherwise the parameter is decreased by $\alpha_d \%$. The values $\alpha_i$ and $\alpha_d$ are known as the learning rates. One iteration of the algorithm consists of running the simulation and evaluating the error metric for each of the noise parameters. The algorithm continues until the error is less than some convergence value $\epsilon$ or until two consecutive iterations are run without producing a new minimum error. This is shown in Algorithm \ref{alg:coordinateascent}, where values of $\alpha_i=1.5$ and $\alpha_d=1.1$ were used.
 
 Essentially, the training algorithm trades tuning the actual noise parameters in the $Q_k$ and $R_k$ matrices for tuning the learning rate parameters $\alpha_i$ and $\alpha_d$.
+
+\begin{algorithm}
+\caption{Coordinate Ascent for Discriminative Training}
+\label{alg:coordinateascent}
+\begin{algorithmic}
+\WHILE {$e > e_{converge}$}
+    \FOR {$j = 1$ \TO $N_Q+N_R$}
+        \STATE $e \gets \sum(y_t-h(\mu_t))^2$
+        \IF {$e < e_{min}$}
+            \STATE $Q_{opt}, R_{opt} \gets Q, R$
+            \STATE $(Q,R)_{j,j} \gets (Q,R)_{j,j} / \alpha_d$
+        \ELSE
+            \STATE $(Q,R)_{j,j} \gets (Q,R)_{j,j} * \alpha_i$
+        \ENDIF
+    \ENDFOR
+\ENDWHILE
+\end{algorithmic}
+\end{algorithm}
