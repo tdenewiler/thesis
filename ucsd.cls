@@ -342,7 +342,7 @@ Class]
 \addtolength{\topmargin}{-.5in}
 \addtolength{\textheight}{.5in}
 %\addtolength{\footskip}{.25in}
-\addtolength{\footskip}{1.0in} % TAD 20110124
+\addtolength{\footskip}{0.75in} % TAD 20110124
 
 \def\makefrontmatter{  
 % TITLE PAGE.   
