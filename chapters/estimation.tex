@@ -61,7 +61,9 @@ x_{k+1} &= \Phi_kx_k + w_k \\
 y_k &= H_kx_k + v_k.
 \end{split}
 \end{align*}
-Here, $\Phi_k$ is the discrete time system model (or state transition matrix) relating the state at time $k+1$ to time $k$ in the absence of inputs or noise and it models the system dynamics. The term $w_k$ is system noise due to an imperfect model. $H_k$ is the measurement matrix which relates the measurements to the state vector and $v_k$ is the sensor measurement noise. The ACS Kalman filter uses an unforced model so all inputs are considered disturbances to the steady-state dynamics. This means that $w_k$ includes noise, modeling errors, external forces and actuator forces.
+Here, $\Phi_k$ is the discrete time system model (or state transition matrix) relating the state at time $k+1$ to time $k$ in the absence of inputs or noise and it models the system dynamics. The term $w_k$ is system noise due to an imperfect model. $H_k$ is the measurement matrix which relates the measurements to the state vector and $v_k$ is the sensor measurement noise.
+
+The ACS Kalman filter uses an unforced model so all inputs are considered disturbances to the steady-state dynamics. This means that $w_k$ includes noise, modeling errors, external forces and actuator forces. The fact that all inputs are modeled as disturbances could lead to a large source of error in the estimate of the state variables. However, \cite{Kelly_1994_338} explains that very little is known about the powertrain dynamices of most autonomous vehicles, so any control-input model has a good chance of being wrong, and the use of that type of model could exagerrate rather than reduce errors.
 
 The prediction update step marches the system dynamics forward in time using the equations
 \begin{align}
@@ -124,9 +126,9 @@ The transformation from continuous to discrete time obeys an exponential matrix 
 \end{align*}
 since
 \begin{align*}
-e^A = \sum_{i=0}^N \frac{A^i}{i!}
+e^{F\Delta_T} = \sum_{i=0}^N \frac{(F\Delta_T)^i}{i!}
 \end{align*}
-and $A^0=I$, the identity matrix \cite{Phadke99}.
+and $(F\Delta_T)^0=I$, the identity matrix \cite{Phadke99}.
 
 A first order Taylor series approximation is generally considered good enough when $\Delta_T$ is small and when the nonlinearities in the system are small enough, meaning that the Taylor remainder is small. In the case of the robots used in these experiments that is assumed to be the case so the transformation used is simply
 \begin{align}
@@ -243,25 +245,11 @@ x_{k+1} =
 \end{array}\right]}_{\Phi_k}
 \left[\begin{array}{c}
 x \\ y \\ z \\ V \\ \theta \\ \phi \\ \psi \\ \omega
-\end{array}\right]_k
+\end{array}\right]_k.
 \end{align}
-as the system model that is used in the prediction update step of the Kalman filter equations to calculate the state of the robot in between measurements.
+This is the system model that is used in the prediction update step of the Kalman filter equations to calculate the state of the robot in between measurements.
 
-%The matrix $\Gamma$ is
-%{\footnotesize
-%\begin{align*}
-%\Gamma = \left[\begin{array}{c c c c c c c c}
-%s\psi c\phi-c\psi s\theta s\phi & c\psi c\theta & s\psi s\phi+c\psi s\theta c\phi & 0 & 0 & 0 & 0 & 0 \\
-%-c\psi c\phi-s\psi s\theta s\phi & s\psi c\theta & -c\psi s\phi-s\psi s\theta c\phi & 0 & 0 & 0 & 0 & 0 \\
-%-c\theta s\phi & -s\theta & c\theta c\phi & 0 & 0 & 0 & 0 & 0 \\
-%0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
-%0 & 0 & 0 & 0 & c\phi & 0 & s\phi & 0 \\
-%0 & 0 & 0 & 0 & -t\theta s\phi & 1 & t\theta c\phi & 0 \\
-%0 & 0 & 0 & 0 & -s\phi/c\theta & 0 & c\phi/c\theta & 0 \\
-%0 & 0 & 0 & 0 & 0 & 0 & 0 & 1
-%\end{array}\right]
-%\end{align*}
-%}
+Use of the extended Kalman filter requires that the system model be calculated at each time step using the most recent estimates of the state variables. This is due to the fact that partial derivatives of the nonlinear model in (\ref{eq:kfnonlineardynamics}) are evaluated at the current state during the linearization process. Since the estimates are not calculated prior to operation of the robots, the recursive nature of the Kalman filter is required.
 
 \subsection{Measurement Model}
 \label{sec:kfMeasurementModel}
@@ -349,7 +337,7 @@ Attempting to determine the proper values for the noise models $Q_k$ in (\ref{eq
 
 \subsection{Discriminative Training of Kalman Filter Parameters}
 \label{sec:kftrainingparams}
-A method to automatically learn what the covariance matrices $Q_k$ and $R_k$ should be, using a discriminative training algorithm, was described in \cite{Abbeel-RSS-05}. Building upon that work \cite{SakaiKuroda10} recently used a variation of the algorithm described in \cite{Abbeel-RSS-05} to learn parameter values for the noise filters used in their unscented Kalman filter. This method takes advantage of ground truth measurements obtained using a DGPS system like that described in Section \ref{sec:groundtruth}. Note that in the following expressions the term $h(\mu_t)$ is the position output by the Kalman filter and $y$ is the DGPS position output, so the goal is to find values of $Q_k$ and $R_k$ that minimize the difference between the output of the Kalman filter and DGPS ground truth.
+A method to automatically learn what the covariance matrices $Q_k$ and $R_k$ should be, using a discriminative training algorithm, was described in \cite{Abbeel-RSS-05}. Building upon that work, \cite{SakaiKuroda10} recently used a variation of the algorithm described in \cite{Abbeel-RSS-05} to learn parameter values for the noise filters used in their unscented Kalman filter. This method takes advantage of ground truth measurements obtained using a DGPS system like that described in Section \ref{sec:groundtruth}. Note that in the following expressions the term $h(\mu_t)$ is the position output by the Kalman filter and $y$ is the DGPS position output, so the goal is to find values of $Q_k$ and $R_k$ that minimize the difference between the output of the Kalman filter and DGPS ground truth.
 
 There are several metrics that can be applied to the data, with the two most relevant metrics being the residual error metric and the prediction likelihood error metric. The residual prediction error is used to estimate $Q_k$ and $R_k$ using
 \begin{align*}

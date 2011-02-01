@@ -15,4 +15,22 @@ During the course of the research performed for this thesis several areas were n
 \item Implement the more advanced work done by \cite{Lapierre06} and \cite{Gulati08} to improve the performance of the model-based controller. In particular, \cite{Gulati08} uses control Lyapunov functions that attempt to constrain the velocities and accelerations of the vehicle. They also use splines to generate intermediate waypoints between the vehicles current position and the goal position so that the route is smooth. Similarly, \cite{Burgard09} uses quintic splines to generate routes.
 \item Extend the model-based controller to have constraints that allow the controller to work with non-differential drive vehicles such as those with Ackerman steering, like most personal automobiles \cite{Shiller91dynamicmotion}. These other types of vehicles are not physically able to rotate in place.
 \item Build on the current extended Kalman filter in ACS to implement an unscented Kalman filter as described by \cite{ThrunProbRobots06} and \cite{Orderud05} to better handle the nonlinearities of the system.
+\item Begin using the known outputs of the controller, or teleoperation commands, as inputs to the Kalman filter. This will change the system model in the prediction update step (\ref{eq:kfpredictionupdate}) to
+\begin{align*}
+\hat{x}_{k+1}^- = \Phi_k \hat{x}_k^+ + G_ku_k
+\end{align*}
+where $G_k$ is the control-input model that maps the control outputs to state variables. Since the control outputs are linear and angular velocities as a percentage of the maximum allowed values for each robot, the control-input model will start as
+\begin{align*}
+G_k = \left[\begin{array}{c c}
+0 & 0 \\
+0 & 0 \\
+0 & 0 \\
+u * \frac{u_{\text{max}}}{100} & 0 \\
+0 & 0 \\
+0 & 0 \\
+0 & 0 \\
+0 & \omega * \frac{\omega_{\text{max}}}{100}
+\end{array}\right].
+\end{align*}
+Effects of the vehicle dynamics, especially within the powertrain, may need to be included in $G_k$. Further testing is needed to determine whether the simple control-input model here will provide an improved estimate of the states of the robot.
 \end{itemize}
