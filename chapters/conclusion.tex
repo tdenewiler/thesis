@@ -19,18 +19,5 @@ During the course of the research performed for this thesis several areas were n
 \begin{align*}
 \hat{x}_{k+1}^- = \Phi_k \hat{x}_k^+ + G_ku_k
 \end{align*}
-where $G_k$ is the control-input model that maps the control outputs to state variables. Since the control outputs are linear and angular velocities as a percentage of the maximum allowed values for each robot, the control-input model will start as
-\begin{align*}
-G_k = \left[\begin{array}{c c}
-0 & 0 \\
-0 & 0 \\
-0 & 0 \\
-u * \frac{u_{\text{max}}}{100} & 0 \\
-0 & 0 \\
-0 & 0 \\
-0 & 0 \\
-0 & \omega * \frac{\omega_{\text{max}}}{100}
-\end{array}\right].
-\end{align*}
-Effects of the vehicle dynamics, especially within the powertrain, may need to be included in $G_k$. Further testing is needed to determine whether the simple control-input model here will provide an improved estimate of the states of the robot.
+where $G_k$ is the control-input model that maps the control outputs to state variables.
 \end{itemize}
