@@ -1,84 +1,57 @@
-% UCSD Math Dissertation Class
-% Modification History:
-% 2008/05/13 V1.1:
-%   Table of Contents bug fix (JRB)
-%   Appendix space in toc (RMR)
 %
-% Summer 2007:
-%   Jason Bandlow       - JRB
-%   Ross Richardson     - RMR
+% UCSD Dissertation Class
 %
-%   The file as modified by Will Brockman (see below) was brought into compliance
-%   with current OGS guidelines.  This includes text spacing,
-%   adding ``Figure'' and ``Table'' to the TOF (TOL) entries,
-%   allowing for two Chapter headings,
-%   cleanup of frontmatter, compatibility with hyperref, compatibility
-%   with indexing, streamlining of template.
-%   Special thanks to John Farina for his initial fixes which prompted this
-%   release.
+%   For the latest version go to:
+%     http://ucsd-thesis.googlecode.com
+%
+%   Release info, modification history and author list below. 
+%
 %
 %   This file was originally based on the UC thesis template (see below
 %   for documentation on that document).  As a result, this file
 %   contains deprecated commentary, code, and options.  
-
-
-
-
-% UCSD DOCUMENT CLASS -- Release info is below. 
-% slight modifications by Will Brockman of ucthesis.cls 
-% fall 1997
+%
 % for LaTeX version 2e - 11/3/94
 %%% ====================================================================
 %%%  @LaTeX-class-file{
-%%%     filename       = "ucthesis.cls",
-%%%     version        = "3.0",
-%%%     date           = "31 October 1994",
-%%%	    portedby       = "Blaise B. Frederick",
-%%%     address        = "Center for Functional Imaging
-%%%	                      Lawrence Berkeley Laboratory
-%%%                       MS 55-121
-%%%                       1 Cyclotron Rd.
-%%%	           	          Berkeley, CA 94720
-%%%			              USA",
-%%%	    telephone       = "(510) 486-4423",
-%%%	    email           = "frederic@imasun.lbl.gov",
+%%%     filename       = "ucsd.cls",
+%%%     version        = "3.6",
+%%%
 %%%     codetable       = "ISO/ASCII",
-%%%     keywords        = "LaTeX, ucthesis",
-%%%     supported       = "until November 30, 1994",
-%%%     docstring       = "This file is the main file for the ucthesis
-%%%            class, which is intended to meet the requirements
-%%%            for University of California Ph.D. dissertations.
-%%%			   It is a direct port to LaTeX2e from UCTHESIS
-%%%			   v2.7 by Ethan V. Munson, with no changes other 
-%%%			   than those for compatibility.  The major modifictions
-%%%			   are in the font selection commands in the option
-%%%			   files uct1x.clo.
+%%%     keywords        = "LaTeX, ucsd-thesis, ucsd, thesis",
+%%%     url             = "http://ucsd-thesis.googlecode.com",
+%%%
+%%%     docstring       = "This file is the main file for the ucsd-thesis
+%%%                        class, which is intended to meet the requirements
+%%%                        for University of California San Diego 
+%%%                        Ph.D. dissertations.",
+%%%  
 %%%			   
-%%%			   UCTHESIS.STY v2.7 is based on the standard
+%%%                    UCTHESIS.STY v2.7 is based on the standard
 %%%			   report.sty as modified by Mittelbach and Schopf in
 %%%			   Jan 1992.  The primary differences are (1) the use
 %%%			   of pseudo-double-spacing, except in certain special
-%%%            environments; and (2) the use of a 6 inch line
-%%%            with 4em paragraph indentation.  It is only
+%%%                        environments; and (2) the use of a 6 inch line
+%%%                        with 0.5'' paragraph indentation.  It is only
 %%%			   intended for single-sided printing.  Double-sided
 %%%			   printing may be possible, but you're on
 %%%			   your own.
 %%%
-%%%            I know of no bugs in this implementation,
-%%%            but would be happy to hear of any problems
-%%%            that arise with it.
+%%%                        I know of no bugs in this implementation,
+%%%                        but would be happy to hear of any problems
+%%%                        that arise with it.
 %%%
-%%%			   Version 2.x fixes a bug in the previous
+%%%                    Version 2.x fixes a bug in the previous
 %%%			   version of 20 Jun 1988.  The bug was that 
 %%%			   "draft" optional mode didn't work because of
 %%%			   problems in handling optional arguments.
-%%%            This file does not seem to work with earlier 
-%%%            versions of LaTeX (pre-Jan 1992).
+%%%                        This file does not seem to work with earlier 
+%%%                        versions of LaTeX (pre-Jan 1992).
 %%%
-%%%			   Version 2.3 includes a single-spaced 
+%%%                    Version 2.3 includes a single-spaced 
 %%%			   tabular* environment.
 %%%			
-%%%			   Version 2.4 sets \evensidemargin correctly
+%%%                    Version 2.4 sets \evensidemargin correctly
 %%%			   for two-sided style.  It also adds new
 %%%			   environments (\smalltabular and
 %%%			   \scriptsizetabular) which produce tables
@@ -86,20 +59,38 @@
 %%%			   of producing small-font tables don't work
 %%%			   in ucthesis style.
 %%%
-%%%			   Version 2.5 adds support for the \maketitle
+%%%                    Version 2.5 adds support for the \maketitle
 %%%			   macro.
 %%%
-%%%			   Version 2.6 adds support for complete and
+%%%                    Version 2.6 adds support for complete and
 %%%			   correct front matter.  Some dead code was
 %%%			   removed, too.
 %%%
-%%%            Version 2.7 adds front matter support for
-%%%            thesis committees of more than 3 people
-%%%            and for a labeled signature line on the
-%%%            abstract page.
+%%%                    Version 2.7 adds front matter support for
+%%%                        thesis committees of more than 3 people
+%%%                        and for a labeled signature line on the
+%%%                        abstract page.
 %%%
-%%%			   Version 3.0 is a direct port of version 2.7
-%%%			   to LaTeX2e.  The major revisions in ucthesis.cls
+%%%                    Version 3.0 - 1994-10-31
+%%%                        Blaise B. Frederick
+%%%
+%%%                            Center for Functional Imaging
+%%%	                         Lawrence Berkeley Laboratory
+%%%                            MS 55-121
+%%%                            1 Cyclotron Rd.
+%%%	           	       Berkeley, CA 94720
+%%%			       USA
+%%%
+%%%	                   (510) 486-4423
+%%%	                   frederic@imasun.lbl.gov
+%%%
+%%%                        Supported until November 30, 1994
+%%%
+%%%                        A direct port to LaTeX2e from UCTHESIS
+%%%			   v2.7 by Ethan V. Munson, with no changes other 
+%%%			   than those for compatibility. 
+%%%
+%%%                        The major revisions in ucthesis.cls
 %%%			   are converting option processing to LaTeX2e 
 %%%			   conventions.  The uct1x files have been revised
 %%%			   to use the new font selection commands.
@@ -117,12 +108,103 @@
 %%%			   and \markboth if you use \part.  The solution
 %%%			   is to get the headerfooter style, which is
 %%%			   nice and simple to use."
+%%%
+%%%			    
+%%%                    Version 3.1 2008/05/13:
+%%%			   Jason Bandlow       - JRB
+%%%			   Ross Richardson     - RMR
+%%%	
+%%%			   The file as modified by Will Brockman (see below) 
+%%%                        was brought into compliance with current OGS guidelines.  
+%%%                        This includes text spacing,
+%%%			   adding ``Figure'' and ``Table'' to the TOF (TOL) entries,
+%%%			   allowing for two Chapter headings,
+%%%			   cleanup of frontmatter, compatibility with hyperref,
+%%%                        compatibility with indexing, 
+%%%			   streamlining of template.
+%%%			   Special thanks to John Farina for his initial fixes 
+%%%                        which prompted this release.
+%%%
+%%%			   Table of Contents bug fix (JRB)
+%%%			   Appendix space in toc (RMR)
+%%%
+%%%
+%%%                   Version 3.2 2009/02/23
+%%%                        Diwaker Gupta <diwaker@floatingsun.net>
+%%%
+%%%                        Brought into compliance with 
+%%%                          OGS guidelines as of Nov 03 2008.
+%%%                        Modified template with additional information.
+%%%                        Honor user specified fonts in TOC/LOT/LOF.
+%%%                        Suppress warning when using the subfig package.
+%%%                        Add note about hyperref not working in draft mode.
+%%%                                                                    
+%%%                        
+%%%                   Version 3.3 2009/03/23
+%%%                        Novimir Pablant <antoniuk@physics.ucsd.edu>
+%%%
+%%%                        Brought into compliance with 
+%%%                          OGS guidelines as of 2009/03/19.
+%%%                          Passed the ruler lady on 2009/03/19.
+%%%                        Letter page size now default, will reject other page sizes.
+%%%                        Abstract indented properly.
+%%%                        Indentations are of the correct size (0.5'').
+%%%                        Extra page after Abstract removed.
+%%%                        Reformatted revision history.
+%%%
+%%%                   Version 3.4 2009/05/01
+%%%                        Novimir Pablant <antoniuk@physics.ucsd.edu>
+%%%                        David Collins
+%%%                        Macneil Shonle
+%%%                        
+%%%                        Added the co-chair to the abstract page.
+%%%                        Added an option for two equal co-chairs.
+%%%                        Adjusted spacing on the signature and vita
+%%%                        pages.
+%%%
+%%%                   Version 3.5 2009/07/12
+%%%                        Novimir Pablant <antoniuk@physics.ucsd.edu>
+%%%                   
+%%%                        Fixed spacing of preliminary entries in TOC.
+%%%                        Fixed alignment of multi-line captions in TOF.
+%%%                        Fixed spacing on the abstract page
+%%%                          now multiline titles will be single spaced.
+%%%                          Spacing between chair and co-chair single spaced.
+%%%
+%%%                   Version 3.6 2010/03
+%%%                        Novimir Pablant <antoniuk@physics.ucsd.edu>                       
+%%%
+%%%                        Figure and Table lables now bold in captions.
+%%%                        Top margin of abstract page now 2.5''
+%%%
+%%%                   Version 3.7 2010/06
+%%%                        Novimir Pablant <antoniuk@physics.ucsd.edu>
+%%%
+%%%                        Links to abstract page fixed.
+%%%
 %%%  }
 %%% ====================================================================
+%%% To Do:
+%%%
+%%%   - Section titles don't break well.  These do not need to be
+%%%     justified full.
+%%%
+%%%   - Vita titles don't break well.  I need to add more freedom to add
+%%%     white space, or let the right hand side go ragged.
+%%%     Update: In the OGS manual, this is not justified full.
+%%%
+%%%   - section and subsection titles are aligned differently.
+%%%
+%%%   - Page numbering is hard coded for parts of the front matter.  
+%%%     Instead, page numbering should be automatic, but a warning should
+%%%     be displayed if it is not what is expected.
+%%%
+%%%   - A test page need to be added for the mathptmx font.
+%%%
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{ucsd}[2008/05/13 V1.1 University of California, San Diego, Mathematics Dissertation
-Class]
+\ProvidesClass{ucsd}[2010/06/01 V3.7 University of California, San Diego, Dissertation Class]
+
 
 %    ****************************************
 %    *               OPTIONS                *
@@ -140,9 +222,26 @@ Class]
 \DeclareOption{twoside}{\@twosidetrue  \@mparswitchtrue}  
 \DeclareOption{draft}{\renewcommand\@draftmark{1}}
 \DeclareOption{final}{\renewcommand\@draftmark{0}}
-\DeclareOption{chapterheads}{\renewcommand\@chapterheadsmark{1}} % RMR - Toggle how chapters are listed
-\ExecuteOptions{11pt,oneside,final}
+% RMR - Toggle how chapters are listed
+\DeclareOption{chapterheads}{\renewcommand\@chapterheadsmark{1}} 
 
+% Letter size (8.5"" x 11") is required for UCSD. Do not allow any other size.
+\DeclareOption{landscape}
+   {\ClassWarning{ucsd}{Paper orientation 'landscape' not valid for ucsd thesis.}}
+\DeclareOption{legalpaper}
+   {\ClassWarning{ucsd}{Paper size 'legalpaper' not valid for ucsd thesis.}}
+\DeclareOption{a4paper}
+   {\ClassWarning{ucsd}{Paper size 'a4paper' not valid for ucsd thesis.}}
+\DeclareOption{a5paper}
+   {\ClassWarning{ucsd}{Paper size 'a5paper' not valid for ucsd thesis.}}
+\DeclareOption{executivepaper}
+   {\ClassWarning{ucsd}{Paper size 'executivepaper' not valid for ucsd thesis..}}
+\DeclareOption{b5paper}
+   {\ClassWarning{ucsd}{Paper size 'b5paper' not valid for ucsd thesis.}}
+\DeclareOption{letterpaper}
+   {\ClassWarning{ucsd}{Paper size 'letterpaper' superfluous. Ignored.}}
+
+\ExecuteOptions{11pt,oneside,final}
 
 % CHOOSING THE TYPE SIZE:
 %
@@ -184,6 +283,10 @@ Class]
 
 \input uct1\@ptsize.clo\relax
 
+% Set the paper size to letter
+\setlength{\paperheight}{11.0in}
+\setlength{\paperwidth}{8.5in}
+
 % \smallssp is used to produce tabular environments in the small font.
 % This is required because single-spacing requires a change in font size.
 % \scriptsizessp is a still smaller version of the same thing.
@@ -204,6 +307,7 @@ Class]
 \ifx\phantomsection\undefined
 \def\phantomsection{}
 \else \fi
+\providecommand*{\toclevel@backmatter}{0}
 
 % PREPARING A FOREIGN LANGUAGE VERSION:
 %
@@ -268,6 +372,8 @@ Class]
 \def\acknowledgename{Acknowledgements}
 %                    ~~~~~~~~~~~~~~~~
 
+\def\UCSD@text@chair{Chair}
+\def\UCSD@text@cochair{Co-Chair}
 %    ****************************************
 %    *             FRONT MATTER             *
 %    ****************************************
@@ -282,13 +388,21 @@ Class]
 \def\degreeyear#1{\gdef\@degreeyear{#1}}
 
 % The full (unabbreviated) name of the degree
-\def\degree#1{\gdef\@degree{#1}}
+\def\degreetitle#1{\gdef\@degreetitle{#1}}
 
 % The name of your committee's chair
-\def\chair#1{\gdef\@chair{#1}}
+\def\chair#1{\gdef\UCSD@chair{#1}}
 
-% The name of your committee's cochair, if applicable
-\def\cochair#1{\gdef\@cochair{#1}}
+% The name of your committee's cochair (if applicable)
+\def\cochair#1{\gdef\UCSD@cochair{#1}}
+
+% The names of your committee's equal co-chairs 
+% (if applicable, and use this instead of chair and cochair)
+\def\cochairs#1#2{
+  \gdef\UCSD@cochairs{true}
+  \gdef\UCSD@chair{#1}
+  \gdef\UCSD@cochair{#2}
+  \let\UCSD@text@chair\UCSD@text@cochair}
 
 % The names of your other committe members, one per line,
 % sorted alphabetically by last name.
@@ -339,10 +453,12 @@ Class]
 
 % JRB - Change textheight per OGS.  This gets the page numbers in the
 % right place.
-\addtolength{\topmargin}{-.5in}
-\addtolength{\textheight}{.5in}
+%\addtolength{\topmargin}{-.5in}
+\addtolength{\topmargin}{-0.75in} % TAD
+%\addtolength{\textheight}{.5in}
+\addtolength{\textheight}{.75in} % TAD
 %\addtolength{\footskip}{.25in}
-\addtolength{\footskip}{0.75in} % TAD 20110124
+\addtolength{\footskip}{0.35in} % TAD
 
 \def\makefrontmatter{  
 % TITLE PAGE.   
@@ -362,11 +478,11 @@ Class]
     {\bfseries
      {\@title} \par}
     \bigskip \medskip
-    A Thesis submitted in partial satisfaction of the \par 
+    A thesis submitted in partial satisfaction of the \par 
 	\smallskip
     requirements for the degree \par 
 	\smallskip
-    {\@degree} \par
+    {\@degreetitle} \par
     \bigskip \medskip
     in \par
     \bigskip \medskip
@@ -381,9 +497,9 @@ Class]
     \fmsmallfont
     Committee in charge:
     \begin{quote}
-       {\@chair}, Chair\newline
-       \ifx\@cochair\@isnotdefined \else%
-	     {\@cochair}, Co-Chair\newline\fi
+       {\UCSD@chair}, \UCSD@text@chair\newline
+       \ifx\UCSD@cochair\@isnotdefined \else%
+	     {\UCSD@cochair}, \UCSD@text@cochair\newline\fi
        {\@othermembers}
     \end{quote}
     \begin{center}
@@ -422,54 +538,56 @@ All rights reserved.}
 % (EVM, 9/19/94)
 
 \phantomsection
-\addcontentsline{toc}{chapter}{\protect\numberline{}Signature Page}%
+\addcontentsline{toc}{frontmatter}{\protect\numberline{}Signature Page}%
 \begin{alwayssingle}
 \null\vfill
 \begin{center}
 \vspace{.25in}
 \vspace{\@approvalspace}
-\makebox[4in][l]{\parbox{3.5in}{\fmfont The Thesis of {\@author} 
+\makebox[4in][l]{\parbox{4in}{\fmfont The thesis of {\@author} 
 is approved, and it is acceptable in quality and form for publication 
 on microfilm and electronically: }}\\
 \begin{tabular*}{4in}[t]{r@{\extracolsep{\fill}}r}
 & \rule{0pt}{\@approvalspace} \\
 \hline
 \ifnum \@numberofmembers > 2
-& \rule{0pt}{\@approvalspace} \\
-\hline
+  & \rule{0pt}{\@approvalspace} \\
+  \hline
 \fi
 \ifnum \@numberofmembers > 3
-& \rule{0pt}{\@approvalspace} \\
-\hline
+  & \rule{0pt}{\@approvalspace} \\
+  \hline
 \fi
 \ifnum \@numberofmembers > 4
-& \rule{0pt}{\@approvalspace} \\
-\hline
+  & \rule{0pt}{\@approvalspace} \\
+  \hline
 \fi
 \ifnum \@numberofmembers > 5
-& \rule{0pt}{\@approvalspace} \\
-\hline
+  & \rule{0pt}{\@approvalspace} \\
+  \hline
 \fi
 \ifnum \@numberofmembers > 6
-& \rule{0pt}{\@approvalspace} \\
-\hline
+  & \rule{0pt}{\@approvalspace} \\
+  \hline
 \fi
 
-\ifx\@cochair\@isnotdefined% No cochair
-&\rule{0pt}{\@approvalspace} \\
-\hline
+\ifx\UCSD@cochair\@isnotdefined% No cochair
+  &\rule{0pt}{\@approvalspace} \\
+  \hline
 \else% Cochair
-&
-\newlength{\@tempapprovalspace} 
-\settoheight{\@tempapprovalspace}{Co-Chair}
-\setlength{\@tempapprovalspace}{-\@tempapprovalspace}
-\addtolength{\@tempapprovalspace}{-2pt}
-\raisebox{\@approvalspace}[\@approvalspace][0pt]%
-{\raisebox{\@tempapprovalspace}{Co-Chair}}\\
-\hline
+  &
+  % Add the Co-Chair label below the last line and make
+  % vertical space before adding another line.
+  \newlength{\@tempapprovalspace} 
+  \settoheight{\@tempapprovalspace}{\UCSD@text@cochair}
+  \setlength{\@tempapprovalspace}{-\@tempapprovalspace}
+  \addtolength{\@tempapprovalspace}{-2pt}
+  \raisebox{\@approvalspace}[\@approvalspace][0pt]%
+  {\raisebox{\@tempapprovalspace}{\UCSD@text@cochair}}\\
+  \hline
 \fi
 
-& Chair
+& \UCSD@text@chair
 \end{tabular*}\\[\@approvalspace]
 {\fmfont University of California, {\@campus}} \\
 \vspace{-.25in}
@@ -488,7 +606,7 @@ on microfilm and electronically: }}\\
 
 \newenvironment{dedication}
 {\phantomsection % RMR - hyperref requires a \section in order to place a hyperlink
-\addcontentsline{toc}{chapter}{\protect\numberline{}Dedication}%
+\addcontentsline{toc}{frontmatter}{\protect\numberline{}Dedication}%
 \begin{alwayssingle}
   \centerline{\expandafter\uppercase\expandafter{Dedication}}%
   \large\begin{center}
@@ -499,7 +617,7 @@ on microfilm and electronically: }}\\
 % user can do whatever they wish.
 \newenvironment{mydedication}
 {\phantomsection
-\addcontentsline{toc}{chapter}{\protect\numberline{}Dedication}%
+\addcontentsline{toc}{frontmatter}{\protect\numberline{}Dedication}%
   \centerline{\expandafter\uppercase\expandafter{Dedication}}}
 {}
 
@@ -512,7 +630,7 @@ on microfilm and electronically: }}\\
 % flush to the right.
 \newenvironment{epigraph}
 {\phantomsection 
-\addcontentsline{toc}{chapter}{\protect\numberline{}Epigraph}%
+\addcontentsline{toc}{frontmatter}{\protect\numberline{}Epigraph}%
 \begin{alwayssingle}
   \centerline{\expandafter\uppercase\expandafter{Epigraph}}%
   \vspace{2in}\hfill\begin{flushright}}
@@ -523,7 +641,7 @@ on microfilm and electronically: }}\\
 % user can do whatever they wish.
 \newenvironment{myepigraph}
 {\phantomsection 
-\addcontentsline{toc}{chapter}{\protect\numberline{}Epigraph}%
+\addcontentsline{toc}{frontmatter}{\protect\numberline{}Epigraph}%
   \centerline{\expandafter\uppercase\expandafter{Epigraph}}}%
 {}
 
@@ -535,7 +653,7 @@ on microfilm and electronically: }}\\
 \newenvironment{acknowledgements}
 {\begin{alwayssingle}
 \phantomsection
-\addcontentsline{toc}{chapter}{\protect\numberline{}\acknowledgename}%
+\addcontentsline{toc}{frontmatter}{\protect\numberline{}\acknowledgename}%
 \centerline{\expandafter\uppercase\expandafter{\acknowledgename}}%
 \bigskip
 }
@@ -550,12 +668,12 @@ on microfilm and electronically: }}\\
 \def\vitapage{\@restonecolfalse\if@twocolumn\@restonecoltrue\onecolumn
      \else \newpage \fi\pagestyle{preliminary}
      \phantomsection
-     \addcontentsline{toc}{chapter}{\protect\numberline{}Vita and Publications}}
+     \addcontentsline{toc}{frontmatter}{\protect\numberline{}Vita and Publications}}
 % Special label for the vita list
 %
 \def\vitalabel#1{#1\hfill}
 \def\vita{\begin{center}VITA\end{center}
-     \list{}{\ssp \leftmargin 2in \labelwidth 1.7in \let\makelabel\vitalabel
+     \list{}{\ssp \leftmargin 1.5in \labelwidth 1.2in \let\makelabel\vitalabel
            \labelsep 0.3in}}
 \let\endvita\endlist
 
@@ -570,34 +688,47 @@ on microfilm and electronically: }}\\
 % The ABSTRACT environment allows for multi-page abstracts which,
 % in accordance with UC rules, is numbered separately from the rest
 % of the rest of the dissertation in Arabic.  It requires definition
-% of the \title, \author, \degree, \field, \campus, and \chair macros.
+% of the \title, \author, \degreetitle, \field, \campus, and \chair macros.
 % The page numbering is in the usual sequence for UCSD OGS--WBB.
+%
+% The OGS manual states that the top margin should be 2.5".
 
-% addcontentsline line moved to fix TOC bug.  (JRB, 5-5-08)
 \def\abstract{ 
-\phantomsection
-\begin{alwayssingle}
-\begin{center}
-{\fmfont
-{\expandafter\uppercase\expandafter{\abstractlongname}}\par
-\vspace{.5in}
-    {\bfseries
-     {\@title} \par}
-\vspace{.1in}
-by\par
-\vspace{.1in}
-\@author\par
-{\@degree} in \@field\par
-\vspace{.1in}
-University of California, {\@campus}, \@degreeyear \par
-\vspace{.1in}
-{\@chair}, Chair}
-\vspace{.1in}
-\end{center}
-\addcontentsline{toc}{chapter}{\protect\numberline{}\abstractshortname}%
+  \begin{alwayssingle}  
+  \phantomsection
+  \addcontentsline{toc}{frontmatter}{\protect\numberline{}\abstractshortname}
+  \begin{center}
+  \ssp
+  {\fmfont
+  \null\vspace{1.25in}  
+  {\expandafter\uppercase\expandafter{\abstractlongname}}\par
+  \vspace{.5in}
+  {\bfseries
+    {\@title} \par}
+  \vspace{.5in}
+  by\par
+  \vspace{.5in}
+  \@author\par
+  \vspace{.3in}
+  {\@degreetitle} in \@field\par
+  \vspace{.3in}
+  University of California, {\@campus}, \@degreeyear \par
+  \vspace{.3in}
+  {\UCSD@chair}, \UCSD@text@chair
+  %Check if there is a co-chair and add accordingly.
+  \ifx\UCSD@cochair\@isnotdefined 
+  \else
+    \par
+    {\UCSD@cochair}, \UCSD@text@cochair
+  \fi
+  \vspace{.3in}
+  } % Closes fmfont above
+  \end{center}
+  \par
 }
 
-\def\endabstract{\par\vfil\null\end{alwayssingle}
+
+\def\endabstract{\par\vfil\end{alwayssingle}
 }
 
 
@@ -953,7 +1084,7 @@ University of California, {\@campus}, \@degreeyear \par
 % From ucsd-thesis.sty (WBB), modified 
   \newpage
   \phantomsection
-  \addcontentsline{toc}{chapter}{\protect\numberline{}\contentslongname}%
+  \addcontentsline{toc}{frontmatter}{\protect\numberline{}\contentslongname}%
   \centerline{\expandafter\uppercase\expandafter{\contentslongname}}%
   \bigskip%
 %  \chapter*{\contentsname
@@ -1000,8 +1131,24 @@ University of California, {\@campus}, \@degreeyear \par
 \settowidth{\@chapterlength}{\@chapapp}
 \addtolength{\@chapterlength}{2.6em} % Space between toc labels and values
 \fi
-%\def\l@chapter{\pagebreak[3]\vskip 1em plus 1pt \@dottedtocline{0}{0em}{1.5em}}
+
 \def\l@chapter{\normalfont\pagebreak[3]\vskip 1em plus 1pt \@dottedtocline{0}{0em}{\@chapterlength}}
+
+\newlength{\UCSD@toc@frontmatterLength}
+\setlength{\UCSD@toc@frontmatterLength}{0em}
+% Use the following line to have the front matter title aligned with 
+% the chapter titles.  Otherwise they will aligned to the left (as required by OGS.)
+%\setlength{\UCSD@toc@frontmatterLength}{0em}
+\def\l@frontmatter{\normalfont\vskip 1em plus 1pt \@dottedtocline{0}{0em}{\UCSD@toc@frontmatterLength}}
+
+
+\newlength{\UCSD@toc@backmatterLength}
+\setlength{\UCSD@toc@backmatterLength}{0em}
+% Use the following line to have the back matter title aligned with 
+% the chapter titles.  Otherwise they will aligned to the left (as required by OGS.)
+%\setlength{\UCSD@toc@backmatterLength}{0em}
+\def\l@backmatter{\normalfont\vskip 1em plus 1pt \@dottedtocline{0}{0em}{\UCSD@toc@frontmatterLength}}
+
 
 \def\l@section{\normalfont\@dottedtocline{1}{\@chapterlength}{2.3em}}
 
@@ -1028,64 +1175,54 @@ University of California, {\@campus}, \@degreeyear \par
 % LIST OF FIGURES
 %
 % Single-space list of figures, add it to the table of contents.
-\def\listoffigures{\@restonecolfalse
-  \if@twocolumn\@restonecoltrue\onecolumn\fi
-%  \chapter*{\listfigurename\@mkboth{\uppercase{\listfigurename}}%
-% {\uppercase{\listfigurename}}}
-% WBB
-  \newpage
+\def\listoffigures{%
+  \@restonecolfalse%
+  \if@twocolumn\@restonecoltrue\onecolumn\fi%
+  \newpage%
   \centerline{\expandafter\uppercase\expandafter{\listfigurename}}%
   \bigskip%
-  \phantomsection
-  \addcontentsline{toc}{chapter}{\protect\numberline{}\listfigurename }%
-  \begingroup  % This group overloads \numberline to output ``Figure 1.3'' instead of ``1.3''
-  \let\ORIG@numberline\numberline
-  \renewcommand*{\numberline}[1]{
-  \ORIG@numberline{\figurename~##1:}}
-
-   {\ssp\@starttoc{lof}}\if@restonecol
-    \twocolumn\fi
-  \endgroup  
+  \phantomsection%
+  \addcontentsline{toc}{frontmatter}{\protect\numberline{}\listfigurename }%
+  %This group overloads \numberline to output ``Figure 1.3'' instead of ``1.3''
+  \begingroup%
+    \let\ORIG@numberline\numberline%
+    \renewcommand*{\numberline}[1]{%
+      \ORIG@numberline{\figurename~##1:}}%
+    {\ssp\@starttoc{lof}}%
+    \if@restonecol\twocolumn\fi%
+  \endgroup %
   }
 
-%\def\l@figure{\@dottedtocline{1}{1.5em}{2.3em}}
 \newlength{\@figurelength}
 \settowidth{\@figurelength}{\figurename }
-\addtolength{\@figurelength}{2.8em} % Magic value, but consistent with the standard figure length
+% Magic value, but consistent with the standard figure length
+\addtolength{\@figurelength}{2.8em}
 \def\l@figure{\normalfont\@dottedtocline{1}{0em}{\@figurelength}}
 
 % LIST OF TABLES
 %
-%\def\listoftables{\@restonecolfalse
-%  \if@twocolumn\@restonecoltrue\onecolumn\fi
-%  \chapter*{\listtablename\@mkboth{\uppercase{\listtablename}}%
-%   {\uppercase{\listtablename}}}\@starttoc{lot}\if@restonecol
-%  \twocolumn\fi}
-\def\listoftables{\@restonecolfalse
-  \if@twocolumn\@restonecoltrue\onecolumn\fi
-% WBB
-  \newpage
+% Single-space list of tables, add it to the table of contents.
+\def\listoftables{%
+  \@restonecolfalse%
+  \if@twocolumn\@restonecoltrue\onecolumn\fi%
+  \newpage%
   \centerline{\expandafter\uppercase\expandafter{\listtablename}}%
   \bigskip%
-  \phantomsection
-  \addcontentsline{toc}{chapter}{\protect\numberline{}\listtablename }%
-  % RMR 2007 
-  \begingroup  % This group overloads \numberline to output ``Table 1.3'' instead of ``1.3''
-  \let\ORIG@numberline\numberline
-  \renewcommand*{\numberline}[1]{\ORIG@numberline{\tablename~##1:}}
-%  \chapter*{\listtablename\@mkboth{\uppercase{\listtablename}}%
-%{\uppercase{\listtablename}}}
-%   \addcontentsline{toc}{chapter}{\listtablename}
-   {\ssp\@starttoc{lot}}\if@restonecol
-  \twocolumn\fi
-  \endgroup  
+  \phantomsection%
+  \addcontentsline{toc}{frontmatter}{\protect\numberline{}\listtablename }%
+  % This group overloads \numberline to output ``Table 1.3'' instead of ``1.3''
+  \begingroup%
+    \let\ORIG@numberline\numberline%
+    \renewcommand*{\numberline}[1]{\ORIG@numberline{\tablename~##1:}}%
+    {\ssp\@starttoc{lot}}%
+    \if@restonecol\twocolumn\fi%
+  \endgroup %
   }
 
-
-%\let\l@table\l@figure
 \newlength{\@tablelength}
 \settowidth{\@tablelength}{\tablename }
-\addtolength{\@tablelength}{2.8em} % Magic value, but consistent with the standard table length
+% Magic value, but consistent with the standard table length.
+\addtolength{\@tablelength}{2.8em}
 \def\l@table{\normalfont\@dottedtocline{1}{0em}{\@tablelength}}
 
 
@@ -1112,7 +1249,7 @@ University of California, {\@campus}, \@degreeyear \par
 %%               to get correct references
 \def\thebibliography#1{\chapter*{\bibname\@mkboth
   {\expandafter\uppercase\expandafter{\bibname}}{\expandafter\uppercase\expandafter{\bibname}}}
-  \addcontentsline{toc}{chapter}{\bibname}
+  \addcontentsline{toc}{backmatter}{\bibname}
   \ssp %WBB re OGSR style, 6.11.97
   \list{\@biblabel{\arabic{enumiv}}}{\settowidth\labelwidth{\@biblabel{#1}}%
     \leftmargin\labelwidth
@@ -1159,7 +1296,7 @@ University of California, {\@campus}, \@degreeyear \par
     \thispagestyle{plain}\parindent\z@
     \parskip\z@ plus .3\p@\relax\let\item\@idxitem
 \phantomsection
-\addcontentsline{toc}{chapter}{\indexname} 
+\addcontentsline{toc}{backmatter}{\indexname} 
 }
 
 \def\@idxitem{\par\hangindent 40\p@}
@@ -1310,7 +1447,7 @@ University of California, {\@campus}, \@degreeyear \par
 \def\fps@figure{tbp}
 \def\ftype@figure{1}
 \def\ext@figure{lof}
-\def\fnum@figure{\figurename~\thefigure}
+\def\fnum@figure{\textbf{\figurename~\thefigure}}
 \def\figure{\@float{figure}}
 \def\endfigure{\end@float}
 \@namedef{figure*}{\@dblfloat{figure}}
@@ -1324,7 +1461,7 @@ University of California, {\@campus}, \@degreeyear \par
 \def\fps@table{tbp}
 \def\ftype@table{2}
 \def\ext@table{lot}
-\def\fnum@table{\tablename~\thetable}
+\def\fnum@table{\textbf{\tablename~\thetable}}
 \def\table{\@float{table}}
 \def\endtable{\end@float}
 \@namedef{table*}{\@dblfloat{table}}
@@ -1449,7 +1586,7 @@ University of California, {\@campus}, \@degreeyear \par
 % page numbering and margins
 %
 
-\def\ps@facingcap{\let\@mkboth\@gobbletwo
+\def\ps@facingcaption{\let\@mkboth\@gobbletwo
      \def\@oddhead{\rmfamily\thepage\hfil} \def\oddfoot{}
      \let\@evenhead\@oddhead \def\@evenfoot{}
      \oddsidemargin 0in \let\evensidemargin\oddsidemargin
