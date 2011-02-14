@@ -28,15 +28,17 @@ saveimages = 0
 # y(1) = alpha
 # y(2) = theta
 def kinematicsODE(y, t, gamma, h, k):
+    psi = y[5]
     edot = -gamma * y[0] * cos(y[1])**2
-    adot = -k * y[1] - gamma * h * y[2] * cos(y[1]) * sin(y[1]) / y[1]
-    tdot = gamma * cos(y[1]) * sin(y[1])
+    alphadot = -k * y[1] - gamma * h * y[2] * cos(y[1]) * sin(y[1]) / y[1]
+    thetadot = gamma * cos(y[1]) * sin(y[1])
     u = gamma * cos(y[1]) * y[0]
     w = k * y[1] + gamma * cos(y[1]) * sin(y[1]) / y[1] * (y[1] + h * y[2])
-    xdot = u * cos(w)
-    ydot = u * sin(w)
+    psi = psi + w
+    xdot = u * cos(psi)
+    ydot = u * sin(psi)
     
-    return [edot, adot, tdot, xdot, ydot]
+    return [edot, alphadot, thetadot, xdot, ydot, u, w]
 # end kinematicsODE()
 
 
@@ -68,7 +70,7 @@ theta = atan2(yend-ystart, xend-xstart)
 alpha = theta - (yawstart-yawend)
 xpos = xstart
 ypos = ystart
-y0 = [e, theta, alpha, xpos, ypos]
+y0 = [e, theta, alpha, xpos, ypos, yawstart]
 
 # Simulate the kinematics for the trajectory to get the state variables
 # through time. The state variables are:
@@ -96,7 +98,7 @@ print y
 #    u[i] = gamma * cos(y[i,1]) * y[i,0]
 #    w[i] = k * y[i,1] + gamma * cos(y[i,1]) * sin(y[i,1]) / y[i,1] * (y[i,1] + h * y[i,2])
 #    Vdot = -y[i,0] * u * cos(y[i,1]) + y[i,1] * (-w[i] + u[i] * sin(y[i,1]) / y[i,1] * (y[i,1] + h * theta) / y[i,0])
-#    phi[i] = y[i,2] - y[i,1]
+#    #phi[i] = y[i,2] - y[i,1]
 #    xpos[i] = sqrt(y[i,0]**2 * cos(y[i,2])**2)
 #    ypos[i] = xpos[i] * tan(y[i,2])
 #    #xpos[i] = u[i] * cos(phi[i])
@@ -106,7 +108,8 @@ print y
 
 # Plot the trajectory to go from the start to the goal.
 figure(1)
-lpos = plot(xpos, ypos, 'b.')
+lpos = plot(y[3], y[4], 'b.')
+#lpos = plot(xpos, ypos, 'b.')
 lposStart = plot(xstart, ystart, 'go')
 lposEnd = plot(xend, yend, 'ro')
 title('Trajectory')
@@ -120,7 +123,8 @@ if saveimages:
 
 # Plot the X and Y positions versus time.
 figure(2)
-lpos = plot(t, xpos, t, ypos)
+lpos = plot(t, y[3], t, y[4])
+#lpos = plot(t, xpos, t, ypos)
 title('Position')
 xlabel('Time (s)')
 ylabel('Position (m)')
@@ -132,7 +136,8 @@ if saveimages:
 
 # Plot the linear and angular velocities versus time.
 figure(3)
-lvel = plot(t, u, t, w)
+lvel = plot(t, y[5], t, y[6])
+#lvel = plot(t, u, t, w)
 title('Linear and Angular Velocities')
 xlabel('Time (s)')
 ylabel('Velocity (m/s)')

@@ -96,7 +96,7 @@ The enthusiasm and energy of Professor Thomas Bewley has been an inspiration and
 
 I am grateful to Gideon Prior, Nima Ghods, Amin Rahimi and Steve Stancliff for our many long conversations while learning how to build better robots.
 
-I would also like to thank Mike Bruch, Bart Everett and the ACS team (Gaurav Ahuja, Donnie Fellars, Greg Kogut and Brandon Sights) as well as Jason Lum, Kelly Grant and the EOD technicians at SPAWAR for their support with both hardware and software.
+I would also like to thank Mike Bruch, Bart Everett and the ACS team (Gaurav Ahuja, Donnie Fellars, Greg Kogut and Brandon Sights) as well as Jason Lum, Kelly Grant and the EOD Reserve technicians at SPAWAR for their support with both hardware and software.
 
 And without the love and encouragement from Silvie Georgens I would not have made it this far.
 \end{acknowledgements}
@@ -125,7 +125,9 @@ And without the love and encouragement from Silvie Georgens I would not have mad
 % Keep a blank line after \begin{abstract} and the first line of the abstract so that indentation occurs.
 \begin{abstract}
 
-Advancements in the autonomous navigation of robots increases the range of behaviors that can be implemented, consequently increasing the utility of the robots to end users. To achieve these advancements, the state estimation and controls algorithms for Explosives Ordinance Disposal (EOD) robots have been studied and improved. In this work, I integrated a high precision, differential GPS system to measure ground truth positions, which were then used to find more accurate system and measurement noise covariance values. The more accurate noise models improved the state estimate of an extended Kalman filter. Independently, a model-based control law was implemented for a vehicle with nonholonomic unicycle constraints kinematics using a Lyapunov method. The Lyapunov controller was implemented on several different EOD robots and is compared to the previously existing PID controller with respect to navigation near simulated obstacles and in open space. Practical considerations for tuning the Lyapunov controller design variables are explored, and recommendations are given for several operating scenarios. The improved algorithms were implemented using multiple different robots. The algorithms are currently running on EOD robots used in the field. This work will accelerate development of advanced maneuvers, such as retroverse over long distances as well as obstacle avoidance.
+Advancements in the autonomous navigation of ground robots increases the range of behaviors that can be implemented, consequently increasing the utility of the robots to end users. To achieve these advancements, the state estimation and controls algorithms for Explosives Ordinance Disposal (EOD) robots have been studied and improved. In this work, I integrated a high-precision, differential GPS system to measure ground-truth positions, which were then used to find more accurate system and measurement noise covariance values. The more accurate noise models improved the state estimate of an extended Kalman filter.
+
+Independently, a model-based control law was implemented for a vehicle with nonholonomic unicycle constraints kinematics using a Lyapunov method. The Lyapunov controller was implemented on several different EOD robots and is compared to the previously existing PID controller with respect to navigation near simulated obstacles and in open space. Practical considerations for tuning the Lyapunov controller design variables are explored, and recommendations are given for several operating scenarios. The improved algorithms were implemented using multiple different robots, and are currently running on EOD robots used in the field. This work will accelerate development of advanced maneuvers, such as retroverse over long distances, as well as obstacle avoidance.
 \end{abstract}
 
 \end{frontmatter}
