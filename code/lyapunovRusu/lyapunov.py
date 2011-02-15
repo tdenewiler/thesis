@@ -1,7 +1,9 @@
 #! /usr/bin/env python
 
+#####################################################################
 # Simulation of differential drive robot using model-based controller
 # based on Lyapunov stability theory.
+#####################################################################
 
 from scipy import *
 from scipy.integrate import odeint
@@ -39,16 +41,19 @@ def kinematicsODE(y, t, gamma, h, k):
 #####################################################################
 # Main.
 
-# Start pose.
-xstart = 1
-ystart = -1
-yawstart = 0
-xend = -25
-yend = 3
-yawend = 0
+############################
+# Configuration starts here.
 
-# Time to run simulation.
-tend = 60
+# Start pose.
+xi = 5
+yi = -2
+yawi = 0
+xf = -15
+yf = 13
+yawf = 0
+
+# Time and resolution of simulation.
+tend = 40
 tinc = 0.1
 t = arange(0, tend, tinc)
 
@@ -56,63 +61,99 @@ t = arange(0, tend, tinc)
 gamma = 0.25
 h = 0.33
 k = 0.30
+gamma2 = 0.25
+h2 = 1.10
+k2 = 2 * gamma2 * sqrt(h2)
+
+# End of configuration.
+#######################
 
 # Calculate the initial errors for position and heading.
-dxe = xend - xstart
-dye = yend - ystart
-thetastar = yawend
-psi = yawstart
+dxe = xf - xi
+dye = yf - yi
+thetastar = yawf
+psi = yawi
 e = sqrt((dxe)**2 + (dye)**2)
 thetae = atan2(dye, dxe)
 phi = thetastar - psi
 theta = thetae - thetastar
 alpha = theta - phi
 y0 = [e, theta, alpha]
-print 'Initial errors are e =', e,'m, alpha =', alpha,'rad, theta =', theta,'rad, thetae =', thetae,'rad'
+print 'Initial errors are e = %0.5f m, alpha = %0.5f rad, theta = %0.5f rad, thetae = %0.5f rad.' % (e, alpha, theta, thetae)
 
-# Simulate the kinematics for the trajectory to get the state variables
-# through time. The state variables are:
-# y[1] = e, y[2] = alpha and y[3] = theta.
+# Simulate the robot kinematics to determine the trajectory of the robot.
+# The state variables are: y[1] = e, y[2] = alpha and y[3] = theta.
 start = time.time()
 y = odeint(kinematicsODE, y0, t, (gamma, h, k))
-elapsed = time.time() - start
-print 'ODE solver took %0.5f seconds' % elapsed
+y2 = odeint(kinematicsODE, y0, t, (gamma2, h2, k2))
 
-# At each time step calculate the linear and angular velocity commands.
-# Note that Vdot should be <= 0 is a sanity check.
+# At each time step calculate the linear and angular velocity commands and the resulting robot positions.
 xpos = zeros((tend/tinc,1))
 ypos = zeros((tend/tinc,1))
 u = zeros((tend/tinc,1))
 w = zeros((tend/tinc,1))
-Vdot = zeros((tend/tinc,1))
+xpos2 = zeros((tend/tinc,1))
+ypos2 = zeros((tend/tinc,1))
+u2 = zeros((tend/tinc,1))
+w2 = zeros((tend/tinc,1))
 
 for i in range(0,int(tend/tinc)):
     u[i] = gamma * y[i,0] * cos(y[i,1])
     w[i] = k * y[i,1] + gamma * cos(y[i,1]) * sin(y[i,1]) / y[i,1] * (y[i,1] + h * y[i,2])
-    Vdot = -gamma * y[i,0]**2 * (cos(y[i,1]))**2 - k * y[i,1]**2
-    xpos[i] = xend - y[i,0] * cos(y[i,2])
-    ypos[i] = yend - y[i,0] * sin(y[i,2])
+    xpos[i] = xf - y[i,0] * cos(y[i,2])
+    ypos[i] = yf - y[i,0] * sin(y[i,2])
+    u2[i] = gamma * y2[i,0] * cos(y2[i,1])
+    w2[i] = k * y2[i,1] + gamma * cos(y2[i,1]) * sin(y2[i,1]) / y2[i,1] * (y2[i,1] + h * y2[i,2])
+    xpos2[i] = xf - y2[i,0] * cos(y2[i,2])
+    ypos2[i] = yf - y2[i,0] * sin(y2[i,2])
+elapsed = time.time() - start
+print 'Simulation took %0.5f seconds for a rate of %0.2f Hz.' % (elapsed, 1/elapsed)
+
+########
+# Plots.
 
 # Plot the trajectory to go from the start to the goal.
-figure(1)
+fignum = 1
+figure(fignum)
 lpos = plot(xpos, ypos, 'b.')
-lposStart = plot(xstart, ystart, 'go')
-lposEnd = plot(xend, yend, 'ro')
-title('Trajectory')
+lposStart = plot(xi, yi, 'go')
+lposEnd = plot(xf, yf, 'ro')
+title(r'Robot Trajectory ($\gamma$ = %0.2f, h = %0.2f, k = %0.2f)' % (gamma, h, k))
+xlabel('x (m)')
+ylabel('y (m)')
+legend((lpos, lposStart, lposEnd), ('Position', 'Start', 'End'), 'best')
+axis('equal')
+#show()
+if saveimages:
+    savefig("images/lyapunovTrajectory.png", dpi=pngres)
+
+# Plot the trajectory to go from the start to the goal.
+fignum = fignum + 1
+figure(fignum)
+lpos = plot(xpos2, ypos2, 'b.')
+lposStart = plot(xi, yi, 'go')
+lposEnd = plot(xf, yf, 'ro')
+title(r'Robot Trajectory ($\gamma$ = %0.2f, h = %0.2f, k = %0.2f)' % (gamma2, h2, k2))
 xlabel('x (m)')
 ylabel('y (m)')
 legend((lpos, lposStart, lposEnd), ('Position', 'Start', 'End'), 'best')
 axis('equal')
 show()
 if saveimages:
-    savefig("images/lyapunovTrajectory.png", dpi=pngres)
+    savefig("images/lyapunovTrajectory2.png", dpi=pngres)
 
-# Plot the X and Y positions versus time.
-figure(2)
-lpos = plot(t, xpos, t, ypos)
-title('Position')
+# Plot the X and Y position errors versus time.
+xdiff = zeros((tend/tinc,1))
+ydiff = zeros((tend/tinc,1))
+for i in range(0,int(tend/tinc)):
+    xdiff[i] = xf - xpos[i]
+    ydiff[i] = yf - ypos[i]
+fignum = fignum + 1
+figure(fignum)
+lpos = plot(t, xdiff, t, ydiff)
+title('Position Errors')
 xlabel('Time (s)')
-ylabel('Position (m)')
+ylabel('Position Error (m)')
 legend((lpos), (r'$\Delta x$', r'$\Delta y$'), 'best')
 axis('equal')
 #show()
@@ -120,13 +161,17 @@ if saveimages:
     savefig("images/lyapunovXYpositions.png", dpi=pngres)
 
 # Plot the linear and angular velocities versus time.
-figure(3)
+fignum = fignum + 1
+figure(fignum)
 lvel = plot(t, u, t, w)
 title('Linear and Angular Velocities')
 xlabel('Time (s)')
-ylabel('Velocity (m/s)')
-legend((lvel), ('u', r'$\omega$'), 'best')
+ylabel('Velocity')
+legend((lvel), ('u (m/s)', r'$\omega$ (rad/s)'), 'best')
 axis('equal')
 #show()
 if saveimages:
     savefig("images/lyapunovVelocities.png", dpi=pngres)
+
+# end lyapunov.py
+#################
