@@ -40,15 +40,15 @@ def kinematicsODE(y, t, gamma, h, k):
 # Main.
 
 # Start pose.
-xstart = 0
-ystart = 0
+xstart = 1
+ystart = -1
 yawstart = 0
-xend = 1
-yend = 1
+xend = -25
+yend = 3
 yawend = 0
 
 # Time to run simulation.
-tend = 20
+tend = 60
 tinc = 0.1
 t = arange(0, tend, tinc)
 
@@ -58,8 +58,8 @@ h = 0.33
 k = 0.30
 
 # Calculate the initial errors for position and heading.
-dxe = xend-xstart
-dye = yend-ystart
+dxe = xend - xstart
+dye = yend - ystart
 thetastar = yawend
 psi = yawstart
 e = sqrt((dxe)**2 + (dye)**2)
@@ -85,22 +85,13 @@ ypos = zeros((tend/tinc,1))
 u = zeros((tend/tinc,1))
 w = zeros((tend/tinc,1))
 Vdot = zeros((tend/tinc,1))
-#yaw = zeros((tend/tinc,1))
-#u[0] = 0
-#w[0] = 0
-#xpos[0] = xstart
-#ypos[0] = ystart
-#yaw[0] = psi
 
 for i in range(0,int(tend/tinc)):
     u[i] = gamma * y[i,0] * cos(y[i,1])
     w[i] = k * y[i,1] + gamma * cos(y[i,1]) * sin(y[i,1]) / y[i,1] * (y[i,1] + h * y[i,2])
-    #yaw[i] = yaw[i-1] + w[i] * tinc
-    #xpos[i] = u[i] * cos(yaw[i])
-    #ypos[i] = u[i] * sin(yaw[i])
     Vdot = -gamma * y[i,0]**2 * (cos(y[i,1]))**2 - k * y[i,1]**2
-    xpos[i] = sqrt(y[i,0]**2 * cos(y[i,2])**2)
-    ypos[i] = xpos[i] * tan(y[i,2])
+    xpos[i] = xend - y[i,0] * cos(y[i,2])
+    ypos[i] = yend - y[i,0] * sin(y[i,2])
 
 # Plot the trajectory to go from the start to the goal.
 figure(1)
