@@ -58,9 +58,12 @@ tinc = 0.1
 t = arange(0, tend, tinc)
 
 # Gains.
+#gamma = 0.25
+#h = 0.33
+#k = 0.30
 gamma = 0.25
-h = 0.33
-k = 0.30
+h = 1.2
+k = 2.5
 gamma2 = 0.25
 h2 = 1.10
 k2 = 2 * gamma2 * sqrt(h2)
