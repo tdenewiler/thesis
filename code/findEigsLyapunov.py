@@ -11,11 +11,11 @@ from numpy import * # For array()
 import sys # For argv
 
 if len(sys.argv) < 2:
-    print 'Usage is ./findEigsLyapunov.py <gamma> <h> or ./lyapunovFindEigs.py <gamma> <h> <k>'
+    print 'Usage is ./findEigsLyapunov.py <gamma> <h> or ./findEigsLyapunov.py <gamma> <h> <k>'
     sys.exit(1)
 
 if len(sys.argv) > 4:
-    print 'Usage is ./findEigsLyapunov.py <gamma> <h> or ./lyapunovFindEigs.py <gamma> <h> <k>'
+    print 'Usage is ./findEigsLyapunov.py <gamma> <h> or ./findEigsLyapunov.py <gamma> <h> <k>'
     sys.exit(1)
 
 gamma = float(sys.argv[1])
