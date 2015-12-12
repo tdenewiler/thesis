@@ -5,9 +5,12 @@
 # based on Lyapunov stability theory.
 #####################################################################
 
+import matplotlib
+# For use over SSH.
+matplotlib.use('Qt4Agg')
+
 from scipy import *
 from scipy.integrate import odeint
-from matplotlib import *
 from pylab import *
 from math import *
 import time
@@ -118,9 +121,9 @@ print 'Simulation took %0.5f seconds for a rate of %0.2f Hz.' % (elapsed, 1/elap
 # Plot the trajectory to go from the start to the goal.
 fignum = 1
 figure(fignum)
-lpos = plot(xpos, ypos, 'b.')
-lposStart = plot(xi, yi, 'go')
-lposEnd = plot(xf, yf, 'ro')
+lpos, = plot(xpos, ypos, 'b.')
+lposStart, = plot(xi, yi, 'go')
+lposEnd, = plot(xf, yf, 'ro')
 title(r'Robot Trajectory ($\gamma$ = %0.2f, h = %0.2f, k = %0.2f)' % (gamma, h, k))
 xlabel('x (m)')
 ylabel('y (m)')
@@ -133,9 +136,9 @@ if saveimages:
 # Plot the trajectory to go from the start to the goal.
 fignum = fignum + 1
 figure(fignum)
-lpos = plot(xpos2, ypos2, 'b.')
-lposStart = plot(xi, yi, 'go')
-lposEnd = plot(xf, yf, 'ro')
+lpos, = plot(xpos2, ypos2, 'b.')
+lposStart, = plot(xi, yi, 'go')
+lposEnd, = plot(xf, yf, 'ro')
 title(r'Robot Trajectory ($\gamma$ = %0.2f, h = %0.2f, k = %0.2f)' % (gamma2, h2, k2))
 xlabel('x (m)')
 ylabel('y (m)')
