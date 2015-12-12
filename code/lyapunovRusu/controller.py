@@ -40,60 +40,43 @@ def kinematics_ode(state, dummy, gamma, h_gain, k_gain):
 
     return [edot, alphadot, thetadot]
 
-class LyapunovController(object): #pylint: disable=too-many-instance-attributes
+class LyapunovController(object):
     """
     Configuration values for controller.
     """
     def __init__(self):
-        self.x_i = 0
-        self.y_i = 0
-        self.yaw_i = 0
-        self.x_f = 0
-        self.y_f = 0
-        self.yaw_f = 0
-        #self.dxe = 0
-        #self.dye = 0
-        #self.thetastar = 0
-        #self.psi = 0
-        #self.e_dist = 0
-        #self.thetae = 0
-        #self.phi = 0
-        #self.theta = 0
-        #self.alpha = 0
+        self.pose_init = [0, 0, 0] # (x, y, yaw)
+        self.pose_final = [0, 0, 0] # (x, y, yaw)
         self.t_range = 0
         self.start = 0
         self.x_pos = []
         self.y_pos = []
 
-    def initialize_states(self, x_i, y_i, yaw_i, x_f, y_f, yaw_f, t_end, t_inc): # pylint: disable=too-many-arguments
+    def initialize_states(self, pose_init, pose_final, t_end, t_inc):
         """
         Initialize start and end states.
         """
-        self.x_i = x_i
-        self.y_i = y_i
-        self.yaw_i = yaw_i
-        self.x_f = x_f
-        self.y_f = y_f
-        self.yaw_f = yaw_f
+        self.pose_init = pose_init
+        self.pose_final = pose_final
         self.t_range = np.arange(0, t_end, t_inc) # pylint: disable=no-member
 
-    def run(self, gamma, h_gain, k_gain, t_end, t_inc):
+    def run(self, gains, t_end, t_inc):
         """
         Run the controller.
         """
         state_init = self.calculate_errors()
-        state_final = self.simulate(state_init, gamma, h_gain, k_gain)
+        state_final = self.simulate(state_init, gains)
         self.x_pos, self.y_pos = self.calculate_commands(state_final, t_end, \
-            t_inc, gamma, h_gain, k_gain)
+            t_inc, gains)
 
     def calculate_errors(self):
         """
         Calculate errors associated with controller state.
         """
-        dxe = self.x_f - self.x_i
-        dye = self.y_f - self.y_i
-        thetastar = self.yaw_f
-        psi = self.yaw_i
+        dxe = self.pose_final[0] - self.pose_init[0]
+        dye = self.pose_final[1] - self.pose_init[1]
+        thetastar = self.pose_final[2]
+        psi = self.pose_init[2]
         e_dist = sqrt((dxe)**2 + (dye)**2)
         thetae = atan2(dye, dxe)
         phi = thetastar - psi
@@ -103,18 +86,17 @@ class LyapunovController(object): #pylint: disable=too-many-instance-attributes
 
         return state_init
 
-    def simulate(self, state_init, gamma, h_gain, k_gain):
+    def simulate(self, state_init, gains):
         """
         Simulate run.
         """
         self.start = time.time()
         state_final = odeint(kinematics_ode, state_init, \
-            self.t_range, (gamma, h_gain, k_gain))
+            self.t_range, (gains[0], gains[1], gains[2]))
 
         return state_final
 
-    def calculate_commands(self, state_final, t_end, t_inc, gamma, h_gain, \
-        k_gain):
+    def calculate_commands(self, state_final, t_end, t_inc, gains):
         """
         Calculate commands at each time step.
         """
@@ -126,15 +108,15 @@ class LyapunovController(object): #pylint: disable=too-many-instance-attributes
 # pylint: enable=no-member
 
         for t_step in range(0, int(t_end / t_inc)):
-            cmd_u[t_step] = gamma * state_final[t_step, 0] * \
+            cmd_u[t_step] = gains[0] * state_final[t_step, 0] * \
                 cos(state_final[t_step, 1])
-            cmd_w[t_step] = k_gain * state_final[t_step, 1] + \
-                gamma * cos(state_final[t_step, 1]) * \
+            cmd_w[t_step] = gains[2] * state_final[t_step, 1] + \
+                gains[0] * cos(state_final[t_step, 1]) * \
                 sin(state_final[t_step, 1]) / state_final[t_step, 1] * \
-                (state_final[t_step, 1] + h_gain * state_final[t_step, 2])
-            x_pos[t_step] = self.x_f - state_final[t_step, 0] * \
+                (state_final[t_step, 1] + gains[1] * state_final[t_step, 2])
+            x_pos[t_step] = self.pose_final[0] - state_final[t_step, 0] * \
                 cos(state_final[t_step, 2])
-            y_pos[t_step] = self.y_f - state_final[t_step, 0] * \
+            y_pos[t_step] = self.pose_final[1] - state_final[t_step, 0] * \
                 sin(state_final[t_step, 2])
         t_elapsed = time.time() - self.start
         print 'Simulation took %0.5f seconds for a rate of %0.2f Hz.' % \
@@ -142,16 +124,16 @@ class LyapunovController(object): #pylint: disable=too-many-instance-attributes
 
         return x_pos, y_pos
 
-    def plot_trajectory(self, fignum, gamma, h_gain, k_gain):
+    def plot_trajectory(self, fignum, gains):
         """
         Plot trajectory of given controller.
         """
         plt.figure(fignum)
         plt.lpos, = plt.plot(self.x_pos, self.y_pos, 'b.')
-        plt.lposStart, = plt.plot(self.x_i, self.y_i, 'go')
-        plt.lposEnd, = plt.plot(self.x_f, self.y_f, 'ro')
+        plt.lposStart, = plt.plot(self.pose_init[0], self.pose_init[1], 'go')
+        plt.lposEnd, = plt.plot(self.pose_final[0], self.pose_final[1], 'ro')
         plt.title(r'Robot Trajectory ($\gamma$ = %0.2f, h = %0.2f, k = %0.2f)' \
-            % (gamma, h_gain, k_gain))
+            % (gains[0], gains[1], gains[2]))
         plt.xlabel('x (m)')
         plt.ylabel('y (m)')
         plt.legend((plt.lpos, plt.lposStart, plt.lposEnd), ('Position', \
@@ -167,31 +149,23 @@ def main():
     print 'Creating controller 1'
     controller = LyapunovController()
     print 'Initializing controller 1'
-    x_i = 5
-    y_i = -2
-    yaw_i = 0
-    x_f = -15
-    y_f = 13
-    yaw_f = 0
+    pose_init = [5, -2, 0]
+    pose_final = [-15, 13, 0]
     t_end = 40
     t_inc = 0.1
-    controller.initialize_states(x_i, y_i, yaw_i, x_f, y_f, yaw_f, t_end, t_inc)
-    gamma = 0.25
-    h_gain = 1.2
-    k_gain = 2.5
+    controller.initialize_states(pose_init, pose_final, t_end, t_inc)
+    gains = [0.25, 1.2, 2.5] # [gamma, h, k]
     print 'Running controller 1'
-    controller.run(gamma, h_gain, k_gain, t_end, t_inc)
-    controller.plot_trajectory(0, gamma, h_gain, k_gain)
+    controller.run(gains, t_end, t_inc)
+    controller.plot_trajectory(0, gains)
 
     print 'Creating controller 2'
     print 'Initializing controller 2'
-    controller.initialize_states(x_i, y_i, yaw_i, x_f, y_f, yaw_f, t_end, t_inc)
-    gamma = 0.25
-    h_gain = 1.10
-    k_gain = 2 * gamma * sqrt(h_gain)
+    controller.initialize_states(pose_init, pose_final, t_end, t_inc)
+    gains = [0.25, 1.2, 2.5] # [gamma, h, k]
     print 'Running controller 2'
-    controller.run(gamma, h_gain, k_gain, t_end, t_inc)
-    controller.plot_trajectory(1, gamma, h_gain, k_gain)
+    controller.run(gains, t_end, t_inc)
+    controller.plot_trajectory(1, gains)
 
     plt.show()
 
