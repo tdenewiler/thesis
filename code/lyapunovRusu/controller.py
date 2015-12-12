@@ -13,9 +13,8 @@ import numpy as np
 from scipy.integrate import odeint # pylint: disable=no-name-in-module
 from math import sqrt, atan2, cos, sin
 import time
-
-PNGRES = 100
-SAVEIMAGES = 0
+import sys
+from optparse import OptionParser
 
 def kinematics_ode(state, dummy, gamma, h_gain, k_gain):
     r"""
@@ -45,27 +44,34 @@ class LyapunovController(object):
     Configuration values for controller.
     """
     def __init__(self):
+        parser = OptionParser()
+        parser.add_option("-r", "--resolution", dest="resolution", \
+            help="Resolution for output images of plots.", default=100)
+        parser.add_option("-s", "--save-images", dest="save_images", \
+            help="Whether to save images or not.", default=False)
+        options, dummy = parser.parse_args(sys.argv)
+
         self.pose_init = [0, 0, 0] # (x, y, yaw)
         self.pose_final = [0, 0, 0] # (x, y, yaw)
-        self.t_range = 0
         self.start = 0
         self.x_pos = []
         self.y_pos = []
+        self.resolution = options.resolution
+        self.save_images = options.save_images
 
-    def initialize_states(self, pose_init, pose_final, t_end, t_inc):
+    def initialize_states(self, pose_init, pose_final):
         """
         Initialize start and end states.
         """
         self.pose_init = pose_init
         self.pose_final = pose_final
-        self.t_range = np.arange(0, t_end, t_inc) # pylint: disable=no-member
 
     def run(self, gains, t_end, t_inc):
         """
         Run the controller.
         """
         state_init = self.calculate_errors()
-        state_final = self.simulate(state_init, gains)
+        state_final = self.simulate(state_init, gains, t_end, t_inc)
         self.x_pos, self.y_pos = self.calculate_commands(state_final, t_end, \
             t_inc, gains)
 
@@ -86,13 +92,14 @@ class LyapunovController(object):
 
         return state_init
 
-    def simulate(self, state_init, gains):
+    def simulate(self, state_init, gains, t_end, t_inc):
         """
         Simulate run.
         """
         self.start = time.time()
+        t_range = np.arange(0, t_end, t_inc) # pylint: disable=no-member
         state_final = odeint(kinematics_ode, state_init, \
-            self.t_range, (gains[0], gains[1], gains[2]))
+            t_range, (gains[0], gains[1], gains[2]))
 
         return state_final
 
@@ -139,8 +146,9 @@ class LyapunovController(object):
         plt.legend((plt.lpos, plt.lposStart, plt.lposEnd), ('Position', \
             'Start', 'End'), 'best')
         plt.axis('equal')
-        if SAVEIMAGES:
-            plt.savefig("images/lyapunovTrajectory.png", dpi=PNGRES)
+        if self.save_images:
+            name = "images/lyapunovTrajectory-run{}.png".format(fignum)
+            plt.savefig(name, dpi=self.resolution)
 
 def main():
     """
@@ -149,11 +157,11 @@ def main():
     print 'Creating controller 1'
     controller = LyapunovController()
     print 'Initializing controller 1'
-    pose_init = [5, -2, 0]
+    pose_init = [5, -2, 0] # [x, y, yaw]
     pose_final = [-15, 13, 0]
     t_end = 40
     t_inc = 0.1
-    controller.initialize_states(pose_init, pose_final, t_end, t_inc)
+    controller.initialize_states(pose_init, pose_final)
     gains = [0.25, 1.2, 2.5] # [gamma, h, k]
     print 'Running controller 1'
     controller.run(gains, t_end, t_inc)
@@ -161,7 +169,7 @@ def main():
 
     print 'Creating controller 2'
     print 'Initializing controller 2'
-    controller.initialize_states(pose_init, pose_final, t_end, t_inc)
+    controller.initialize_states(pose_init, pose_final)
     gains = [0.25, 1.2, 2.5] # [gamma, h, k]
     print 'Running controller 2'
     controller.run(gains, t_end, t_inc)
