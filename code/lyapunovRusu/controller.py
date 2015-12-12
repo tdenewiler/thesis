@@ -8,7 +8,7 @@ import matplotlib
 # For use over SSH.
 matplotlib.use('Qt4Agg')
 
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import numpy as np
 from scipy.integrate import odeint # pylint: disable=no-name-in-module
 from math import sqrt, atan2, cos, sin
@@ -40,9 +40,7 @@ def kinematics_ode(state, dummy, gamma, h_gain, k_gain):
 
     return [edot, alphadot, thetadot]
 
-#pylint: disable=too-many-instance-attributes
-class LyapunovController(object):
-#pylint: enable=too-many-instance-attributes
+class LyapunovController(object): #pylint: disable=too-many-instance-attributes
     """
     Configuration values for controller.
     """
@@ -67,7 +65,7 @@ class LyapunovController(object):
         self.x_pos = []
         self.y_pos = []
 
-    def initialize_states(self, x_i, y_i, yaw_i, x_f, y_f, yaw_f, t_range):
+    def initialize_states(self, x_i, y_i, yaw_i, x_f, y_f, yaw_f, t_end, t_inc): # pylint: disable=too-many-arguments
         """
         Initialize start and end states.
         """
@@ -77,16 +75,14 @@ class LyapunovController(object):
         self.x_f = x_f
         self.y_f = y_f
         self.yaw_f = yaw_f
-        self.t_range = t_range
+        self.t_range = np.arange(0, t_end, t_inc) # pylint: disable=no-member
 
-    def run(self, gamma, h_gain, k_gain):
+    def run(self, gamma, h_gain, k_gain, t_end, t_inc):
         """
         Run the controller.
         """
         state_init = self.calculate_errors()
         state_final = self.simulate(state_init, gamma, h_gain, k_gain)
-        t_end = 40
-        t_inc = 0.1
         self.x_pos, self.y_pos = self.calculate_commands(state_final, t_end, \
             t_inc, gamma, h_gain, k_gain)
 
@@ -104,8 +100,6 @@ class LyapunovController(object):
         theta = thetae - thetastar
         alpha = theta - phi
         state_init = [e_dist, theta, alpha]
-        print 'state_init = '
-        print state_init
 
         return state_init
 
@@ -117,8 +111,6 @@ class LyapunovController(object):
         state_final = odeint(kinematics_ode, state_init, \
             self.t_range, (gamma, h_gain, k_gain))
 
-        print 'state_final ='
-        print state_final
         return state_final
 
     def calculate_commands(self, state_final, t_end, t_inc, gamma, h_gain, \
@@ -150,6 +142,24 @@ class LyapunovController(object):
 
         return x_pos, y_pos
 
+    def plot_trajectory(self, fignum, gamma, h_gain, k_gain):
+        """
+        Plot trajectory of given controller.
+        """
+        plt.figure(fignum)
+        plt.lpos, = plt.plot(self.x_pos, self.y_pos, 'b.')
+        plt.lposStart, = plt.plot(self.x_i, self.y_i, 'go')
+        plt.lposEnd, = plt.plot(self.x_f, self.y_f, 'ro')
+        plt.title(r'Robot Trajectory ($\gamma$ = %0.2f, h = %0.2f, k = %0.2f)' \
+            % (gamma, h_gain, k_gain))
+        plt.xlabel('x (m)')
+        plt.ylabel('y (m)')
+        plt.legend((plt.lpos, plt.lposStart, plt.lposEnd), ('Position', \
+            'Start', 'End'), 'best')
+        plt.axis('equal')
+        if SAVEIMAGES:
+            plt.savefig("images/lyapunovTrajectory.png", dpi=PNGRES)
+
 def main():
     """
     Run controllers with different gains.
@@ -163,22 +173,27 @@ def main():
     x_f = -15
     y_f = 13
     yaw_f = 0
-    t_trange = 40
-    controller.initialize_states(x_i, y_i, yaw_i, x_f, y_f, yaw_f, t_trange)
+    t_end = 40
+    t_inc = 0.1
+    controller.initialize_states(x_i, y_i, yaw_i, x_f, y_f, yaw_f, t_end, t_inc)
     gamma = 0.25
     h_gain = 1.2
     k_gain = 2.5
     print 'Running controller 1'
-    controller.run(gamma, h_gain, k_gain)
+    controller.run(gamma, h_gain, k_gain, t_end, t_inc)
+    controller.plot_trajectory(0, gamma, h_gain, k_gain)
 
     print 'Creating controller 2'
     print 'Initializing controller 2'
-    controller.initialize_states(x_i, y_i, yaw_i, x_f, y_f, yaw_f, t_trange)
+    controller.initialize_states(x_i, y_i, yaw_i, x_f, y_f, yaw_f, t_end, t_inc)
     gamma = 0.25
     h_gain = 1.10
     k_gain = 2 * gamma * sqrt(h_gain)
     print 'Running controller 2'
-    controller.run(gamma, h_gain, k_gain)
+    controller.run(gamma, h_gain, k_gain, t_end, t_inc)
+    controller.plot_trajectory(1, gamma, h_gain, k_gain)
+
+    plt.show()
 
 if __name__ == '__main__':
     main()
