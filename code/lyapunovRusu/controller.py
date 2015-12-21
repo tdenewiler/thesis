@@ -51,13 +51,13 @@ class LyapunovController(object):
             help="Whether to save images or not.", default=False)
         options, dummy = parser.parse_args(sys.argv)
 
+        self.positions = [[], []]
         self.pose_init = [0, 0, 0] # (x, y, yaw)
         self.pose_final = [0, 0, 0] # (x, y, yaw)
-        self.start = 0
+        self.start = time.time()
         self.x_pos = []
         self.y_pos = []
-        self.resolution = options.resolution
-        self.save_images = options.save_images
+        self.image_props = [options.resolution, options.save_images]
 
     def initialize_states(self, pose_init, pose_final):
         """
@@ -70,10 +70,10 @@ class LyapunovController(object):
         """
         Run the controller.
         """
-        state_init = self.calculate_errors()
-        state_final = self.simulate(state_init, gains, t_end, t_inc)
-        self.x_pos, self.y_pos = self.calculate_commands(state_final, t_end, \
-            t_inc, gains)
+        for trial in range(len(gains)):
+            state_init = self.calculate_errors()
+            state_final = self.simulate(state_init, gains[trial], t_end, t_inc)
+            self.calculate_commands(state_final, t_end, t_inc, gains[trial])
 
     def calculate_errors(self):
         """
@@ -92,11 +92,11 @@ class LyapunovController(object):
 
         return state_init
 
-    def simulate(self, state_init, gains, t_end, t_inc):
+    @classmethod
+    def simulate(cls, state_init, gains, t_end, t_inc):
         """
         Simulate run.
         """
-        self.start = time.time()
         t_range = np.arange(0, t_end, t_inc) # pylint: disable=no-member
         state_final = odeint(kinematics_ode, state_init, \
             t_range, (gains[0], gains[1], gains[2]))
@@ -125,55 +125,65 @@ class LyapunovController(object):
                 cos(state_final[t_step, 2])
             y_pos[t_step] = self.pose_final[1] - state_final[t_step, 0] * \
                 sin(state_final[t_step, 2])
-        t_elapsed = time.time() - self.start
-        print 'Simulation took %0.5f seconds for a rate of %0.2f Hz.' % \
-            (t_elapsed, 1 / t_elapsed)
 
-        return x_pos, y_pos
+        self.x_pos.append(x_pos)
+        self.y_pos.append(y_pos)
 
-    def plot_trajectory(self, fignum, gains):
+    def plot_trajectory(self, gains):
         """
         Plot trajectory of given controller.
         """
-        plt.figure(fignum)
-        plt.lpos, = plt.plot(self.x_pos, self.y_pos, 'b.')
-        plt.lposStart, = plt.plot(self.pose_init[0], self.pose_init[1], 'go')
-        plt.lposEnd, = plt.plot(self.pose_final[0], self.pose_final[1], 'ro')
-        plt.title(r'Robot Trajectory ($\gamma$ = %0.2f, h = %0.2f, k = %0.2f)' \
-            % (gains[0], gains[1], gains[2]))
+        plt.figure()
+#pylint: disable=no-member
+        colormap = plt.cm.gist_rainbow
+        plt.gca().set_color_cycle([colormap(i) for i in np.linspace(0, 1, \
+            len(gains))])
+#pylint: enable=no-member
+        labels = []
+        for entry in range(len(gains)):
+            plt.lpos, = plt.plot(self.x_pos[entry], self.y_pos[entry])
+            labels.append(r'(%0.2lf, %0.2lf, %0.2lf)' % (gains[entry][0], \
+                gains[entry][1], gains[entry][2]))
+        plt.lpos_start, = plt.plot(self.pose_init[0], self.pose_init[1])
+        plt.lpos_end, = plt.plot(self.pose_final[0], self.pose_final[1])
+        plt.title(r'Robot Trajectory')
         plt.xlabel('x (m)')
         plt.ylabel('y (m)')
-        plt.legend((plt.lpos, plt.lposStart, plt.lposEnd), ('Position', \
-            'Start', 'End'), 'best')
+        labels.append('Start')
+        labels.append('End')
+        #plt.legend(labels, ncol=4, loc='best')
         plt.axis('equal')
-        if self.save_images:
-            name = "images/lyapunovTrajectory-run{}.png".format(fignum)
-            plt.savefig(name, dpi=self.resolution)
+        if self.image_props[1]:
+            name = "images/lyapunovTrajectories.png"
+            plt.savefig(name, dpi=self.image_props[0])
 
 def main():
     """
     Run controllers with different gains.
     """
-    print 'Creating controller 1'
     controller = LyapunovController()
-    print 'Initializing controller 1'
     pose_init = [5, -2, 0] # [x, y, yaw]
     pose_final = [-15, 13, 0]
-    t_end = 40
+    pose_init = [0, 0, 0] # [x, y, yaw]
+    pose_final = [10, 10, 0]
+    num_trials = 100
+    t_end = 30
     t_inc = 0.1
+    k_gamma = 0.1
+    k_h = 1.0
+    k_k = k_gamma * sqrt(k_h)
     controller.initialize_states(pose_init, pose_final)
-    gains = [0.25, 1.2, 2.5] # [gamma, h, k]
-    print 'Running controller 1'
+    gains = []
+    for trial in range(num_trials):
+        k_gamma = k_gamma + trial * 0.01
+        k_h = k_h + trial * 0.01
+        k_k = k_gamma * sqrt(k_h)
+        gains.append([k_gamma, k_h, k_k])
     controller.run(gains, t_end, t_inc)
-    controller.plot_trajectory(0, gains)
-
-    print 'Creating controller 2'
-    print 'Initializing controller 2'
-    controller.initialize_states(pose_init, pose_final)
-    gains = [0.25, 1.2, 2.5] # [gamma, h, k]
-    print 'Running controller 2'
-    controller.run(gains, t_end, t_inc)
-    controller.plot_trajectory(1, gains)
+    t_elapsed = time.time() - controller.start
+    print 'Simulation of %d runs took %0.5f seconds for a rate of %0.2f Hz.' % \
+        (num_trials, t_elapsed, 1 / t_elapsed)
+    controller.plot_trajectory(gains)
 
     plt.show()
 
