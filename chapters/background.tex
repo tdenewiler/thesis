@@ -10,58 +10,58 @@ There are two commonly used robots in EOD applications, the iRobot Packbot and Q
 
 Each of the robots has a computer that accepts teleoperation commands consisting of a linear and angular velocity. Additionally, each robot has a payload bay where another computer and sensors used for autonomous navigation are located. The payload computer is used to read sensor data and calculate appropriate linear and angular velocity commands that are sent to the robot computer. The standard sensors available on each robot are a gyro, wheel encoders, an inertial measurement unit (IMU), and a global position system (GPS) receiver.
 
-The \href{http://www.irobot.com/sp.cfm?pageid=171}{Packbot} is manufactured by iRobot and can be seen in Figure \ref{fig:packbot}.
+The \href{http://www.irobot.com/sp.cfm?pageid=171}{Packbot} is manufactured by iRobot and can be seen in Figure~\ref{fig:packbot}.
 
 \begin{figure}[ht!]
-	\centering
-	\includegraphics[width=.3\textwidth]{images/packbotRetrotraverse}
-	\caption{iRobot Packbot}
-	\label{fig:packbot}
+\centering
+\includegraphics[width=.3\textwidth]{images/packbotRetrotraverse}
+\caption{iRobot Packbot}
+\label{fig:packbot}
 \end{figure}
 
-The \href{http://www.foster-miller.com/lemming.htm}{Talon} is manufactured by Qinetiq NA and is shown in Figure \ref{fig:talon}.
+The \href{http://www.foster-miller.com/lemming.htm}{Talon} is manufactured by Qinetiq NA and is shown in Figure~\ref{fig:talon}.
 
 \begin{figure}[ht!]
-	\centering
-	\includegraphics[width=.3\textwidth]{images/talonRetrotraverse}
-	\caption{Kinetiq Talon}
-	\label{fig:talon}
+\centering
+\includegraphics[width=.3\textwidth]{images/talonRetrotraverse}
+\caption{Kinetiq Talon}
+\label{fig:talon}
 \end{figure}
 
-The \href{http://www.spawar.navy.mil/robots/land/mprs/mprs.html}{Urbot} is an experimental prototype of a man-portable robot developed by SSCPAC and is shown in Figure \ref{fig:urbot}.
+The \href{http://www.spawar.navy.mil/robots/land/mprs/mprs.html}{Urbot} is an experimental prototype of a man-portable robot developed by SSCPAC and is shown in Figure~\ref{fig:urbot}.
 
 \begin{figure}[ht!]
-	\centering
-	\includegraphics[width=.3\textwidth]{images/urbotWithGps}
-	\caption{SSCPAC Urbot}
-	\label{fig:urbot}
+\centering
+\includegraphics[width=.3\textwidth]{images/urbotWithGps}
+\caption{SSCPAC Urbot}
+\label{fig:urbot}
 \end{figure}
 
-The \href{http://www.autonomoussolutions.com/products/chaos.php}{Chaos} is manufactured by Autonomous Solutions and is shown in Figure \ref{fig:chaos}.
+The \href{http://www.autonomoussolutions.com/products/chaos.php}{Chaos} is manufactured by Autonomous Solutions and is shown in Figure~\ref{fig:chaos}.
 
 \begin{figure}[ht!]
-	\centering
-	\includegraphics[width=.3\textwidth]{images/chaos}
-	\caption{Autonomous Solutions Chaos}
-	\label{fig:chaos}
+\centering
+\includegraphics[width=.3\textwidth]{images/chaos}
+\caption{Autonomous Solutions Chaos}
+\label{fig:chaos}
 \end{figure}
 
 \section{MOCU \& JAUS}
 \label{sec:mocujaus}
-The Multi-robot Operator Control Unit (MOCU), shown in Figure \ref{fig:mocu}, is a highly configurable front end for simultaneous command and control of multiple systems and was created at SSCPAC \cite{PowellMOCU08}. MOCU has the ability to use a variety of communications protocols for interfacing to different systems and uses the Joint Architecture for Unmanned Systems (JAUS) protocol to send and receive data to all of the robots employed in this research \cite{RoweJAUS08}. A combination of teleoperation using a joystick controller and autonomous navigation were used to collect data and test new ideas for estimation and controls. From within MOCU, waypoints can be drawn on an overhead image of the operating area, and a route generated from those waypoints, and downloaded to the robot using the JAUS protocol. The robot will then attempt to autonomously drive that route and send back status information to MOCU using the controls and estimation code that is the focus of this research.
+The Multi-robot Operator Control Unit (MOCU), shown in Figure~\ref{fig:mocu}, is a highly configurable front end for simultaneous command and control of multiple systems and was created at SSCPAC~\cite{PowellMOCU08}. MOCU has the ability to use a variety of communications protocols for interfacing to different systems and uses the Joint Architecture for Unmanned Systems (JAUS) protocol to send and receive data to all of the robots employed in this research~\cite{RoweJAUS08}. A combination of teleoperation using a joystick controller and autonomous navigation were used to collect data and test new ideas for estimation and controls. From within MOCU, waypoints can be drawn on an overhead image of the operating area, and a route generated from those waypoints, and downloaded to the robot using the JAUS protocol. The robot will then attempt to autonomously drive that route and send back status information to MOCU using the controls and estimation code that is the focus of this research.
 
 \begin{figure}[ht!]
-	\centering
-	\includegraphics[width=.75\textwidth]{images/mocuPackbotScreenshot}
-	\caption{Controlling Packbot with MOCU}
-	\label{fig:mocu}
+\centering
+\includegraphics[width=.75\textwidth]{images/mocuPackbotScreenshot}
+\caption{Controlling Packbot with MOCU}
+\label{fig:mocu}
 \end{figure}
 
 \section{Sensors}
 \label{sec:bgSensors}
 The Packbot and Talon have their own onboard computers that take in commands for desired linear and angular velocities. Those computers then output the correct motor-controller commands that cause the robot to move at the desired velocities. Typically, the desired linear and angular velocity commands are generated by a user with a remote control. The research in this thesis was concerned with generating the velocity commands autonomously, or without human input, using a set of sensors installed in one of the payload bays of the robot.
 
-For most of the results presented here the computer used for running the estimation and controls algorithms is the \href{http://www.beckhoff.com/english.asp?motherboards/cb4051.htm}{Beckhoff CB4051} with an Intel $2.0$-$GHz$ Core 2 Duo CPU. Tests were also conducted using an Intel Atom CPU as the payload computer, with very similar results as obtained with the Core 2 Duo CPU. The IMU in the payload bay is a \href{http://www.microstrain.com/3dm-gx1.aspx}{Microstrain 3DM-GX1} that outputs Euler angles and angular rates.
+For most of the results presented here the computer used for running the estimation and controls algorithms is the \href{http://www.beckhoff.com/english.asp?motherboards/cb4051.htm}{Beckhoff CB4051} with an Intel $2.0$-$GHz$ Core 2 Duo CPU\@. Tests were also conducted using an Intel Atom CPU as the payload computer, with very similar results as obtained with the Core 2 Duo CPU\@. The IMU in the payload bay is a \href{http://www.microstrain.com/3dm-gx1.aspx}{Microstrain 3DM-GX1} that outputs Euler angles and angular rates.
 
 Two different GPS receivers were used on the robots. The GPS receiver used most often on all of the robots is a \href{http://www.novatel.com/products/gnss-receivers/oem-receiver-boards/oemv-receivers/}{Novatel OEMV}, but a \href{http://www.u-blox.com/gps-modules.html}{uBlox NEO-6Q} GPS receiver was used on both the Talon and Packbot during the course of experimentation. The Novatel receiver performed better overall, though the uBlox  was adequate. All of the results presented here use data from runs with the Novatel receiver.
 
@@ -71,6 +71,6 @@ The Packbot and Talon are manufactured with wheel encoders that are read by the 
 
 \section{Estimation and Control Software}
 \label{sec:bgSoftware}
-The SSCPAC robotics group has developed the Autonomous Capabilities Suite (ACS) which incorporates many different robotics related algorithms into a single software package that can be run on a wide variety of robots. ACS is able to easily accomodate different payload and sensor suites \cite{Sights06}. The Kalman filter implementation was done in ACS. A JAUS library written by SSCPAC provides for communications between the robots and MOCU.
+The SSCPAC robotics group has developed the Autonomous Capabilities Suite (ACS) which incorporates many different robotics related algorithms into a single software package that can be run on a wide variety of robots. ACS is able to easily accomodate different payload and sensor suites~\cite{Sights06}. The Kalman filter implementation was done in ACS\@. A JAUS library written by SSCPAC provides for communications between the robots and MOCU\@.
 
-The original path planning and control software was written by SSCPAC for the Man Portable Robotic System (MPRS) program \cite{Bruch02} and extended for use on unmanned surface vehicles \cite{Ebken05}, \cite{Larson06}, \cite{Larson07}. The new model-based controller is implemented in the MPRS code and will be ported to ACS in the near future. A single program was built by combining the ACS Kalman filter code, the JAUS library and the MPRS code, and was used for all of the experiments presented here.
+The original path planning and control software was written by SSCPAC for the Man Portable Robotic System (MPRS) program~\cite{Bruch02} and extended for use on unmanned surface vehicles~\cite{Ebken05},~\cite{Larson06},~\cite{Larson07}. The new model-based controller is implemented in the MPRS code and will be ported to ACS in the near future. A single program was built by combining the ACS Kalman filter code, the JAUS library and the MPRS code, and was used for all of the experiments presented here.
