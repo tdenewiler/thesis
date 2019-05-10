@@ -8,7 +8,7 @@ theory.
 
 import time
 import sys
-from optparse import OptionParser
+from optparse import OptionParser # pylint: disable=deprecated-module
 from math import sqrt, atan2, cos, sin
 import numpy as np
 from scipy.integrate import odeint # pylint: disable=no-name-in-module,import-error
