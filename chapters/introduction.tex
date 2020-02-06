@@ -1,28 +1,57 @@
 \chapter{Introduction}%
 \label{ch:introduction}
-This chapter provides a brief overview of the research performed for this thesis and the subsequent contributions to the robotics community. An introduction to autonomous navigation and its relevance to end users is included.
+This chapter provides a brief overview of the research performed for this thesis and the subsequent contributions to the robotics community.
+An introduction to autonomous navigation and its relevance to end users is included.
 
 \section{Thesis Outline and Contributions}%
 \label{sec:outline}
-The problem of autonomous navigation is not isolated to any one technical area, but is instead a combination of estimation, controls and planning. Estimating the robots position, and its environment, is required in order to determine where the robot is located in the world. The field of controls is concerned with which commands will cause a robot to move from its current location to a desired location. Planning involves determining the best path to get a robot to this desired location and includes issues such as obstacle avoidance.
+The problem of autonomous navigation is not isolated to any one technical area, but is instead a combination of estimation, controls and planning.
+Estimating the robots position, and its environment, is required in order to determine where the robot is located in the world.
+The field of controls is concerned with which commands will cause a robot to move from its current location to a desired location.
+Planning involves determining the best path to get a robot to this desired location and includes issues such as obstacle avoidance.
 
-This research focuses on the estimation and controls aspects of autonomous navigation for explosive ordinance disposal (EOD) robots. The estimation algorithm uses a Kalman filter to determine the robot's location in the world. The Kalman filter was improved in two separate ways:
+This research focuses on the estimation and controls aspects of autonomous navigation for explosive ordinance disposal (EOD) robots.
+The estimation algorithm uses a Kalman filter to determine the robot's location in the world.
+The Kalman filter was improved in two separate ways:
 
-(i) Several bugs in the previous Kalman filter implementation used on the EOD robots were found and fixes were applied so that the equations are calculated correctly. The result of these fixes dramatically improved the state estimate of the robot (details are in Section~\ref{sec:kfBugs}).
+(i) Several bugs in the previous Kalman filter implementation used on the EOD robots were found and fixes were applied so that the equations are calculated correctly.
+The result of these fixes dramatically improved the state estimate of the robot (details are in Section~\ref{sec:kfBugs}).
 
-(ii) Discriminative training of the covariance matrices describing the noise models used by the Kalman filter was used to find more accurate covariance values. The new noise models resulted in an improved state estimate provided by the Kalman filter (details are in Section~\ref{sec:kftrainingparams}).
+(ii) Discriminative training of the covariance matrices describing the noise models used by the Kalman filter was used to find more accurate covariance values.
+The new noise models resulted in an improved state estimate provided by the Kalman filter (details are in Section~\ref{sec:kftrainingparams}).
 
-The original control algorithm on the EOD robots used a proportional-integral-derivative (PID) controller that required a large amount of time to tune so that it would work on different driving surfaces at variable speeds. This thesis describes the implementation of a model-based controller that uses a kinematic model of a nonholonomic vehicle with unicycle constraints, based on a Lyapunov method. The new controller is a direct replacement for the PID controller, and is shown to work at variable speeds with very little tuning. Additionally, the Lyapunov controller provides more free design variables than the PID controller. These design variables, which are not available with the PID controller, can be used to shape the trajectory of the robot as it moves from its current location to a desired location. Results of testing the Lyapunov controller while modifying the design variables are shown and guidelines for setting these values are provided. The Lyapunov controller is described in Chapter~\ref{ch:controls}.
+The original control algorithm on the EOD robots used a proportional-integral-derivative (PID) controller that required a large amount of time to tune so that it would work on different driving surfaces at variable speeds.
+This thesis describes the implementation of a model-based controller that uses a kinematic model of a nonholonomic vehicle with unicycle constraints, based on a Lyapunov method.
+The new controller is a direct replacement for the PID controller, and is shown to work at variable speeds with very little tuning.
+Additionally, the Lyapunov controller provides more free design variables than the PID controller.
+These design variables, which are not available with the PID controller, can be used to shape the trajectory of the robot as it moves from its current location to a desired location.
+Results of testing the Lyapunov controller while modifying the design variables are shown and guidelines for setting these values are provided.
+The Lyapunov controller is described in Chapter~\ref{ch:controls}.
 
-Background information is provided in Chapter~\ref{ch:background}. Chapter~\ref{ch:estimation} describes the Kalman filter and how it is used to estimate the state of the robot. The PID and Lyapunov controllers are described in Chapter~\ref{ch:controls}. Results that show improvements in the estimation and controls algorithms are described in Chapter~\ref{ch:results}. Finally, the conclusion and suggestions for future work are described in Chapter~\ref{ch:conclusion}.
+Background information is provided in Chapter~\ref{ch:background}.
+Chapter~\ref{ch:estimation} describes the Kalman filter and how it is used to estimate the state of the robot.
+The PID and Lyapunov controllers are described in Chapter~\ref{ch:controls}.
+Results that show improvements in the estimation and controls algorithms are described in Chapter~\ref{ch:results}.
+Finally, the conclusion and suggestions for future work are described in Chapter~\ref{ch:conclusion}.
 
-The main contribution of this research is that the EOD robots investigated here have greater autonomy, which allows for less human oversight of basic functionality. The algorithms developed during this reasearch have been implemented on fielded production systems, and are shown to work better than the original algorithms.
+The main contribution of this research is that the EOD robots investigated here have greater autonomy, which allows for less human oversight of basic functionality.
+The algorithms developed during this reasearch have been implemented on fielded production systems, and are shown to work better than the original algorithms.
 
 \section{The Need for Autonomy}%
 \label{sec:needforautonomy}
-Robots have been developed to assist humans in tasks that are generally considered dirty, dangerous or boring. Recently, robots have found a useful niche as a tool to help EOD teams assess and eliminate threats from improvised explosive devices (IEDs), commonly referred to as roadside bombs. The use of robots allows humans to maintain a safe stand-off distance while investigating a scene. Clearly, this falls under the dangerous category. The current method that EOD teams use involves teleoperation of the robot from the control point to the object of interest. The teleoperation task consumes the operator's energy and focus while navigating the robot to and from the objective. During this process the operator is exposed and vulnerable to external threats such as ambushes and enemy snipers.
+Robots have been developed to assist humans in tasks that are generally considered dirty, dangerous or boring.
+Recently, robots have found a useful niche as a tool to help EOD teams assess and eliminate threats from improvised explosive devices (IEDs), commonly referred to as roadside bombs.
+The use of robots allows humans to maintain a safe stand-off distance while investigating a scene.
+Clearly, this falls under the dangerous category.
+The current method that EOD teams use involves teleoperation of the robot from the control point to the object of interest.
+The teleoperation task consumes the operator's energy and focus while navigating the robot to and from the objective.
+During this process the operator is exposed and vulnerable to external threats such as ambushes and enemy snipers.
 
-As technologies mature they provide humans with better tools. However, as the use of robots increases shortcomings are discovered, such as the vulnerability due to teleoperation, and that opens up avenues for improvement. One approach to reducing the amount of work humans are required to perform is to give the robots more intelligence via intelligent behaviors. This is accomplished using additional sensors, specialized actuators and more advanced software to automate as many routine tasks as possible. In time, more complex tasks such as navigation over rough terrain, around obstacles and back to a home location will become routine and automated as well, thus freeing up the operators to focus on higher level tasks.
+As technologies mature they provide humans with better tools.
+However, as the use of robots increases shortcomings are discovered, such as the vulnerability due to teleoperation, and that opens up avenues for improvement.
+One approach to reducing the amount of work humans are required to perform is to give the robots more intelligence via intelligent behaviors.
+This is accomplished using additional sensors, specialized actuators and more advanced software to automate as many routine tasks as possible.
+In time, more complex tasks such as navigation over rough terrain, around obstacles and back to a home location will become routine and automated as well, thus freeing up the operators to focus on higher level tasks.
 
 When adding autonomy to robots nearly all of the tasks can be characterized by the following questions:
 \begin{itemize}
@@ -32,10 +61,22 @@ When adding autonomy to robots nearly all of the tasks can be characterized by t
 \item How do I get there?
 \end{itemize}
 
-The initial attempt at adding autonomy to EOD robots resulted in somewhat erratic driving behavior. This was especially evident near obstacles, as the robot trajectory would not be smooth while changing speeds when attempting to avoid the obstacle~\cite{Bruch00}. In this thesis we will look at smoothing out the trajectories taken by the robot by making improvements to the state estimation (Where am I?) and controls (How do I get there?) algorithms. This work ignores actual obstacle detection (What's around me?) and will be using a simple planning algorithm (Where do I want to go?) to simulate obstacles in the robot path. The simulated obstacles will force the robot to change direction and speed multiple times. One of the benefits of a new controls algorithm with respect to planning will be discussed as well.
+The initial attempt at adding autonomy to EOD robots resulted in somewhat erratic driving behavior.
+This was especially evident near obstacles, as the robot trajectory would not be smooth while changing speeds when attempting to avoid the obstacle~\cite{Bruch00}.
+In this thesis we will look at smoothing out the trajectories taken by the robot by making improvements to the state estimation (Where am I?) and controls (How do I get there?) algorithms.
+This work ignores actual obstacle detection (What's around me?) and will be using a simple planning algorithm (Where do I want to go?) to simulate obstacles in the robot path.
+The simulated obstacles will force the robot to change direction and speed multiple times.
+One of the benefits of a new controls algorithm with respect to planning will be discussed as well.
 
-Other tasks for small robots include sending them into buildings that are dangerous due to structural damage or unknown, and possibly hostile elements inside. The goal is to have the robots map the interior of the building and provide images so the operator can assess any danger prior to humans entering the buildings~\cite{CongressUGV06}. After the attacks on the World Trade Center on September 11, 2001, several small robot systems were used to look for survivors in the rubble and to help assess structural damage to nearby buildings~\cite{Everett02}.
+Other tasks for small robots include sending them into buildings that are dangerous due to structural damage or unknown, and possibly hostile elements inside.
+The goal is to have the robots map the interior of the building and provide images so the operator can assess any danger prior to humans entering the buildings~\cite{CongressUGV06}.
+After the attacks on the World Trade Center on September 11, 2001, several small robot systems were used to look for survivors in the rubble and to help assess structural damage to nearby buildings~\cite{Everett02}.
 
-Speed, efficiency and precision are valuable characteristics that can result in the success or failure of a mission. Better autonomous navigation algorithms can improve upon these characteristics in small robot systems. An example of an advanced behavior that becomes possible with better navigation is the ability to have a robot retrotraverse, meaning to find its way back to a preset location, without human intervention. The benefits of improved navigation include less time waiting for a robot to get close to an IED or clearing a building. This results in less exposure for humans in a hostile or dangerous environment. In search and rescue situations, this could lead to less time searching and more time for rescuing.
+Speed, efficiency and precision are valuable characteristics that can result in the success or failure of a mission.
+Better autonomous navigation algorithms can improve upon these characteristics in small robot systems.
+An example of an advanced behavior that becomes possible with better navigation is the ability to have a robot retrotraverse, meaning to find its way back to a preset location, without human intervention.
+The benefits of improved navigation include less time waiting for a robot to get close to an IED or clearing a building.
+This results in less exposure for humans in a hostile or dangerous environment.
+In search and rescue situations, this could lead to less time searching and more time for rescuing.
 
 This work is especially relevant for the dirty, dangerous and boring tasks where robots are most useful because it allows humans to focus their concentration, time and effort on being clean, safe and efficient.

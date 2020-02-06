@@ -8,7 +8,9 @@ One of the ACS libraries is the extended Kalman filter, which is used on the EOD
 \item imperfect models of the robot dynamics.
 \end{itemize}
 
-The Kalman filter is a method to merge physical models and sensor data to realize an estimate of robot location, orientation, and velocities. This estimate is better than any of the individual sensor measurements~\cite{Simon06OptimalEstimation},~\cite{Grewal08},~\cite{Orderud05}. There are four models used in the Kalman filter:
+The Kalman filter is a method to merge physical models and sensor data to realize an estimate of robot location, orientation, and velocities.
+This estimate is better than any of the individual sensor measurements~\cite{Simon06OptimalEstimation},~\cite{Grewal08},~\cite{Orderud05}.
+There are four models used in the Kalman filter:
 \begin{itemize}
 \item system model based on physics,
 \item measurement model to transform sensor output to state coordinate system,
@@ -18,7 +20,9 @@ The Kalman filter is a method to merge physical models and sensor data to realiz
 
 \section{State Space Models}%
 \label{sec:statespacemodels}
-Kalman filters and modern control systems (see Chapter~\ref{ch:controls}) use the idea of a multi-dimensional state space to encapsulate all of the relevant information that is known about a system. In the case of robots like the ones used in these experiments, the states of interest are position, orientation and linear and angular velocities. In general, the physics of a system are given in the form of nonlinear equations that describe how the state variables change through time and how measurements of the system are related to the states as given by
+Kalman filters and modern control systems (see Chapter~\ref{ch:controls}) use the idea of a multi-dimensional state space to encapsulate all of the relevant information that is known about a system.
+In the case of robots like the ones used in these experiments, the states of interest are position, orientation and linear and angular velocities.
+In general, the physics of a system are given in the form of nonlinear equations that describe how the state variables change through time and how measurements of the system are related to the states as given by
 \begin{align}
 \label{eq:statespace}
 \begin{split}
@@ -27,7 +31,11 @@ Kalman filters and modern control systems (see Chapter~\ref{ch:controls}) use th
 \end{split}
 \end{align}
 
-The state variables are given in vector form by $x$ and the sensor measurements are contained in the vector $y$. The state space equations are a means of representing in compact notation how the state of a system changes over time, based on the initial state of the system plus the inputs to the system, $u$. This representation allows the trajectory (or motion through time) to be calculated. The inputs are assumed to include any external forces applied to the system, as well as actuation provided by the system itself. The function $h(x,t)$ transforms the sensor measurements into state variables.
+The state variables are given in vector form by $x$ and the sensor measurements are contained in the vector $y$.
+The state space equations are a means of representing in compact notation how the state of a system changes over time, based on the initial state of the system plus the inputs to the system, $u$.
+This representation allows the trajectory (or motion through time) to be calculated.
+The inputs are assumed to include any external forces applied to the system, as well as actuation provided by the system itself.
+The function $h(x,t)$ transforms the sensor measurements into state variables.
 
 For the robots used in these experiments the state vector used follows that found in~\cite{Kelly_1994_338},~\cite{Kelly_1994_333}, where the state variables are
 \begin{align*}
@@ -44,7 +52,12 @@ In this vector, $x$, $y$ and $z$ are positions, $V$ is linear velocity, $\theta$
 
 \section{The Kalman Filter}%
 \label{sec:kalmanfilter}
-The ACS Kalman filter is typical of all Kalman filters in that it consists of a prediction update step and a measurement update step. The prediction update is run as fast as possible and the measurement update is run whenever new sensor data becomes available, as depicted in the block diagram of Figure~\ref{fig:kf}. The prediction update step uses a model of the system dynamics (or kinematics) and a measurement of elapsed time to determine where the system is in the world. This system model will inevitably have errors, some due to effects that are not captured in the model, including (im)-precision of the clock on the computer for measuring time. Other errors are due to simplifying assumptions that are made in order to calculate the equations of the system model in real-time using embedded computers. The measurement update step is basically a feedback step to help correct for errors in the system model using sensors to provide current data~\cite{Kelly_1994_338}.
+The ACS Kalman filter is typical of all Kalman filters in that it consists of a prediction update step and a measurement update step.
+The prediction update is run as fast as possible and the measurement update is run whenever new sensor data becomes available, as depicted in the block diagram of Figure~\ref{fig:kf}.
+The prediction update step uses a model of the system dynamics (or kinematics) and a measurement of elapsed time to determine where the system is in the world.
+This system model will inevitably have errors, some due to effects that are not captured in the model, including (im)-precision of the clock on the computer for measuring time.
+Other errors are due to simplifying assumptions that are made in order to calculate the equations of the system model in real-time using embedded computers.
+The measurement update step is basically a feedback step to help correct for errors in the system model using sensors to provide current data~\cite{Kelly_1994_338}.
 
 \begin{figure}[ht!]
 \centering
@@ -53,7 +66,9 @@ The ACS Kalman filter is typical of all Kalman filters in that it consists of a 
 \label{fig:kf}
 \end{figure}
 
-The Kalman filter that runs on the small robots used in these experiments is implemented on a digital computer and is necessarily used in discrete time rather than continuous time because of the nature of computers. Additionally, the standard Kalman filter equations make the assumption that the system and measurement models are linear. From~\cite{Kelly_1994_338} and~\cite{Simon06OptimalEstimation}, the discretized and linearized versions of (\ref{eq:statespace}), giving the state space equations, are represented as
+The Kalman filter that runs on the small robots used in these experiments is implemented on a digital computer and is necessarily used in discrete time rather than continuous time because of the nature of computers.
+Additionally, the standard Kalman filter equations make the assumption that the system and measurement models are linear.
+From~\cite{Kelly_1994_338} and~\cite{Simon06OptimalEstimation}, the discretized and linearized versions of (\ref{eq:statespace}), giving the state space equations, are represented as
 \begin{align*}
 %\label{eq:kfstatemodel}
 \begin{split}
@@ -61,9 +76,14 @@ x_{k+1} &= \Phi_k x_k + w_k \\
 y_k &= H_k x_k + v_k.
 \end{split}
 \end{align*}
-Here, $\Phi_k$ is the discrete time system model (or state transition matrix) relating the state at time $k+1$ to time $k$ in the absence of inputs or noise, and thus models the system dynamics. The term $w_k$ is system noise due to an imperfect model. $H_k$ is the measurement matrix that relates the measurements to the state vector, and $v_k$ is the sensor measurement noise.
+Here, $\Phi_k$ is the discrete time system model (or state transition matrix) relating the state at time $k+1$ to time $k$ in the absence of inputs or noise, and thus models the system dynamics.
+The term $w_k$ is system noise due to an imperfect model.
+$H_k$ is the measurement matrix that relates the measurements to the state vector, and $v_k$ is the sensor measurement noise.
 
-The ACS Kalman filter uses an unforced model so all inputs are considered disturbances to the steady-state dynamics. This means that $w_k$ includes noise, modeling errors, external forces and actuator forces. The fact that all inputs are modeled as disturbances could lead to a large source of error in the estimate of the state variables. However,~\cite{Kelly_1994_338} explains that very little is known about the powertrain dynamices of most autonomous vehicles, so any control-input model has a good chance of being wrong, and the use of that type of model could exagerrate rather than reduce errors.
+The ACS Kalman filter uses an unforced model so all inputs are considered disturbances to the steady-state dynamics.
+This means that $w_k$ includes noise, modeling errors, external forces and actuator forces.
+The fact that all inputs are modeled as disturbances could lead to a large source of error in the estimate of the state variables.
+However,~\cite{Kelly_1994_338} explains that very little is known about the powertrain dynamices of most autonomous vehicles, so any control-input model has a good chance of being wrong, and the use of that type of model could exagerrate rather than reduce errors.
 
 The prediction update step marches the system dynamics forward in time using the equations
 \begin{align}
@@ -82,13 +102,19 @@ K_k &= P_k^-H_k^T{\left[H_k P_k^- H_k^T + R_k\right]}^{-1} \\
 P_k^+ &= \left[I - K_k H_k \right]P_k^-.
 \end{split}
 \end{align}
-$P_k$ is the state covariance matrix and $K_k$ is the Kalman gain. The noise models are $Q_k = E[w_k w_k^T]$ and $R_k = E[v_k v_k^T]$. $Q_k$ is the process covariance matrix giving a measure of the expected noise in the system model and $R_k$ is the measurement covariance matrix giving the expected noise of the sensors. Using (\ref{eq:kfpredictionupdate}) and (\ref{eq:kfmeasurementupdate}) a state estimate of the robot can be obtained at any time. This estimate can be used for the controls algorithms, to give feedback to an operator or to share with other systems that can change their behavior based on the robot state.
+$P_k$ is the state covariance matrix and $K_k$ is the Kalman gain.
+The noise models are $Q_k = E[w_k w_k^T]$ and $R_k = E[v_k v_k^T]$.
+$Q_k$ is the process covariance matrix giving a measure of the expected noise in the system model and $R_k$ is the measurement covariance matrix giving the expected noise of the sensors.
+Using (\ref{eq:kfpredictionupdate}) and (\ref{eq:kfmeasurementupdate}) a state estimate of the robot can be obtained at any time.
+This estimate can be used for the controls algorithms, to give feedback to an operator or to share with other systems that can change their behavior based on the robot state.
 
-The variables $\hat{x}_k^-$, $P_{k+1}^-$ in (\ref{eq:kfpredictionupdate}) refer to the mean and covariance of the estimate obtained after the prediction update step (as denoted by the negative superscript) and $\hat{x}_k^+$, $P_{k}^+$ in (\ref{eq:kfmeasurementupdate}) refer to the mean and covariance of the estimate after the measurement update step in the Kalman filter (as denoted by the positive superscript). Each of the terms in the Kalman filter equations is discussed in more detail in subsequent sections.
+The variables $\hat{x}_k^-$, $P_{k+1}^-$ in (\ref{eq:kfpredictionupdate}) refer to the mean and covariance of the estimate obtained after the prediction update step (as denoted by the negative superscript) and $\hat{x}_k^+$, $P_{k}^+$ in (\ref{eq:kfmeasurementupdate}) refer to the mean and covariance of the estimate after the measurement update step in the Kalman filter (as denoted by the positive superscript).
+Each of the terms in the Kalman filter equations is discussed in more detail in subsequent sections.
 
 \subsection{Models in the Kalman Filter}%
 \label{sec:kfModels}
-The Kalman filter relies on several models that are used to determine the mean and covariance of the estimated states for a system. The ACS Kalman filter uses four such models:
+The Kalman filter relies on several models that are used to determine the mean and covariance of the estimated states for a system.
+The ACS Kalman filter uses four such models:
 \begin{itemize}
 \item System dynamics model $\Phi_k$,
 \item measurement model $H_k$,
@@ -100,19 +126,28 @@ It is important to recognize that the fidelity of and interaction between these 
 
 \subsection{Assumptions in the System Model}%
 \label{sec:kfAssumptions}
-It is nearly impossible to develop models that completely capture all of the attributes of most systems, including robots that are expected to operate in many different physical environments. For this reason, assumptions are made to simplify the system model. The following assumptions allow the prediction update step to be calculated in a reasonable amount of time using modern computers so that a state estimate is available that the control systems can act upon in real time. The assumptions also allow a single system model to be abstracted and used on multiple similar but different robotic vehicles, such as those described in Section~\ref{sec:smallugvs}.
+It is nearly impossible to develop models that completely capture all of the attributes of most systems, including robots that are expected to operate in many different physical environments.
+For this reason, assumptions are made to simplify the system model.
+The following assumptions allow the prediction update step to be calculated in a reasonable amount of time using modern computers so that a state estimate is available that the control systems can act upon in real time.
+The assumptions also allow a single system model to be abstracted and used on multiple similar but different robotic vehicles, such as those described in Section~\ref{sec:smallugvs}.
 
 \subsubsection{Low Dynamics Assumption}%
 \label{sec:kfLowDynamicsAssumption}
-The first assumption made is that from one time step to the next, the robot will not be accelerating fast enough in any direction for the sensors on the robot to be able to measure those accelerations. This means that the two velocities, linear and angular, in the state vector are assumed to be constant. The benefit of this assumption is that there are six fewer states that must be tracked in the state vector, one for acceleration about each axis of the robot.
+The first assumption made is that from one time step to the next, the robot will not be accelerating fast enough in any direction for the sensors on the robot to be able to measure those accelerations.
+This means that the two velocities, linear and angular, in the state vector are assumed to be constant.
+The benefit of this assumption is that there are six fewer states that must be tracked in the state vector, one for acceleration about each axis of the robot.
 
 \subsubsection{Principal Motion Assumption}%
 \label{sec:kfPrincipalMotionAssumption}
-The second assumption says that during a single time step, the position of the robot will only be a function of linear velocity and the orientation of the robot will only be a function of the angular velocity. Figure~\ref{fig:packbotaxes} helps in visualizing the effect of rotating the robot about its center and how that will not affect the position of the robot. Similarly, translation of the robot along the $x$, $y$ or $z$ axes will not change the orientation of the robot. This assumption allows several terms in the system model to be set to zero.
+The second assumption says that during a single time step, the position of the robot will only be a function of linear velocity and the orientation of the robot will only be a function of the angular velocity.
+Figure~\ref{fig:packbotaxes} helps in visualizing the effect of rotating the robot about its center and how that will not affect the position of the robot.
+Similarly, translation of the robot along the $x$, $y$ or $z$ axes will not change the orientation of the robot.
+This assumption allows several terms in the system model to be set to zero.
 
 \subsection{Continuous to Discrete Time Transform}%
 \label{sec:kfContToDiscTransform}
-The system model will initially be developed using continuous-time nonlinear differential equations, but the Kalman filter on the robots will be running on digital computers, so the model will need to be converted to discrete time. In continuous time the system model is 
+The system model will initially be developed using continuous-time nonlinear differential equations, but the Kalman filter on the robots will be running on digital computers, so the model will need to be converted to discrete time.
+In continuous time the system model is 
 \begin{align*}
 \dot{x} = Fx
 \end{align*}
@@ -130,7 +165,8 @@ e^{F\Delta_T} = \sum_{i=0}^N \frac{{(F\Delta_T)}^i}{i!}
 \end{align*}
 and ${(F\Delta_T)}^0=I$, the identity matrix~\cite{Phadke99}.
 
-A first order Taylor series approximation is generally considered good enough when $\Delta_T$ is small and when the nonlinearities in the system are small enough, meaning that the Taylor remainder is small. For the robots used in these experiments that is assumed to be the case, so the transformation used is simply
+A first order Taylor series approximation is generally considered good enough when $\Delta_T$ is small and when the nonlinearities in the system are small enough, meaning that the Taylor remainder is small.
+For the robots used in these experiments that is assumed to be the case, so the transformation used is simply
 \begin{align}
 \label{eq:kfContToDiscTransform}
 \Phi_k = I + F\Delta_T.
@@ -139,9 +175,12 @@ Note that when the low dynamics assumption and the principal motion assumption a
 
 \subsection{System Dynamics Model}%
 \label{sec:dynamics}
-A model of the system dynamics is necessary in order to propagate the state of the system forward in time in the absence of measurements. However, it is impossible to create a perfect model of the system, and even a nearly perfect model of the system will likely be too complex to compute fast enough for it to be useful. The best result that is typically available is a model with a large amount of assumptions, where the most important aspects of the dynamics are retained in the simplified model.
+A model of the system dynamics is necessary in order to propagate the state of the system forward in time in the absence of measurements.
+However, it is impossible to create a perfect model of the system, and even a nearly perfect model of the system will likely be too complex to compute fast enough for it to be useful.
+The best result that is typically available is a model with a large amount of assumptions, where the most important aspects of the dynamics are retained in the simplified model.
 
-A nonlinear continuous-time model based on robot kinematics is developed in the body-frame coordinate system using the states from Section~\ref{sec:statespacemodels}. The governing differential equations are given by
+A nonlinear continuous-time model based on robot kinematics is developed in the body-frame coordinate system using the states from Section~\ref{sec:statespacemodels}.
+The governing differential equations are given by
 \begin{align}
 \label{eq:kfnonlineardynamics}
 \begin{split}
@@ -163,7 +202,11 @@ V\sin\psi\cos\theta \\
 
 \subsection{Extended Kalman Filter}%
 \label{sec:extendedkf}
-The basic Kalman filter makes the assumption that both the system model contained in $\Phi_k$ and the measurement model in $H_k$ are linear. The extended Kalman filter (EKF) allows for nonlinear models, such as that given by (\ref{eq:kfnonlineardynamics}), to be used for $\Phi_k$ by linearizing the model around the state estimate. (Similar linearization can be applied to the measurement model if it is nonlinear.) To linearize the model, the Jacobian, or matrix of partial derivatives, is determined and evaluated at the current state estimate. The idea of linearization of a nonlinear model is shown in Figure~\ref{fig:KFLinearization}, where the linearization can be seen to be more accurate when the system nonlinearities are small, meaning that the dynamics are slow.
+The basic Kalman filter makes the assumption that both the system model contained in $\Phi_k$ and the measurement model in $H_k$ are linear.
+The extended Kalman filter (EKF) allows for nonlinear models, such as that given by (\ref{eq:kfnonlineardynamics}), to be used for $\Phi_k$ by linearizing the model around the state estimate.
+(Similar linearization can be applied to the measurement model if it is nonlinear.)
+To linearize the model, the Jacobian, or matrix of partial derivatives, is determined and evaluated at the current state estimate.
+The idea of linearization of a nonlinear model is shown in Figure~\ref{fig:KFLinearization}, where the linearization can be seen to be more accurate when the system nonlinearities are small, meaning that the dynamics are slow.
 
 \begin{figure}[ht!]
 \centering
@@ -185,7 +228,8 @@ The basic Kalman filter makes the assumption that both the system model containe
 \label{fig:KFLinearization}
 \end{figure}
 
-The nonlinear state dynamics were described in (\ref{eq:kfnonlineardynamics}). The Jacobian of that state vector equation is calculated using
+The nonlinear state dynamics were described in (\ref{eq:kfnonlineardynamics}).
+The Jacobian of that state vector equation is calculated using
 %{\tiny
 \begin{align*}
 \frac{d}{dt}\left[\begin{array}{c}
@@ -229,7 +273,9 @@ x \\ y \\ z \\ V \\ \theta \\ \phi \\ \psi \\ \omega
 \end{array}\right].
 \end{align}
 }
-Applying the principal motion assumption allows us to set the terms relating position and angular velocity to zero. Additionally, the terms relating orientation and linear velocity are set to zero. Finally, converting from continuous to discrete time to put ones on the diagonal (c.f. (\ref{eq:kfContToDiscTransform})) gives
+Applying the principal motion assumption allows us to set the terms relating position and angular velocity to zero.
+Additionally, the terms relating orientation and linear velocity are set to zero.
+Finally, converting from continuous to discrete time to put ones on the diagonal (c.f. (\ref{eq:kfContToDiscTransform})) gives
 \begin{align}
 \label{eq:kfSystemModelWithAssumptions}
 x_{k+1} = 
@@ -249,13 +295,19 @@ x \\ y \\ z \\ V \\ \theta \\ \phi \\ \psi \\ \omega
 \end{align}
 This is the system model that is used in the prediction update step of the Kalman filter equations to calculate the state of the robot between measurements.
 
-Use of the extended Kalman filter requires that the system model be calculated at each time step using the most recent estimates of the state variables. This is due to the fact that partial derivatives of the nonlinear model in (\ref{eq:kfnonlineardynamics}) are evaluated at the current state during the linearization process. Since the estimates are not calculated prior to operation of the robots, the recursive nature of the Kalman filter is required.
+Use of the extended Kalman filter requires that the system model be calculated at each time step using the most recent estimates of the state variables.
+This is due to the fact that partial derivatives of the nonlinear model in (\ref{eq:kfnonlineardynamics}) are evaluated at the current state during the linearization process.
+Since the estimates are not calculated prior to operation of the robots, the recursive nature of the Kalman filter is required.
 
 \subsection{Measurement Model}%
 \label{sec:kfMeasurementModel}
-The measurement model converts sensor data to the state-variable coordinate system, and for a standard sensor suite is by far the simplest model used in the ACS Kalman filter. The idea is that, for a sensor that measures one of the states, the data output by the sensor has to have the same units and be in the same range as the state variable. This is best illustrated by an example.
+The measurement model converts sensor data to the state-variable coordinate system, and for a standard sensor suite is by far the simplest model used in the ACS Kalman filter.
+The idea is that, for a sensor that measures one of the states, the data output by the sensor has to have the same units and be in the same range as the state variable.
+This is best illustrated by an example.
 
-Suppose a compass and an IMU both measure the yaw state variable. Let the compass output be $0 - 360^\circ$, the IMU output be $0 - 2\pi~rads$, and the yaw state in the Kalman filter be tracked in the range $0 - 2\pi~rads$. If, for one time step, both compass and IMU measurements are available to be incorporated into the Kalman filter, then the measurement update step from (\ref{eq:kfmeasurementupdate}) is run and the $H_k$ matrix is
+Suppose a compass and an IMU both measure the yaw state variable.
+Let the compass output be $0 - 360^\circ$, the IMU output be $0 - 2\pi~rads$, and the yaw state in the Kalman filter be tracked in the range $0 - 2\pi~rads$.
+If, for one time step, both compass and IMU measurements are available to be incorporated into the Kalman filter, then the measurement update step from (\ref{eq:kfmeasurementupdate}) is run and the $H_k$ matrix is
 \begin{align*}
 H_k = \left[\begin{array}{c c c c c c c c}
 0 & 0 & 0 & 0 & 0 & 0 & \frac{\pi}{180^\circ} & 0 \\
@@ -264,7 +316,10 @@ H_k = \left[\begin{array}{c c c c c c c c}
 \end{align*}
 The $y$ vector is a $2\times1$ column vector with the compass measurement in the $y_{(1,1)}$ element and the IMU measurement in the $y_{(2,1)}$ element.
 
-There is one row per sensor measurement and one column per state in the measurement matrix, so in this example $H_k$ is a $2\times8$ matrix. The compass measurement corresponds to the first row and the data is converted from degrees to radians. The IMU measurement corresponds to the second row and, since the units of the sensor data are the same as the units of the state variable, the data is not transformed at all. In the case when there is a single sensor measuring each of the states, and those sensors output data that is in the correct units and range of the state variables, then $H_k=I$, the identity matrix.
+There is one row per sensor measurement and one column per state in the measurement matrix, so in this example $H_k$ is a $2\times8$ matrix.
+The compass measurement corresponds to the first row and the data is converted from degrees to radians.
+The IMU measurement corresponds to the second row and, since the units of the sensor data are the same as the units of the state variable, the data is not transformed at all.
+In the case when there is a single sensor measuring each of the states, and those sensors output data that is in the correct units and range of the state variables, then $H_k=I$, the identity matrix.
 
 \subsection{Noise Models}%
 \label{sec:kfNoiseModels}
@@ -276,13 +331,21 @@ y_k &= H_k x_k + v_k.
 \end{split}
 \end{align*}
 
-The Kalman filter uses two different noise models, one for system noise $w_k$ and one for measurement noise $v_k$. The system noise model attempts to capture all of the effects due to an imperfect system model, linearization of the model, the low dynamics assumption and the principal motion assumption. The measurement noise model tries to compensate for sensors that do not measure the environment perfectly.
+The Kalman filter uses two different noise models, one for system noise $w_k$ and one for measurement noise $v_k$.
+The system noise model attempts to capture all of the effects due to an imperfect system model, linearization of the model, the low dynamics assumption and the principal motion assumption.
+The measurement noise model tries to compensate for sensors that do not measure the environment perfectly.
 
-Noise in the Kalman filter is assumed to be zero mean with a Gaussian distribution. The models are set up as covariance matrices that describe the variance of the Gaussian distribution of each state and each sensor. When the noise in the system is \textit{not} Gaussian, then the Kalman filter is the best linear estimator and performance will degrade gracefully as non-Gaussian noise enters the system~\cite{Simon10}. As noted in~\cite{AndersonMoore79}, when dropping the Gaussian assumption all of the Kalman filter equations will propagate exactly the same for the mean and covariance of the states and measurements, except that any information about higher-order moments is lost, and the probability density functions cannot be reproduced. This means that the Gaussian assumption is valid when the higher-order moments do not have a large effect on the distributions. When the higher order moments are significant, then the Kalman filter performance will degrade gracefully and still be the optimal linear filter.
+Noise in the Kalman filter is assumed to be zero mean with a Gaussian distribution.
+The models are set up as covariance matrices that describe the variance of the Gaussian distribution of each state and each sensor.
+When the noise in the system is \textit{not} Gaussian, then the Kalman filter is the best linear estimator and performance will degrade gracefully as non-Gaussian noise enters the system~\cite{Simon10}.
+As noted in~\cite{AndersonMoore79}, when dropping the Gaussian assumption all of the Kalman filter equations will propagate exactly the same for the mean and covariance of the states and measurements, except that any information about higher-order moments is lost, and the probability density functions cannot be reproduced.
+This means that the Gaussian assumption is valid when the higher-order moments do not have a large effect on the distributions.
+When the higher order moments are significant, then the Kalman filter performance will degrade gracefully and still be the optimal linear filter.
 
 \subsection{Kalman Gain}%
 \label{kfKalmanGain}
-The Kalman gain matrix is used in the measurement update step (\ref{eq:kfmeasurementupdate}) and essentially weights whether the state estimate will rely more on the system model or the measurements. The gain matrix $K_k$ is given by
+The Kalman gain matrix is used in the measurement update step (\ref{eq:kfmeasurementupdate}) and essentially weights whether the state estimate will rely more on the system model or the measurements.
+The gain matrix $K_k$ is given by
 \begin{align*}
 K_k &= P_k^- H_k^T {\left[H_k P_k^- H_k^T + R_k\right]}^{-1}
 \end{align*}
@@ -291,34 +354,72 @@ where
 P_{k+1}^- &= \Phi_k P_k^+\Phi_k^T + Q_k.
 \end{align*}
 
-From these equations it can be seen that all four models in the Kalman filter are used to calculate the Kalman gain matrix, since $\Phi_k$, $Q_k$, $H_k$ and $R_k$ are all present. In the measurement update step, the Kalman gain is multiplied by the difference between the measured values $y_k$ of the state and the expected values of those measurements based on the system model $\hat{y}_k$. Note that $\hat{y}_k = H_k\hat{x}_k^-$ is what the sensors would report if there were no noise in the measurements and the system model were perfect. The state estimate from the measurement update step is
+From these equations it can be seen that all four models in the Kalman filter are used to calculate the Kalman gain matrix, since $\Phi_k$, $Q_k$, $H_k$ and $R_k$ are all present.
+In the measurement update step, the Kalman gain is multiplied by the difference between the measured values $y_k$ of the state and the expected values of those measurements based on the system model $\hat{y}_k$.
+Note that $\hat{y}_k = H_k\hat{x}_k^-$ is what the sensors would report if there were no noise in the measurements and the system model were perfect.
+The state estimate from the measurement update step is
 \begin{align*}
 \hat{x}_k^+ &= \hat{x}_k^- + K_k\left[y_k - H_k\hat{x}_k^-\right].
 \end{align*}
 
-If the sensor data matches the system model prediction then the innovations term $y_k-H_k\hat{x}_k^-=0$, and the Kalman gain is ignored. The innovation term is rarely, if ever, zero in practice. The interesting question then becomes whether to trust the noisy sensors or the imperfect system model to determine the state estimate. A large gain value will adjust the previous estimate from the prediction update step by a larger amount, which means that the sensor data is weighted more heavily than the system model. Conversely, a small gain value will cause the estimate from the measurement update step to trust the system model more than the sensor data. It is important to note that the Kalman gain matrix $K_k$ can have large values for some states (and sensors) and small values for other states (and sensors).
+If the sensor data matches the system model prediction then the innovations term $y_k-H_k\hat{x}_k^-=0$, and the Kalman gain is ignored.
+The innovation term is rarely, if ever, zero in practice.
+The interesting question then becomes whether to trust the noisy sensors or the imperfect system model to determine the state estimate.
+A large gain value will adjust the previous estimate from the prediction update step by a larger amount, which means that the sensor data is weighted more heavily than the system model.
+Conversely, a small gain value will cause the estimate from the measurement update step to trust the system model more than the sensor data.
+It is important to note that the Kalman gain matrix $K_k$ can have large values for some states (and sensors) and small values for other states (and sensors).
 
-As discussed in Section~\ref{sec:kfMeasurementModel}, the measurement model is fairly simple, so the Kalman gain is really a function of the system model and the noise models. If the system model is a very good approximation to the real system, the system noise model should reflect that by having small values in $Q_k$. If the sensors are very good, then the measurement noise model will have small values in $R_k$. Thus the Kalman gain matrix tends to take on values relative to the ratio of the elements in the $Q_k$ and $R_k$ noise models. From this it can be seen that developing accurate noise models is very important to the performance of the Kalman filter.
+As discussed in Section~\ref{sec:kfMeasurementModel}, the measurement model is fairly simple, so the Kalman gain is really a function of the system model and the noise models.
+If the system model is a very good approximation to the real system, the system noise model should reflect that by having small values in $Q_k$.
+If the sensors are very good, then the measurement noise model will have small values in $R_k$.
+Thus the Kalman gain matrix tends to take on values relative to the ratio of the elements in the $Q_k$ and $R_k$ noise models.
+From this it can be seen that developing accurate noise models is very important to the performance of the Kalman filter.
 
-When the models are not set up correctly, then the measurements will likely not match the predicted state estimates. This will cause the Kalman gains to grow larger during each measurement update step to force the state estimate to trust the measurements more than the system model.
+When the models are not set up correctly, then the measurements will likely not match the predicted state estimates.
+This will cause the Kalman gains to grow larger during each measurement update step to force the state estimate to trust the measurements more than the system model.
 
 \section{Fixing Bugs in ACS Kalman Filter}%
 \label{sec:kfBugs}
-The ACS Kalman filter contained three major bugs in the equations and only worked because of a reforumlation of the standard Kalman filter equations. The first bug concerned the calculation of the Kalman gain matrix (see Section~\ref{kfKalmanGain}). The $K_k$ matrix was being calculated correctly, but at the end of the calculation gains from previous sensors were added back into their former element locations in the matrix. This bug was fixed by removing the code that added previous gain elements back into the Kalman gain matrix. One of the consequences of this bug was that the calculation of the covariance of the state estimate in the prediction update step used the continuous-time system model $F$ (\ref{eq:kfjacobianresult}) instead of the discrete-time system model $\Phi_k$ (\ref{eq:kfSystemModelWithAssumptions}). The result was such that instead of $P_{k+1}^- = \Phi_k P_k^-\Phi_k^T + Q_k$ (c.f. (\ref{eq:kfpredictionupdate})), the Kalman filter used
+The ACS Kalman filter contained three major bugs in the equations and only worked because of a reforumlation of the standard Kalman filter equations.
+The first bug concerned the calculation of the Kalman gain matrix (see Section~\ref{kfKalmanGain}).
+The $K_k$ matrix was being calculated correctly, but at the end of the calculation gains from previous sensors were added back into their former element locations in the matrix.
+This bug was fixed by removing the code that added previous gain elements back into the Kalman gain matrix.
+One of the consequences of this bug was that the calculation of the covariance of the state estimate in the prediction update step used the continuous-time system model $F$ (\ref{eq:kfjacobianresult}) instead of the discrete-time system model $\Phi_k$ (\ref{eq:kfSystemModelWithAssumptions}).
+The result was such that instead of $P_{k+1}^- = \Phi_k P_k^-\Phi_k^T + Q_k$ (c.f. (\ref{eq:kfpredictionupdate})), the Kalman filter used
 \begin{align*}
 P_{k+1}^- = FP_k^+F^T + Q_k.
 \end{align*}
-The discrete time system model $\Phi_k$ was used in the calculation of the state estimate $\hat{x}_k^-$, however. After this fix, $\Phi_k$ was used appropriately in the state covariance calculation during the prediction update step.
+The discrete time system model $\Phi_k$ was used in the calculation of the state estimate $\hat{x}_k^-$, however.
+After this fix, $\Phi_k$ was used appropriately in the state covariance calculation during the prediction update step.
 
-The second bug was a consequence of calculating the Kalman gain incorrectly. The yaw angle calculation was not being done correctly, since the state covariance estimate was wrong, so a correcting term was introduced that fixed the yaw angle estimate. This worked when a standard set of sensors were used, since they reliably gave measurements at a fixed rate and affected the Kalman gain matrix in a consistent manner. This bug was also fixed by simply removing the correcting term and the yaw angle was estimated correctly after the Kalman gain matrix was properly implemented.
+The second bug was a consequence of calculating the Kalman gain incorrectly.
+The yaw angle calculation was not being done correctly, since the state covariance estimate was wrong, so a correcting term was introduced that fixed the yaw angle estimate.
+This worked when a standard set of sensors were used, since they reliably gave measurements at a fixed rate and affected the Kalman gain matrix in a consistent manner.
+This bug was also fixed by simply removing the correcting term and the yaw angle was estimated correctly after the Kalman gain matrix was properly implemented.
 
-The third bug was slightly less significant but still posed several problems. In the measurement update step (\ref{eq:kfmeasurementupdate}), the measurement model $H_k$ was set up to use the latest received data from each sensor at each time step, rather than only use new measurements if they were available from each sensor. This bug manifested itself most prominently in sensors with slow update rates such as GPS\@. One particular robot configuration used the uBlox GPS receiver that output position fixes at $1 Hz$, which resulted in the Kalman filter measurement update (running at $100 Hz$) using the same position measurement for $100$ time steps. That particular measurement should only have been used a single time out of the $100$ time steps. This became obvious when the control system exhibited the behavior of cycling through slowing down and speeding up in a very jerky fashion. This occurred because the Kalman filter was trying to push the position estimate backwards toward the most recent GPS measurement instead of letting the system model $\Phi_k$ allow the robot position to propagate forward based on the robot kinematics.
+The third bug was slightly less significant but still posed several problems.
+In the measurement update step (\ref{eq:kfmeasurementupdate}), the measurement model $H_k$ was set up to use the latest received data from each sensor at each time step, rather than only use new measurements if they were available from each sensor.
+This bug manifested itself most prominently in sensors with slow update rates such as GPS\@.
+One particular robot configuration used the uBlox GPS receiver that output position fixes at $1 Hz$, which resulted in the Kalman filter measurement update (running at $100 Hz$) using the same position measurement for $100$ time steps.
+That particular measurement should only have been used a single time out of the $100$ time steps.
+This became obvious when the control system exhibited the behavior of cycling through slowing down and speeding up in a very jerky fashion.
+This occurred because the Kalman filter was trying to push the position estimate backwards toward the most recent GPS measurement instead of letting the system model $\Phi_k$ allow the robot position to propagate forward based on the robot kinematics.
 
 \section{Establishing Ground Truth}%
 \label{sec:groundtruth}
-Quantitatively evaluating the performance of Kalman filters can be accomplished in several ways, the best of which is to analyze the output of the Kalman filter against ground truth. Although it is nearly impossible to establish ground truth over a large area in practice, the closer the measurements are to an absolute position in the world the better. To determine ground truth for the robots in these experiments, a differential GPS (DGPS) system was used independently of the sensors on the robot so that very accurate measurements of the robot's actual position could be logged. The ground truth measurements were then used in a post-processing step to determine how well the Kalman filter estimate corresponds to ground truth.
+Quantitatively evaluating the performance of Kalman filters can be accomplished in several ways, the best of which is to analyze the output of the Kalman filter against ground truth.
+Although it is nearly impossible to establish ground truth over a large area in practice, the closer the measurements are to an absolute position in the world the better.
+To determine ground truth for the robots in these experiments, a differential GPS (DGPS) system was used independently of the sensors on the robot so that very accurate measurements of the robot's actual position could be logged.
+The ground truth measurements were then used in a post-processing step to determine how well the Kalman filter estimate corresponds to ground truth.
 
-The DGPS system consists of a GPS receiver and serial radio that make up the base station, and a GPS receiver, serial radio and small computer that make up the roaming station (Figure~\ref{fig:dgps}). The GPS receivers are both Novatel RT2 receivers using the Real Time Kinematics algorithm. The base station is located in a static position and is then configured to use a fixed position. The difference between the fixed position is compared to what the current position would be if it were not fixed. The difference between the fixed position and the calculated position are used to generate corrections that would put the position of the GPS antenna at the fixed position and those corrections are sent to and applied at the roaming station. This results in a standard deviation of $2$ $cm$ for the position output of the roaming station. The errors are due to the effects of the GPS signal passing from the satellites through the atmosphere to the antenna, as well as to multipath effects closer to the ground. The DGPS system is bootstrapped to the robot during testing runs to log data at a rate of $10 Hz$ and is only used as a tool to measure ground truth for position, not to be used during normal operation.
+The DGPS system consists of a GPS receiver and serial radio that make up the base station, and a GPS receiver, serial radio and small computer that make up the roaming station (Figure~\ref{fig:dgps}).
+The GPS receivers are both Novatel RT2 receivers using the Real Time Kinematics algorithm.
+The base station is located in a static position and is then configured to use a fixed position.
+The difference between the fixed position is compared to what the current position would be if it were not fixed.
+The difference between the fixed position and the calculated position are used to generate corrections that would put the position of the GPS antenna at the fixed position and those corrections are sent to and applied at the roaming station.
+This results in a standard deviation of $2$ $cm$ for the position output of the roaming station.
+The errors are due to the effects of the GPS signal passing from the satellites through the atmosphere to the antenna, as well as to multipath effects closer to the ground.
+The DGPS system is bootstrapped to the robot during testing runs to log data at a rate of $10 Hz$ and is only used as a tool to measure ground truth for position, not to be used during normal operation.
 
 With a highly accurate estimate of ground truth established, it becomes possible to not only study the performance of the Kalman filter, but to also determine whether to focus efforts in improving the autonomous navigation behaviors of the robots via the estimation or controls algorithms.
 
@@ -331,13 +432,18 @@ With a highly accurate estimate of ground truth established, it becomes possible
 
 \section{Identifying Noise Models}%
 \label{sec:kfIdentifyNoiseModels}
-Attempting to determine the proper values for the noise models $Q_k$ in (\ref{eq:kfpredictionupdate}) and $R_k$ in (\ref{eq:kfmeasurementupdate}) can be a laborious process and is often considered more of an art than a science, with engineer experience being a critical factor. In Section~\ref{sec:kfNoiseModels} it was shown that the Kalman filter performance is heavily dependent upon the accuracy of the noise models even though they are difficult to determine.
+Attempting to determine the proper values for the noise models $Q_k$ in (\ref{eq:kfpredictionupdate}) and $R_k$ in (\ref{eq:kfmeasurementupdate}) can be a laborious process and is often considered more of an art than a science, with engineer experience being a critical factor.
+In Section~\ref{sec:kfNoiseModels} it was shown that the Kalman filter performance is heavily dependent upon the accuracy of the noise models even though they are difficult to determine.
 
 \subsection{Discriminative Training of Kalman Filter Parameters}%
 \label{sec:kftrainingparams}
-A method to automatically learn what the covariance matrices $Q_k$ and $R_k$ should be, using a discriminative training algorithm, was described in~\cite{Abbeel-RSS-05}. Building upon that work,~\cite{SakaiKuroda10} recently used a variation of the algorithm described in~\cite{Abbeel-RSS-05} to learn parameter values for the noise filters used in their unscented Kalman filter. This method takes advantage of ground truth measurements obtained using a DGPS system like that described in Section~\ref{sec:groundtruth}. Note that in the following expressions the term $h(\mu_t)$ is the position output by the Kalman filter and $y$ is the DGPS position output, so the goal is to find values of $Q_k$ and $R_k$ that minimize the difference between the output of the Kalman filter and DGPS ground truth.
+A method to automatically learn what the covariance matrices $Q_k$ and $R_k$ should be, using a discriminative training algorithm, was described in~\cite{Abbeel-RSS-05}.
+Building upon that work,~\cite{SakaiKuroda10} recently used a variation of the algorithm described in~\cite{Abbeel-RSS-05} to learn parameter values for the noise filters used in their unscented Kalman filter.
+This method takes advantage of ground truth measurements obtained using a DGPS system like that described in Section~\ref{sec:groundtruth}.
+Note that in the following expressions the term $h(\mu_t)$ is the position output by the Kalman filter and $y$ is the DGPS position output, so the goal is to find values of $Q_k$ and $R_k$ that minimize the difference between the output of the Kalman filter and DGPS ground truth.
 
-There are several metrics that can be applied to the data, with the two most relevant metrics being the residual error metric and the prediction-likelihood error metric. The residual prediction error is used to estimate $Q_k$ and $R_k$ using
+There are several metrics that can be applied to the data, with the two most relevant metrics being the residual error metric and the prediction-likelihood error metric.
+The residual prediction error is used to estimate $Q_k$ and $R_k$ using
 \begin{align*}
 \left<R_{\text{res}},Q_{\text{res}}\right> = \argmin_{R,Q}\sum_{t=0}^T ||y_t-h(\mu_t)||_2^2.
 \end{align*}
@@ -355,7 +461,8 @@ The prediction-likelihood method uses the metric
 \begin{align*}
 \left<R_{\text{pred}},Q_{\text{pred}}\right> = \argmax_{R,Q}\sum_{t=0}^T -\log|2\pi\Omega_t| - {(y_t-h(\mu_t))}^T\Omega_t^{-1}(y_t-h(\mu_t))
 \end{align*}
-where $\Omega_t = H_t \Sigma_t H_t^T+P$. The error metric used for the prediction likelihood method is
+where $\Omega_t = H_t \Sigma_t H_t^T+P$.
+The error metric used for the prediction likelihood method is
 \begin{align}
 \label{eq:kftrainingpred}
 e = -\frac{1}{T}\sum_{t=1}^T \left(\log|2\pi\Omega_t| - {(y_t-h(\mu_t))}^T\Omega_t^{-1}(y_t-h(\mu_t))\right)
@@ -364,7 +471,10 @@ where $\Omega_t$ is the same as in the previous description.
 
 \subsection{Simulating Robot Runs}%
 \label{sec:kfSimulation}
-For the training algorithm to work, the sensor data collected from a robot has to be replayed a large number of times while making small adjustments to the noise models. To accomplish this, a simulation of the robot that runs faster than real time helps to reduce the amount of time taken to replay the data. As shown in Table~\ref{tab:kfSimulationErrors}, the position errors as calculated using (\ref{eq:kftrainingres}) were very close between the simulated runs and the actual robot run. The average error was $0.0556~m$ over nine different runs, which gives a baseline for the convergence criterion.
+For the training algorithm to work, the sensor data collected from a robot has to be replayed a large number of times while making small adjustments to the noise models.
+To accomplish this, a simulation of the robot that runs faster than real time helps to reduce the amount of time taken to replay the data.
+As shown in Table~\ref{tab:kfSimulationErrors}, the position errors as calculated using (\ref{eq:kftrainingres}) were very close between the simulated runs and the actual robot run.
+The average error was $0.0556~m$ over nine different runs, which gives a baseline for the convergence criterion.
 
 \begin{table}[ht!]
 \caption{Kalman Filter Simulation Errors}
@@ -387,9 +497,18 @@ Run & Actual Error (m)  & Simulation Error (m) & Error Difference (m) \\ \midrul
 
 \subsection{Coordinate Ascent Algorithm}%
 \label{sec:coordinateAscent}
-In order to evaluate the error metrics in (\ref{eq:kftrainingres}) and (\ref{eq:kftrainingpred}) it is necessary to search through the space of parameters to find the optimal parameters to use in the $Q_k$ and $R_k$ matrices. Initially, a program was written to attempt a naive brute-force approach of trying every possible combination of parameters. This brute-force algorithm turned out to be difficult to implement, took several days to run, and returned unimpressive results that did not really improve the Kalman filter estimates. Following the description in~\cite{Abbeel-RSS-05}, a coordinate-ascent algorithm was then written with much better results and faster convergence times.
+In order to evaluate the error metrics in (\ref{eq:kftrainingres}) and (\ref{eq:kftrainingpred}) it is necessary to search through the space of parameters to find the optimal parameters to use in the $Q_k$ and $R_k$ matrices.
+Initially, a program was written to attempt a naive brute-force approach of trying every possible combination of parameters.
+This brute-force algorithm turned out to be difficult to implement, took several days to run, and returned unimpressive results that did not really improve the Kalman filter estimates.
+Following the description in~\cite{Abbeel-RSS-05}, a coordinate-ascent algorithm was then written with much better results and faster convergence times.
 
-The coordinate-ascent algorithm was initialized by a set of hand-tuned noise model parameters and then the robot run was simulated. For each parameter in the noise models, the value of the parameter is then increased by $\alpha_i \%$ and the error metric is evaluated. If the resulting error is less than the previous best result, the parameter is kept at the increased value, otherwise the parameter is decreased by $\alpha_d \%$. The values $\alpha_i$ and $\alpha_d$ are known as the learning rates. One iteration of the algorithm consists of running the simulation and evaluating the error metric for each of the noise parameters. The algorithm continues until the error is less than some convergence value $\epsilon$ or until two consecutive iterations are run without producing a new minimum error. This is shown in Algorithm~\ref{alg:coordinateascent}, where values of $\alpha_i=1.5$ and $\alpha_d=1.1$ were used.
+The coordinate-ascent algorithm was initialized by a set of hand-tuned noise model parameters and then the robot run was simulated.
+For each parameter in the noise models, the value of the parameter is then increased by $\alpha_i \%$ and the error metric is evaluated.
+If the resulting error is less than the previous best result, the parameter is kept at the increased value, otherwise the parameter is decreased by $\alpha_d \%$.
+The values $\alpha_i$ and $\alpha_d$ are known as the learning rates.
+One iteration of the algorithm consists of running the simulation and evaluating the error metric for each of the noise parameters.
+The algorithm continues until the error is less than some convergence value $\epsilon$ or until two consecutive iterations are run without producing a new minimum error.
+This is shown in Algorithm~\ref{alg:coordinateascent}, where values of $\alpha_i=1.5$ and $\alpha_d=1.1$ were used.
 
 \begin{algorithm}
 \caption{Coordinate Ascent for Discriminative Training}%
