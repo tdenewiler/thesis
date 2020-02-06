@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 """
 Simulation of differential drive robot.
 
@@ -8,15 +8,13 @@ theory.
 
 import time
 import sys
-from optparse import OptionParser # pylint: disable=deprecated-module
+from optparse import OptionParser  # pylint: disable=deprecated-module
 from math import sqrt, atan2, cos, sin
 import numpy as np
-from scipy.integrate import odeint # pylint: disable=no-name-in-module,import-error
 
-import matplotlib # pylint: disable=import-error
-# For use over SSH.
-matplotlib.use('Qt4Agg')
-import matplotlib.pyplot as plt # pylint: disable=import-error,wrong-import-position
+import matplotlib.pyplot as plt  # pylint: disable=import-error,wrong-import-position
+from scipy.integrate import odeint  # pylint: disable=no-name-in-module,import-error
+
 
 def kinematics_ode(state, _, gamma, h_gain, k_gain):
     r"""
@@ -42,21 +40,24 @@ def kinematics_ode(state, _, gamma, h_gain, k_gain):
 
     return [edot, alphadot, thetadot]
 
+
 class LyapunovController():
     """Configuration values for controller."""
 
     def __init__(self):
-        """Controller."""
+        """Vehicle controller."""
         parser = OptionParser()
-        parser.add_option("-r", "--resolution", dest="resolution", \
-            help="Resolution for output images of plots.", default=100)
-        parser.add_option("-s", "--save-images", dest="save_images", \
-            help="Whether to save images or not.", default=False)
+        parser.add_option("-r", "--resolution", dest="resolution",
+                          help="Resolution for output images of plots.",
+                          default=100)
+        parser.add_option("-s", "--save-images", dest="save_images",
+                          help="Whether to save images or not.",
+                          default=False)
         options, dummy = parser.parse_args(sys.argv)
 
         self.positions = [[], []]
-        self.pose_init = [0, 0, 0] # (x, y, yaw)
-        self.pose_final = [0, 0, 0] # (x, y, yaw)
+        self.pose_init = [0, 0, 0]  # (x, y, yaw)
+        self.pose_final = [0, 0, 0]  # (x, y, yaw)
         self.start = time.time()
         self.x_pos = []
         self.y_pos = []
@@ -92,9 +93,9 @@ class LyapunovController():
     @classmethod
     def simulate(cls, state_init, gains, t_end, t_inc):
         """Simulate run."""
-        t_range = np.arange(0, t_end, t_inc) # pylint: disable=no-member
-        state_final = odeint(kinematics_ode, state_init, \
-            t_range, (gains[0], gains[1], gains[2]))
+        t_range = np.arange(0, t_end, t_inc)  # pylint: disable=no-member
+        state_final = odeint(kinematics_ode, state_init,
+                             t_range, (gains[0], gains[1], gains[2]))
 
         return state_final
 
@@ -125,16 +126,17 @@ class LyapunovController():
     def plot_trajectory(self, gains):
         """Plot trajectory of given controller."""
         plt.figure()
-#pylint: disable=no-member
+        # pylint: disable=no-member
         colormap = plt.cm.gist_rainbow
-        plt.gca().set_color_cycle([colormap(i) for i in np.linspace(0, 1, \
-            len(gains))])
-#pylint: enable=no-member
+        plt.gca().set_color_cycle([colormap(i) for i in np.linspace(0, 1,
+                                                                    len(gains))])
+        # pylint: enable=no-member
         labels = []
         for entry in enumerate(gains):
             plt.lpos, = plt.plot(self.x_pos[entry], self.y_pos[entry])
-            labels.append(r'(%0.2lf, %0.2lf, %0.2lf)' % (gains[entry][0], \
-                gains[entry][1], gains[entry][2]))
+            labels.append(r'(%0.2lf, %0.2lf, %0.2lf)' % (gains[entry][0],
+                                                         gains[entry][1],
+                                                         gains[entry][2]))
         plt.lpos_start, = plt.plot(self.pose_init[0], self.pose_init[1])
         plt.lpos_end, = plt.plot(self.pose_final[0], self.pose_final[1])
         plt.title(r'Robot Trajectory')
@@ -142,18 +144,18 @@ class LyapunovController():
         plt.ylabel('y (m)')
         labels.append('Start')
         labels.append('End')
-        #plt.legend(labels, ncol=4, loc='best')
         plt.axis('equal')
         if self.image_props[1]:
             name = "images/lyapunovTrajectories.png"
             plt.savefig(name, dpi=self.image_props[0])
 
+
 def main():
     """Run controllers with different gains."""
     controller = LyapunovController()
-    pose_init = [5, -2, 0] # [x, y, yaw]
+    pose_init = [5, -2, 0]  # [x, y, yaw]
     pose_final = [-15, 13, 0]
-    pose_init = [0, 0, 0] # [x, y, yaw]
+    pose_init = [0, 0, 0]  # [x, y, yaw]
     pose_final = [10, 10, 0]
     num_trials = 100
     t_end = 30
@@ -170,11 +172,12 @@ def main():
         gains.append([k_gamma, k_h, k_k])
     controller.run(gains, t_end, t_inc)
     t_elapsed = time.time() - controller.start
-    print('Simulation of %d runs took %0.5f seconds for a rate of %0.2f Hz.' % \
-        (num_trials, t_elapsed, 1 / t_elapsed))
+    print('Simulation of %d runs took %0.5f seconds for a rate of %0.2f Hz.' %
+          (num_trials, t_elapsed, 1 / t_elapsed))
     controller.plot_trajectory(gains)
 
     plt.show()
+
 
 if __name__ == '__main__':
     main()

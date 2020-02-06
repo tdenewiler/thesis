@@ -1,12 +1,11 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 """Plot controls output."""
 
 from __future__ import print_function
 
 import csv
 import sys
-from pylab import * # pylint: disable=import-error,wildcard-import
-import matplotlib.pyplot as plt # pylint: disable=import-error
+import matplotlib.pyplot as plt
 
 # pylint: disable=invalid-name
 
@@ -44,7 +43,8 @@ yaw = []
 compassYaw = []
 crossTrackError = []
 
-# Read and store data from log file in vectors using labels on first line of log file.
+# Read and store data from log file in vectors using labels on first line of
+# log file.
 for data in reader:
     date.append(str(data["date"]))
     time.append(str(data["time"]))
@@ -104,37 +104,40 @@ sys.exit()
 
 # Plot the Lyapunov vectors versus time.
 plt.figure()
-#le = plot(e)
-#lheading = plt.plot(heading)
-#lgoalyaw = plt.plot(goalyaw)
+# le = plot(e)
+# lheading = plt.plot(heading)
+# lgoalyaw = plt.plot(goalyaw)
 lpidu = plt.plot(pidu)
 lpidw = plt.plot(pidw)
-#lVdot = plt.plot(Vdot)
-#lu = plt.plot(u)
-#lw = plt.plot(w)
-#lencvelt = plt.plot(encvelt)
-#lencvelr = plt.plot(encvelr)
-#lvel = plt.plot(vel)
-#lyawrate = plt.plot(yawrate)
-#lyaw = plt.plot(yaw)
-#lcompassYaw = plt.plot(compassYaw)
+# lVdot = plt.plot(Vdot)
+# lu = plt.plot(u)
+# lw = plt.plot(w)
+# lencvelt = plt.plot(encvelt)
+# lencvelr = plt.plot(encvelr)
+# lvel = plt.plot(vel)
+# lyawrate = plt.plot(yawrate)
+# lyaw = plt.plot(yaw)
+# lcompassYaw = plt.plot(compassYaw)
 plt.title("PackBot Data vs. Time")
 plt.ylim(-100, 100)
 plt.xlabel("Time (1/10th s)")
 plt.ylabel("Data")
 
 # The legend contains Unicode characters for Greek symbols.
-#plt.figlegend((lyaw, lcompassYaw), ('KF Yaw', 'Compass Yaw'), 'upper right')
-#plt.figlegend((lheading, lyaw), ('Heading', 'Yaw'), 'upper right')
-#plt.figlegend((lencvelt, lvel, lyaw), ('Encoder Velocity', 'GPS Velocity', 'Yaw'), 'upper right')
-#plt.figlegend((le, lheading, lgoalyaw, lVdot, lu, lw, lencvelt, lencvelr),
-#              ('e (m)', u"\u03b1"' (rad)', u"\u03b8"' (rad)', 'Vdot', 'u', 'w', 'Enc u', 'Enc w'),
-#              'upper right')
-#plt.figlegend((le, lheading, lgoalyaw, lu, lw, lencvelt, lencvelr),
-#              ('e (m)', u"\u03b1"' (rad)', u"\u03b8"' (rad)', 'u', 'w', 'Enc u', 'Enc w'),
-#              'upper right')
-#plt.figlegend((lu, lw), ('Linear Velocity (%)', 'Angular Velocity (%)'), 'upper right')
-plt.figlegend((lpidu, lpidw), ('Linear Velocity (%)', 'Angular Velocity (%)'), 'upper right')
+# plt.figlegend((lyaw, lcompassYaw), ('KF Yaw', 'Compass Yaw'), 'upper right')
+# plt.figlegend((lheading, lyaw), ('Heading', 'Yaw'), 'upper right')
+# plt.figlegend((lencvelt, lvel, lyaw),
+#               ('Encoder Velocity', 'GPS Velocity', 'Yaw'), 'upper right')
+# plt.figlegend((le, lheading, lgoalyaw, lVdot, lu, lw, lencvelt, lencvelr),
+#               ('e (m)', u"\u03b1"' (rad)', u"\u03b8"' (rad)', 'Vdot',
+#               'u', 'w', 'Enc u', 'Enc w'), 'upper right')
+# plt.figlegend((le, lheading, lgoalyaw, lu, lw, lencvelt, lencvelr),
+#               ('e (m)', u"\u03b1"' (rad)', u"\u03b8"' (rad)', 'u', 'w',
+#               'Enc u', 'Enc w'), 'upper right')
+# plt.figlegend((lu, lw), ('Linear Velocity (%)',
+#               'Angular Velocity (%)'), 'upper right')
+plt.figlegend((lpidu, lpidw), ('Linear Velocity (%)', 'Angular Velocity (%)'),
+              'upper right')
 if saveplots:
     plt.savefig("pbData.svg")
     plt.savefig("pbData.png", dpi=pngres)
@@ -147,7 +150,8 @@ ltheta = plt.plot(theta)
 plt.title("Packbot Errors vs. Time")
 plt.xlabel("Time (1/10th s)")
 plt.ylabel("Data")
-plt.figlegend((le, lalpha, ltheta), ('e', r'$\alpha$', r'$\theta$'), 'upper right')
+plt.figlegend((le, lalpha, ltheta), ('e', r'$\alpha$', r'$\theta$'),
+              'upper right')
 if saveplots:
     plt.savefig("pbDataErrors.svg")
     plt.savefig("pbDataErrors.png", dpi=pngres)

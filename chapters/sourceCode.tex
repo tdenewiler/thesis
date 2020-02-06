@@ -1,8 +1,9 @@
-\chapter{Source Code}
+\chapter{Source Code}%
 \label{ch:code}
-This is some of the source code used in this research. Contact the \mailto{\thesisAuthorEmail}{author} for more complete listings.
+This is some of the source code used in this research.
+Contact the \mailto{\thesisAuthorEmail}{author} for more complete listings.
 
-\section{QR}
+\section{QR}%
 \label{sec:qrcode}
 This code was used to generate the $Q$ and $R$ matrices.
 % Set the syntax highlighting to C++.
@@ -12,16 +13,17 @@ This code was used to generate the $Q$ and $R$ matrices.
 \matlabscript{code/qr/metrics.cc}{C++ source file for calculating errors.}
 
 \clearpage
-\section{DGPS}
+\section{DGPS}%
 \label{sec:dgpscode}
 This code was used to set up and communicate with DGPS receivers.
 \matlabscript{code/gpslogger/gpslogger.cpp}{Main C/C++ file for logging GPS data.}
 % \matlabscript{code/gpslogger/oem4.cpp}{Main C++ file for the Novatel OEM4 library.}
 
 \clearpage
-\section{Lyapunov}
+\section{Lyapunov}%
 \label{sec:lyapunovcode}
-This code was adapted from~\cite{Rusu05RobotuxLyapunov}. Most of the changes involved making the code more efficient, making it easier to modify the parameters and variables, adding additional comments and using more descriptive variable names.
+This code was adapted from~\cite{Rusu05RobotuxLyapunov}.
+Most of the changes involved making the code more efficient, making it easier to modify the parameters and variables, adding additional comments and using more descriptive variable names.
 % Set the syntax highlighting back to Matlab.
 \lstset{language=Matlab}
 \matlabscript{code/lyapunovRusu/main.m}{Main Matlab file for Lyapunov controller.}
