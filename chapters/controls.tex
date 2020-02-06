@@ -1,15 +1,15 @@
-\chapter{Controls}
+\chapter{Controls}%
 \label{ch:controls}
 Control systems are responsible for computing the commands necessary for actuators to cause the trajectory of a system to go from its current state to a desired state, or for answering the question ``How do I get there?'' There are many different methods that can be used to determine the output commands, one of the more popular and widely implemented being the proportional-integral-differential (PID) controller. Model-based controllers utilize knowledge of the physics of the system to compute appropriate output commands. The robots in these experiments originally used PID controllers for heading control. Later, they were tested with a model-based contoller that takes advantage of Lyapunov stability theory. Both types of controllers described in this chapter take in state estimates from the Kalman filter of Chapter~\ref{ch:estimation} and output linear and angular velocity commands to the robots.
 
-\section{PID}
+\section{PID}%
 \label{sec:pid}
 PID controllers use the current state estimate to determine the errors between the desired state and the current state. The goal of the PID controller is to drive those errors to zero based on a number of criteria, including rise time, settling time, steady state error and overshoot. Shown in Figure~\ref{fig:pid}, the green line is the ideal output, while the blue and purple lines are typical results. The orange line shows what happens when a system becomes unstable. Point $m$ represents the desired state, $m-n$ represents steady state error, point $a$ is the rise time for the blue line and point $b$ is the settling time for the blue line.
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=.85\textwidth]{images/pid}
-\caption{PID Controller Response}
+\caption{PID Controller Response}%
 \label{fig:pid}
 \end{figure}
 
@@ -42,14 +42,14 @@ Parameter    & Rise Time      & Overshoot & Settling Time & Steady State Error \
 $K_p$        & Decrease       & Increase  & Small Change  & Decrease \\
 $K_i$        & Decrease       & Increase  & Increase      & Eliminate \\
 $K_d$        & Small Decrease & Decrease  & Decrease      & None \\ \bottomrule
-\end{tabular}
+\end{tabular}%
 \label{tab:PIDGainEffects}
 \end{table}
 
 \subsection{PID Implementation}
 The PID controller used by SSCPAC was only for angular rate output, with the linear velocity output set to a maximum allowable velocity, and a simple ramp function used to slow the robot down as it approached a waypoint. In conjunction with the PID controller, a simple local path planner was developed following work in~\cite{Hogg02}. This path planner uses a carrot placed a reasonable distance in front of the robot on the path from the previous to the current waypoint, and the carrot position, rather than the waypoint position, is used to correct the heading. When the waypoint is a large distance from the robot's current position, this causes the PID controller to move the robot onto the path faster than it would if the heading error were only based on the angle to the waypoint. The carrot could also be extended along the path after the waypoint so that the robot would not stop at each intermediate waypoint, but would instead cut the corner on the way to the next waypoint. One of the difficulties in using the PID controller, and a motivation for finding a different control scheme, is that as the maximum allowable linear velocity is set to larger values, the performance of the controller works poorly when the waypoints are spaced close together, as is the case when obstacles are present. The converse is also true. As previously mentioned, gain scheduling is a time-intensive task but it is possible that it would have provided a working solution.
 
-\section{Model-Based Controller}
+\section{Model-Based Controller}%
 \label{sec:lyapunov}
 The motivation to find a replacement for the PID controller was primarily caused by one major shortcoming. When the PID gains were set to work well with the robot running at full speed, performance degraded when slowing down, as is typically the case when obstacles are encountered. Conversely, tuning the gains to work at slow speeds caused the robot to drive poorly at fast speeds. As will be shown in Chapter~\ref{ch:results}, the model-based controller works well at varying speeds. There are also cases where the PID controller becomes unstable and cannot converge to a goal position, while the model-based controller does not suffer from this deficiency.
 
@@ -75,14 +75,14 @@ It is not always possible to find such a control Lyapunov function $V$, but when
 
 Two different modes of the model-based controller were developed and tested during these experiments. The difference between the two modes is the behavior of the robot as it approaches intermediate waypoints while navigating to its final destination. The first mode is considered to be useful for a parking behavior where the robot stops at each waypoint, including the intermediate waypoints. The second mode is a slightly modified version of the parking behavior, where the distance error is extended beyond each intermediate waypoint so that the robot will drive through the waypoints without stopping (although the robot often does slow down some) until it reaches its final destination. This second mode will be referred to as the driving mode. During the following development of the control law, the parking mode will be described fully, then extensions will build directly on top of the parking mode to describe the driving mode in Section~\ref{sec:drivingMode}.
 
-\subsection{Error Terms for the Model-Based Controller}
+\subsection{Error Terms for the Model-Based Controller}%
 \label{sec:errorTermsMBC}
 Several groups have implemented model-based controllers rooted in Lyapunov stability theory in simulation including~\cite{MicaelliLyapunov93},~\cite{Aicardi94},~\cite{Aicardi_UnicycleLyapunov95},~\cite{Rusu05RobotuxLyapunov},~\cite{Gulati08}. Only recently have these results been applied to actual robots~\cite{KimLyapunov05},~\cite{Lapierre06},~\cite{Lapierre07},~\cite{NuchterLyapunov07}. All of these groups describe a method for constructing a control Lyapunov function based on the kinematics of a differential-drive robot, similar to the small robots considered in these experiments, which are typically referred to as unicycle-like robots in the literature.
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=.95\textwidth]{images/packbotlyapunov}
-\caption{Packbot Coordinate System for Model Based Controller}
+\caption{Packbot Coordinate System for Model Based Controller}%
 \label{fig:pblyapunov}
 \end{figure}
 
@@ -107,7 +107,7 @@ Additional variables used to calculate the errors, shown in Figure~\ref{fig:pbly
 \item $\phi$, the difference between the target heading $\theta^\star$ and the current heading $\psi$ in the global coordinate system.
 \end{itemize}
 
-\subsection{Unicycle-like Robot Kinematics}
+\subsection{Unicycle-like Robot Kinematics}%
 \label{sec:unicycleKinematics}
 A kinematic model of the robot is used to predict how the robot moves without considering the effects of the mass of the robot or outside forces (such as friction between the robot tracks and the ground) with
 \begin{align}
@@ -146,7 +146,7 @@ Finally, replacing $\alpha$ with $\theta-\phi$ results in a kinematic model of
 \end{split}
 \end{align}
 
-\subsection{Control Lyapunov Function}
+\subsection{Control Lyapunov Function}%
 \label{sec:controllyapunov}
 The control Lyapunov function is selected to be positive, contain all three error states, and separate the distance error from the angle errors. It is given by
 \begin{align}
@@ -240,7 +240,7 @@ u &= \gamma e\cos\alpha \\
 \end{split}
 \end{align}
 
-\subsection{Calculating Control Law Variables}
+\subsection{Calculating Control Law Variables}%
 \label{sec:lyapunovVariables}
 The method used to calculate the variables needed for the control law in (\ref{eq:lyapunovControlLaw}) based on Figure~\ref{fig:pblyapunov} is:
 \begin{enumerate}
@@ -262,7 +262,7 @@ The method used to calculate the variables needed for the control law in (\ref{e
 \item $\alpha = \theta - \phi$.
 \end{enumerate}
 
-\subsection{Model-Based Driving Mode}
+\subsection{Model-Based Driving Mode}%
 \label{sec:drivingMode}
 The parking mode described above can be extended such that the control law will cause the robot to drive through intermediate waypoints along a route rather than stop at each waypoint. The basic idea is that the target position as given in the goal frame $<g>$ of Figure~\ref{fig:pblyapunov} is moved such that the distance error $e$ is increased. Since the linear velocity output of the controller is a function of $e$ (c.f. (\ref{eq:lyapunovControlLaw})), that output will increase causing the robot to drive faster through the intermediate waypoints. As described in~\cite{Aicardi_UnicycleLyapunov95}, an effective means of moving the goal frame is to control its rate of motion, $\dot{s}$, via the function
 \begin{align}
@@ -284,7 +284,7 @@ It can be seen from (\ref{eq:moveTargetFrame}) and (\ref{eq:moveTargetFrameFunct
 
 The resulting behavior of the robot has a very natural appearance as this is how humans typically drive. When the road ahead is straight and we want to continue driving straight, we keep our eyes focused farther down the road and maintain speed. However, when the road ahead is twisty or we want to make a turn we slow down and focus our eyes closer to our current position.
 
-\subsection{Practical Considerations for Selecting Gains}
+\subsection{Practical Considerations for Selecting Gains}%
 \label{sec:lyapunovTrajectoryConvergence}
 The gains $h$, $k$ and $\gamma$ in the control law (\ref{eq:lyapunovControlLaw}) determine the resulting trajectory that the robot will use when driving from its current position to the goal point and heading. The first thing to notice is that the linear velocity is at a maximum when the angle error $\alpha=0$, since that leads to $\cos(\alpha)=1$ and $u_{\text{max}}=\gamma e$. To limit the maximum linear velocity of the robot the gain $\gamma=\frac{u_{\text{max}}}{e}$ can be used when $u>u_{\text{max}}$. Typically, in the environments in which this testing was performed, a long path segment was approximately $10m$. Since $2.5m/s$ is a reasonable upper limit for the Packbot linear velocity, a good starting gain is $\gamma=\frac{2.5}{10}=0.25$.
 
@@ -310,7 +310,7 @@ u &= \gamma e \\
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=.75\textwidth]{images/plotSinCos}
-\caption{Useful Trigonometric Functions of $\alpha$}
+\caption{Useful Trigonometric Functions of $\alpha$}%
 \label{fig:plotSinCos}
 \end{figure}
 

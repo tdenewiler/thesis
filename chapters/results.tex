@@ -1,15 +1,15 @@
-\chapter{Results}
+\chapter{Results}%
 \label{ch:results}
 The Kalman filter and control algorithms discussed in this thesis were implemented in software on a Packbot. They were then run in an open field with an uneven surface consisting of dirt, gravel and asphalt, as seen in Figure~\ref{fig:resultsTestArea}. This testing area is difficult for the robots to navigate because pitch, roll and elevation have significant changes, plus the loose dirt and gravel can cause the tracks to slip, leading to erroneous wheel encoder data. The realistic environment, in addition to routes that force the robot to change linear and angular velocities, excites all the modes of the system model. Some effects, such as track slip, are not modeled and have an effect on the algorithms. All of these conditions rigorously test the estimation and control algorithms.
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=.75\textwidth]{images/flightFieldTestArea}
-\caption{Robot Test Area at SSCPAC}
+\caption{Robot Test Area at SSCPAC}%
 \label{fig:resultsTestArea}
 \end{figure}
 
-\section{Kalman Filter Results}
+\section{Kalman Filter Results}%
 \label{sec:kfResults}
 In Chapter~\ref{ch:estimation}, several aspects of the Kalman filter were modified with the goal of improving robot state estimation. Two metrics have been used to quantify the difference in performance of the Kalman filter after making changes to the algorithm. The first metric is the root-mean-square (RMS) error over the entire course. The second metric is the amount of error in the position estimate before and after the robot runs a route, where the percentage is the position error divided by the total amount of distance traveled during the entire route. Also included is the total distance traveled during the run that the data was logged. The different changes that were tested were the baseline case, fixing the Kalman filter implementation bugs described in Section~\ref{sec:kfBugs}, hand tuning the Kalman filter noise models and, finally, using noise models learned from the training algorithm from Section~\ref{sec:kftrainingparams}. The results for Kalman filter performance are shown in Table~\ref{tab:resultsKF}.
 
@@ -24,7 +24,7 @@ Baseline   & 10.62          & 1.51              & 224.22 \\
 Fix Bugs   & 4.38           & 0.79              & 182.70 \\
 Hand Tuned & 4.87           & 1.32              & 184.09 \\
 Trained    & 3.64           & 0.99              & 332.62 \\ \bottomrule
-\end{tabular}
+\end{tabular}%
 \label{tab:resultsKF}
 \end{table}
 
@@ -38,7 +38,7 @@ In Figures~\ref{fig:kfResults1} -~\ref{fig:kfResults4}, the same route was drive
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=.75\textwidth]{images/GE/20101203_1551_kf_lyapOrigQR}
-\caption{Model Based Controller with Original Noise Models}
+\caption{Model Based Controller with Original Noise Models}%
 \label{fig:kfResults1}
 \end{figure}
 
@@ -47,7 +47,7 @@ Running the model-based controller with learned noise models resulted in the pos
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=.75\textwidth]{images/GE/20101203_1545_kf_lyapNewQR}
-\caption{Model Based Controller with Learned Noise Models}
+\caption{Model Based Controller with Learned Noise Models}%
 \label{fig:kfResults2}
 \end{figure}
 
@@ -56,7 +56,7 @@ Results of the PID controller with original noise models is shown in Figure~\ref
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=.75\textwidth]{images/GE/20101203_1755_kf_pidOrigQR}
-\caption{PID Controller with Original Noise Models}
+\caption{PID Controller with Original Noise Models}%
 \label{fig:kfResults3}
 \end{figure}
 
@@ -65,36 +65,36 @@ The PID controller with learned noise models has similar trouble navigating the 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=.75\textwidth]{images/GE/20101203_1751_kf_pidNewQR}
-\caption{PID Controller with Learned Noise Models}
+\caption{PID Controller with Learned Noise Models}%
 \label{fig:kfResults4}
 \end{figure}
 
-\section{Model-Based Controller Results}
+\section{Model-Based Controller Results}%
 \label{sec:lyapunovResults}
 The linear and angular velocity outputs that were the result of running a simple route with the PID controller are shown in Figure~\ref{fig:pidOutput}. This compares to the outputs of the model-based controller shown in Figure~\ref{fig:mbOutput}, where it can be seen that the angular velocity is smooth and the linear velocity drives much faster, using $100\%$ effort at times, but smoothly decelerating as waypoints are reached. The linear velocity output does not go to $0$ until the final waypoint is reached as a consequence of the moving target frame described in Section~\ref{sec:drivingMode}. The errors for the model-based controller are presented in Figure~\ref{fig:mbErrors}, showing that $e$, $\alpha$ and $\theta$ decrease linearly at the rate given by the gain $\gamma$ and the eigenvalues of the matrix $A$, composed of the gains $h$ and $k$.
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=.5\textwidth]{images/pbtx/20110109_1815_pbtx_simpleDrivePID}
-\caption{Typical PID Controller Velocity Output}
+\caption{Typical PID Controller Velocity Output}%
 \label{fig:pidOutput}
 \end{figure}
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=.5\textwidth]{images/pbtx/20110113_1451_pbtx_simpleDrive}
-\caption{Typical Model Based Controller Velocity Output}
+\caption{Typical Model Based Controller Velocity Output}%
 \label{fig:mbOutput}
 \end{figure}
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=.5\textwidth]{images/pbtx/20110113_1451_pbtx_simpleDriveErrors}
-\caption{Model Based Controller Errors}
+\caption{Model Based Controller Errors}%
 \label{fig:mbErrors}
 \end{figure}
 
-\subsection{Controller Comparison}
+\subsection{Controller Comparison}%
 \label{sec:controllerComparison}
 For both the PID (Section~\ref{sec:pid}, Table~\ref{tab:PIDGainEffects}) and model-based controller (Section~\ref{sec:lyapunovTrajectoryConvergence}), gains have to be selected. The difference in selecting gains is that stability is the goal when selecting PID gains whereas stability is guaranteed with the model-based controller. More advanced behaviors such as three-point turns are a consequence of the control law in (\ref{eq:lyapunovControlLaw}) derived using a kinematic model of the robot. The other major difference between the controllers is that a table of gains must be tuned for the PID controller to work at varying linear velocities, but the model-based controller works very well at different linear and angular velocities. Also, when properties of the robot such as mass are changed by using different payloads on the system, the entire table of PID gains must be retuned while, at most, one set of gains must be retuned for the model-based controller. This last benefit of the model-based controller makes it very appealing to use in fielded systems, since it reduces the amount of maintenance required to keep the robot in optimal working condition. The model-based controller will also allow for improved navigation performance near obstacles, which leads directly to more reliable autonomy for the robot. The local path planner is much simpler with the model-based controller, since it only requires moving the target frame based on the calculated errors. The PID controller uses an entirely new algorithm that is not a normal part of the control algorithm to set the carrot-following mode~\cite{Hogg02}.
 
@@ -111,7 +111,7 @@ Setup & Controller  & $\gamma$ & $h$  & $k$               & $\theta^\star$ \\ \m
 3     & Model Based & 0.25     & 0.33 & 0.30              & PC \\
 4     & Model Based & 0.25     & 1.10 & $2\gamma\sqrt{h}$ & CN \\
 5     & Model Based & 0.25     & 1.10 & $2\gamma\sqrt{h}$ & PC \\ \bottomrule
-\end{tabular}
+\end{tabular}%
 \label{tab:resultsControllersSetup}
 \end{table}
 
@@ -128,21 +128,21 @@ The variable $R_{\text{cap}}$ is the capture radius for each waypoint and is use
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=.5\textwidth]{images/GE/GELongSegmentsRoute2}
-\caption{Route with Long Path Segments}
+\caption{Route with Long Path Segments}%
 \label{fig:routeLong}
 \end{figure}
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=.5\textwidth]{images/GE/GEShortSegmentsRoute2}
-\caption{Route with Short Path Segments}
+\caption{Route with Short Path Segments}%
 \label{fig:routeShort}
 \end{figure}
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=.5\textwidth]{images/GE/GEMixedSegmentsRoute2}
-\caption{Route with Mixed Length Path Segments}
+\caption{Route with Mixed Length Path Segments}%
 \label{fig:routeMixed}
 \end{figure}
 
@@ -165,7 +165,7 @@ Setup & Time (s) & XT (m) & $u_{\text{max}}$ (\%) & Stops \\ \midrule
 3     & 71.42    & 2.71   & 100.0                 & 4     \\
 4     & 110.09   & 2.42   & 100.0                 & 14    \\
 5     & 75.45    & 2.80   & 100.0                 & 5     \\ \bottomrule
-\end{tabular}
+\end{tabular}%
 \label{tab:resultsControllersOpenSpace}
 \end{table}
 
@@ -180,7 +180,7 @@ Setup & Time (s) & XT (m) & $u_{\text{max}}$ (\%) & Stops \\ \midrule
 3     & 75.92    & 0.94   & 50.86                 & 21    \\
 4     & 232.09   & 0.79   & 27.90                 & 31    \\
 5     & 75.99    & 0.91   & 49.96                 & 23    \\ \bottomrule
-\end{tabular}
+\end{tabular}%
 \label{tab:resultsControllersObstacles}
 \end{table}
 
@@ -195,7 +195,7 @@ Setup & Time (s) & XT (m) & $u_{\text{max}}$ (\%) & Stops \\ \midrule
 3     & 76.91    & 2.98   & 100.0                 & 12    \\
 4     & 164.65   & 2.34   & 100.0                 & 22    \\
 5     & 83.84    & 2.87   & 100.0                 & 12    \\ \bottomrule
-\end{tabular}
+\end{tabular}%
 \label{tab:resultsControllersMixed}
 \end{table}
 
